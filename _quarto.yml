@@ -1,8 +1,14 @@
 project:
   type: manuscript
 
+manuscript:
+  article: index.qmd
+  notebooks: 
+    - notebooks/park-tree-access.qmd
+
 execute:
   freeze: auto
+  fig-path: "notebooks/"
 
 format:
   html:
@@ -13,5 +19,6 @@ format:
   jats: default
   agu-pdf: default
 
+editor: visual
 
 

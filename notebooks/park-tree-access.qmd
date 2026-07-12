@@ -1,0 +1,34 @@
+---
+title: "Phoenix park tree access"
+editor: visual
+---
+
+```{r}
+#| label: setup
+#| include: false
+#| warning: false
+phx_bg <- readRDS("g:/My Drive/Research/Phoenix park tree access/phx_bg.rds")
+parks <- readRDS("g:/My Drive/Research/Phoenix park tree access/parks.rds")
+phx_city_limits <- readRDS("g:/My Drive/Research/Phoenix park tree access/phx_city_limits.rds")
+
+library(sf)
+library(tidyverse)
+library(tmap)
+library(flextable)
+```
+
+Map Phoenix block groups with county and state inset
+
+```{r}
+#| label: fig-bg-parks
+#| fig-cap: "Block groups and public parks in Phoenix, Arizona"
+#| fig-alt: "A map of the locations of block groups and public parks in Phoenix, Maricopa County, Arizona"
+
+tm_shape(phx_bg) +
+  tm_polygons(fill = "lightblue",
+              fill_alpha = 0.6) +
+  tm_shape(phx_city_limits) +
+  tm_borders(col = "black", lwd = 1.3) +
+  tm_shape(parks) +
+  tm_polygons(fill = "darkgreen")
+```

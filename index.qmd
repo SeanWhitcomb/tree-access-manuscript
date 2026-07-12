@@ -1,111 +1,638 @@
 ---
-title: La Palma Earthquakes
+title: Phoenix public parks serve as tree refuges in deprived areas
 author:
-  - name: Steve Purves
-    orcid: 0000-0002-0760-5497
+  - name: Sean Whitcomb
     corresponding: true
-    email: steve@curvenote.com
-    roles:
-      - Investigation
-      - Project administration
-      - Software
-      - Visualization
+    email: sean.whitcomb@mesacc.edu
     affiliations:
-      - Curvenote
-  - name: Rowan Cockett
-    orcid: 0000-0002-7859-8394
-    corresponding: false
-    roles: []
-    affiliations:
-      - Curvenote
+      - Mesa Community College
 keywords:
-  - La Palma
-  - Earthquakes
-abstract: |
-  In September 2021, a significant jump in seismic activity on the island of La Palma (Canary Islands, Spain) signaled the start of a volcanic crisis that still continues at the time of writing. Earthquake data is continually collected and published by the Instituto Geográphico Nacional (IGN). ...
-plain-language-summary: |
-  Earthquake data for the island of La Palma from the September 2021 eruption is found ...
-key-points:
-  - A web scraping script was developed to pull data from the Instituto Geogràphico Nacional into a machine-readable form for analysis
-  - Earthquake events on La Palma are consistent with the presence of both mantle and crustal reservoirs.
+  - urban forest
+  - green space equity
 date: last-modified
+format: 
+  nature-html:
+    journal:
+      cite-style: sn-basic
+      cite-method: natbib
+  nature-pdf: 
+    journal:
+      cite-style: sn-basic
+      cite-method: natbib
 bibliography: references.bib
-citation:
-  container-title: Earth and Space Science
+csl: _extensions/christopherkenny/nature/csl/springer-basic-brackets-no-et-al.csl
 number-sections: true
 ---
 
-## Introduction
+```{r}
+#| label: setup
+#| include: false
+#| error: true
+
+phx_bg <- readRDS(here::here("phx_bg.rds"))
+parks <- readRDS(here::here("parks.rds"))
+phx_bg_all <- readRDS(here::here("phx_bg_all.rds"))
+phx_city_limits <- readRDS(here::here("phx_city_limits.rds"))
+phx_bg_parks <- readRDS(here::here("phx_bg_parks.rds"))
+park_bg_pw <- readRDS(here::here("park_bg_pw.rds"))
+
+library(sf)
+library(tidyverse)
+library(tmap)
+library(flextable)
+library(stargazer)
+library(modelsummary)
+library(gtsummary)
+library(spdep)
+library(spatialreg)
+library(nnet)
+library(tigris)
+library(cowplot)
+library(kableExtra)
+library(labelled)
+library(gt)
+```
+
+## Introduction {#sec-introduction}
+
+Urban trees, whether in private yards, planted along streets, or in public parks, are a critical component of sustainable cities. The urban forest provides numerous ecosystem services that benefit city residents, including shade, stormwater removal, and air pollution mitigation (CITE). Tree canopy cover (TCC), defined as the area of ground covered by tree leaves, stems, and branches, is especially crucial in hot arid cities like Phoenix, Arizona, where shaded ground can be up to XX C cooler than bare ground (CITE). Adequate shade can be a lifesaving amenity in Phoenix, which experienced XXX heat-related deaths in 2025 (CITE).
+
+Like many urban amenities, tree canopy cover is often not equitably distributed across cities. Several studies have shown that residents of lower socioeconomic status tend to live in neighborhoods with lower TCC (CITE). Some studies also report that neighborhoods with larger populations of ethnic and racial minorities have lower levels of TCC (CITE). Wang, et al. (2024) demonstrated that these patterns hold true in Phoenix as well, finding a positive association between TCC and median household income, a negative correlation between TCC and percent Black population, and a negative correlation between TCC and percent Hispanic population at the block group level [@wang2024].
+
+As a source of publicly available tree canopy cover, municipal parks could potentially compensate for the lack of tree cover in disadvantaged neighborhoods. However, numerous studies have shown that public parks also tend to be inequitably distributed across cities (CITE). Public parks in XXX and XXX are more concentrated in more affluent neighborhoods with larger White populations, but the evidence for park inequities in Phoenix is mixed. Lara-Valencia (2018) found that Hispanic residents of Phoenix tend to have greater access to municipal parks due to a higher concentration of parks in the urban core [@lara-valencia2018]. However, Ibes (2015) analyzed access to public parks in Phoenix by type of park and found that "green neighborhood parks" are more concentrated in neighborhoods with higher White populations while "urban core parks" are more often found in areas with lower incomes and more minority residents [@ibes2015]. Corley (2024) found no association between park acreage and minority status or poverty level at the block group level in Phoenix [@corley2024]. The previously mentioned studies on Phoenix park access did not account for spatial autocorrelation of variables, i.e, observations that are spatially proximate tend to be more similar than expected under random distribution (CITE). When Kim, et al. (2023) used spatial regressive models to investigate park access in Phoenix and nearby Mesa, AZ, they found that more affluent neighborhoods had access to greater park acreage within walking distance, but there were no significant correlations between race/ethnicity of residents and the number of parks, size of parks, or distance to the nearest park [@kim2023].
+
+Parks don't necessarily have lots of trees
+
+No studies have looked at whether park tree canopy cover compensates for lack of cover
+
+Phoenix park studies have used simple distance measures, not advanced access measures
+
+This study address these questions:
+
+1.  Do Phoenix public parks significantly contribute to the percent tree canopy cover within block groups that contain parks?
+
+2.  Are there racial/ethnic or socioeconomic inequities in private tree canopy cover in Phoenix block groups?
+
+3.  Is public park tree canopy access higher in disadvantaged areas, thereby partially compensating for private tree canopy cover inequities?
+
+## Materials and methods {#sec-methods}
+
+### Study area
+
+The study area is the city of Phoenix in Maricopa County, Arizona, USA. AREA... It has a population of 1.67 million as of 2024, making it the fifth largest city in the country [@quickfa]. The Phoenix metro area consists of 26 municipalities with a total of 4.7 million inhabitants. The population of Phoenix is ethnically and racially diverse. Of the block groups included in this study, Hispanic residents make up `r round(mean(na.omit(phx_bg_all$pct_hispanic)), 1)`% of the population, and Black residents make up `r round(mean(na.omit(phx_bg_all$pct_black)), 1)`%, according to data from the 2021-2024 5-year American Community Survey (ACS). The median household income is \$`r mean(na.omit(phx_bg_all$median_income))`. FIX THIS
+
+Phoenix is located in the Sonoran Desert and has a semi-arid climate with hot summers and mild winters. The average daily mean temperature...
+
+### Tree canopy cover data
+
+Tree canopy cover was extracted from a 2021 land cover raster file created by the University of Vermont Spatial Analysis Lab and provided by American Forests [@maricopa2021]. The imagery has a spatial resolution of 0.3 m and includes most of Phoenix except for large undeveloped desert preserves and some urban land on the periphery of the city. Census block group boundaries and Census block populations (used for calculating population-weighted centroids) were downloaded from the United States Census Bureau using the tidycensus R package [@tidycensus] . A total of `r nrow(phx_bg_all)` block groups had tree canopy cover data available.
+
+Phoenix public park boundaries were downloaded from OpenStreetMap [@openstre]. Desert preserves , parks established after 2021, and those missing land cover data were excluded, resulting `r nrow(parks)` public urban parks in the final dataset. Private planned community parks were excluded from the analysis as they are often only accessible to neighborhood residents [@cityofphoenixb].
+
+The City of Phoenix Parks and Recreation Department operates 187 urban parks and desert preserves [@gallego2024], classified into five categories based on their size and amenities. Each park category has a service area radius that represents the recommended distance from a Phoenix residence to the nearest park of a given type [@cityofphoenixparksandrecreationdepartment]. Park category characteristics are summarized in @tbl-park-types.
 
 ```{r}
-eruptions <- c(1492, 1585, 1646, 1677, 1712, 1949, 1971, 2021)
-n_eruptions <- length(eruptions)
+#| label: tbl-park-types
+#| tbl-cap: "Typical amenities, sizes, and service area radius of Phoenix public park types"
+
+park_types <- data.frame(
+  `Park type` = c("Pocket", "Linear", "Neighborhood", "Community", "Regional"),
+  `Typical amenities` = c(
+    "Playground; small open area; picnic areas",
+    "Linear open space; walking/biking path; fitness equipment; picnic areas",
+    "Open space; playground; sports fields; fitness equipment; picnic areas",
+    "Amenities in neighborhood parks plus: swimming pool; recreational center; dog park; skate plaza; pond",
+    "Amenities in community parks plus: community/senior center; sports complex and concessions; skate park"
+  ),
+  `Size (ha)` = c("<0.8", "Various", "0.8-11.7", "12-20", ">20"),
+  `Service area (km)` = c("0.8", "0.8", "1.6", "4.8", "8.0"),
+  check.names = FALSE
+) 
+
+park_types |> 
+  gt()
+
+```
+
+The percentage of total tree canopy cover (TTCC) per block group was calculated using the zonal histogram tool in QGIS [@qgis.org2026]. TTCC represents the total amount of tree canopy cover within a block group, including trees in private yards, businesses, and parks. Public park polygons were then clipped from the land cover raster to calculate the percentage of private tree canopy cover (PTCC) for each block group. PTCC represents the amount of tree canopy cover supplied by trees that are not within public parks.
+
+The Mann-Whitney *U* test was performed to determine whether TTCC within block groups is affected by the presence of public parks. The median TTCC value of the `r nrow(phx_bg_parks)` block groups with parks was compared to the TTCC value of the `r nrow(filter(phx_bg_all, has_park == FALSE))`block groups without parks, and the *U* statistic was calculated.
+
+The Wilcoxon signed-rank test was performed on the block groups that contain public parks to determine whether the parks contribute to the total tree canopy cover.
+
+### Demographic factors {#sec-demographic}
+
+Total population and race/ethnicity data at the block group level were sourced from the 2024 American Community Survey (ACS) 5-year estimate [@uscensusbureau] using tidycensus. These factors were used to calculate the percentage of Black and Hispanic residents per block group.
+
+The area deprivation index (ADI) at the block group level was acquired from the University of Wisconsin School of Medicine Public Health [-@universityofwisconsinschoolofmedicinepublichealth2023]. The ADI is a validated measure of socioeconomic status based on 17 indicators of income, education, employment, and housing quality [@rollings2023]. The raw ADI score of a block group is compared against all other block groups in the nation and ranked on a percentile scale from 1-100, where 1 indicates the lowest level of disadvantage and 100 indicates the highest disadvantage. Block groups with predominantly group housing (college dormitories or jails) do not have ADI data available, so they were excluded from the analysis. The resulting dataset contained `r nrow(phx_bg)` block groups used in the demographic analysis. @fig-bg-parks shows the locations block groups with land cover and/or demographic data available and the public parks within those block groups.
+
+Median household income was considered as an additional explanatory variable, but it was excluded due to its high correlation with ADI rank (*r* = -0.70) and the presence of 50 block groups with suppressed income estimates in the ACS data.
+
+Descriptive statistics TABLE
+
+```{r}
+#| label: boundary
+#| include: false
+
+# Create boundary objects for mapping
+options(tigris_use_cache = TRUE)
+
+az_state <- states(cb= TRUE) |> filter(STUSPS == "AZ")
+az_county <- counties(state = "AZ", cb = TRUE)
+maricopa <- az_county |> filter(NAME == "Maricopa")
 ```
 
 ```{r}
-#| label: fig-timeline
-#| fig-cap: Timeline of recent earthquakes on La Palma
-#| fig-alt: An event plot of the years of the last 8 eruptions on La Palma.
-#| fig-height: 1.5
-#| fig-width: 6
-par(mar = c(3, 1, 1, 1) + 0.1)
-plot(eruptions, rep(0, n_eruptions), 
-  pch = "|", axes = FALSE)
-axis(1)
-box()
+#| label: fig-bg-parks
+#| fig-cap: "Block groups and public parks in Phoenix, Arizona"
+#| fig-alt: "A map of the locations of block groups and public parks in Phoenix, Maricopa County, Arizona"
+
+# Change county and state labels
+maricopa <- maricopa |> mutate(label = "Maricopa County")
+az_state <- az_state
+
+# Create inset map
+inset_phx <- tm_shape(az_state) +
+  tm_polygons(fill = "white", col = "gray40", lwd = 0.5) +
+  tm_text("NAME", size = 1, ymod = 5) +
+  tm_shape(maricopa) +
+  tm_polygons(fill = "lightblue") +
+  tm_text("NAMELSAD", size = 0.8, xmod = 3.5, ymod = 5.5) +
+  tm_shape(phx_city_limits) +
+  tm_polygons(fill = "darkblue") +
+  tm_text(text = "Phoenix", col = "darkblue", size = 0.6, xmod = 4, ymod = -3) +
+  tm_layout(frame = TRUE, inner.margins = 0.1, frame.lwd = 0.3)
+
+# Create legend element
+legend_bg_parks <- tm_shape(phx_bg_all) +
+  tm_polygons(fill = "#fee08b") +
+  tm_add_legend(
+    title = "Block groups",
+    type = "polygons",
+    fill = c("#fee08b", "#fdae61", "gray90"),
+    col = c("black", "black", "black"),
+    labels = c("Land cover data only",
+               "Land cover & demographic data",
+               "No data"),
+    frame = TRUE
+  ) +
+  tm_add_legend(
+    title = "Parks",
+    type = "polygons",
+    fill = "#1a9641",
+    col = "darkgreen",
+    labels = "Public parks",
+    frame = TRUE
+  ) +
+  tm_layout(legend.only = TRUE,
+            legend.frame = TRUE,
+            legend.frame.lwd = 1,
+            legend.bg.col = "white")
+
+# Create map of block groups and parks
+map_phx <-   tm_shape(phx_city_limits) +
+  tm_polygons(fill = "gray90", 
+              col = "black", 
+              lwd = 1.3) +
+  tm_shape(phx_bg_all) +
+  tm_polygons(fill = "#fee08b") +
+  tm_shape(phx_bg) +
+  tm_polygons(fill = "#fdae61") +
+  tm_shape(parks) +
+  tm_polygons(fill = "#1a9641", col = "darkgreen") +
+  tm_layout(frame = FALSE, legend.show = FALSE)
+
+# Plot all three elements
+ggdraw() +
+  draw_plot(tmap_grob(map_phx)) +
+  draw_plot(tmap_grob(legend_bg_parks), 
+            x = 0.06, 
+            y = 0.55, 
+            width = 0.3, 
+            height = 0.35) +
+  draw_plot(tmap_grob(inset_phx), 
+            x = 0.003, 
+            y = 0.1, 
+            width = 0.4, 
+            height = 0.4)
+```
+
+MAPS of Hispanic, Black, and ADI by block group
+
+```{r}
+#| label: fig-bg-demographics
+#| fig-cap: "Maps of Hispanic population (%), Black population (%), and ADI national percentile rank by block group"
+#| fig-alt: "Maps show the percentage of Hispanic and Black residents and the ADI rank per block group in Phoenix"
+
+# Create map of Hispanic population
+map_hisp <-   tm_shape(phx_city_limits) +
+  tm_polygons(fill = "gray90", 
+              col = "black", 
+              lwd = 1.3) +
+  tm_shape(phx_bg) +
+  tm_polygons(fill = "pct_hispanic") +
+  tm_layout(frame = FALSE, legend.show = TRUE)
+
+# Create map of Black population
+map_black <-   tm_shape(phx_city_limits) +
+  tm_polygons(fill = "gray90", 
+              col = "black", 
+              lwd = 1.3) +
+  tm_shape(phx_bg) +
+  tm_polygons(fill = "pct_black", 
+              palette = "brewer.purples") +
+  tm_layout(frame = FALSE, legend.show = TRUE)
+
+# Create map of ADI ranke
+map_adi <-   tm_shape(phx_city_limits) +
+  tm_polygons(fill = "gray90", 
+              col = "black", 
+              lwd = 1.3) +
+  tm_shape(phx_bg) +
+  tm_polygons(fill = "adi_rank", 
+              palette = "brewer.oranges") +
+  tm_layout(frame = FALSE, legend.show = TRUE)
+
+
+tmap_arrange(map_hisp, map_black, map_adi, nrow = 3)
+```
+
+### Spatial access to park tree canopy cover {#sec-methods-spatial}
+
+The Gaussian two-step floating catchment area (G2SFCA) method was used to determine Phoenix residents' spatial access to tree canopy cover in public parks. This method accounts for both the supply of public amenities and demand on those amenities when calculating accessibility. In previous studies of green space equity, park size and amenities have often been used as the supply term (CITE). The population of areas surrounding an amenity represents the demand on the amenity. More people living near a park leads to greater competition for the park's amenities, including tree canopy cover.
+
+Park tree canopy area in hectares (PTCA) was used as the supply term in this study and was calculated by multiplying the percent tree canopy cover of a park by its total area (@tbl-parks). Since PTCA values are affected by both park size and percent tree canopy cover, residents living near several small tree-dense parks may have access to more tree canopy than residents near a single large park with scant tree cover.
+
+```{r}
+#| label: tbl-parks  
+#| tbl-cap: "Total park area and park tree canopy cover area in Phoenix public parks"    
+ 
+# Create gt table of descriptive statistics
+datasummary((`Total park area (ha)` = area_ha) + 
+              (`Park tree canopy area (ha)` = tree_area) ~ 
+              Mean + SD + Median + Min + Max, 
+            data = st_drop_geometry(parks),
+            output = "gt"
+) |> 
+  tab_source_note(source_note = md(paste0("*N* = ", nrow(parks))))
+```
+
+The original 2SFCA, developed by Luo and Wang (2003) [@luo2003], considers an amenity to be fully accessible if it lies within a given travel time or distance from a residential area and fully inaccessible if it lies outside this catchment area. However, the decision to visit an amenity is not dichotomous; for example, a resident may choose to travel farther to visit a park with more tree canopy even though there are other parks nearby that provide less shade. The Gaussian 2SFCA method used in this study improves on the original method by applying a continuous weighting function to the travel distance, where nearby parks are given more weight than those farther away within the same catchment area. Residents who choose more distant parks will thus encounter greater travel friction [@dai2011].
+
+The first step in the G2SFCA method is to compute the ratio of park tree canopy area to the surrounding block group population at each park location. The population-weighted centroid of block groups was used as the population location ($k$) in calculating the distance between block groups and parks. This point represents the mean location of residents within the block group. Populations at each block group location $k$ are weighted using a Gaussian function. This ratio is calculated as:
+
+$$R_j = \frac{S_j}{\sum_{k \in {d_{kj} \leq d_0}} G(d_{kj}, d_0)P_k},$$ {#eq-sd-ratio}
+
+where $P_k$ is the population at block group $k$ whose population-weighted centroid lies within the catchment (i.e., $d_{kj} \leq d_0$) of a park at location $j$; $d_{kj}$ is the travel distance between block group $k$ and park $j$; $S_j$ is the supply capability of park $j$, i.e., the tree canopy area in hectares; $G$ is the friction-of-distance, calculated below:
+
+$$G(d_{kj}, d_0) = 
+\begin{cases}
+\dfrac{e^{-(1/2) \times (d_{kj}/d_0)^2} - e^{-(1/2)}}{1 - e^{-(1/2)}}, & \text{if } d_{kj} \leq d_0 \\[10pt]
+0, & \text{if } d_{kj} > d_0
+\end{cases} .$$ {#eq-gaussian}
+
+The second step in G2SFCA is to search all parks $l$ within the threshold distance $d_0$ from block group $i$, thus creating the catchment for the population at $i$. Each $R$ is discounted using the Gaussian function $G$. The discounted $R$ values within the catchment area of $i$ are summed to obtain the spatial accessibility of park tree canopy area at block group $i$ as follows:
+
+$$A_i = \sum_{l \in \ d_{il} \leq d_0} G (d_{il}, d_0)R_l,$$ {#eq-access}
+
+where $l$ denotes all parks within the catchment of block group $i$, and all other notations are the same as in @eq-sd-ratio. The park tree canopy accessibility score ($A_i$) represents the amount of park tree canopy cover (in hectares) available to each resident in a given block group. Raw accessibility scores are very small values and thus were re-scaled by a factor of 1,000,000 for reporting purposes; the re-scaled values are hereafter referred to as park tree access scores (PTAS).
+
+Public park access studies often use the park centroid as the destination point. However, this can bias the results against large parks since users may have to walk long distances from a park entrance to the centroid. Parks may also have multiple points of entry that are separated by significant distances [@zhang2023a]. This study used park entrances, determined by visual examination using QGIS, as destination locations for parks larger than 2 ha. For smaller parks, the centroid was used since travel time would be minimally affected by the access point location.
+
+Travel distance ($d_{kj}$) from block group centroids ($k$) to park entrances ($j$) was computed using the driving profile in the osrm R package [@osrm]. This method uses the Open Source Routing Machine to identify the shortest driving path between any two points based on the OpenStreetMap road network. A distance matrix of all block group population-weighted centroids to all park entrances was created and then limited to the distance from a block group to only the nearest entrance within any given park.
+
+Park catchment size ($d_0$) was determined by the service area radius assigned to each park category by the City of Phoenix [@cityofphoenixa]. Pocket and linear parks were assigned a threshold of 0.8 km (0.5 mi), neighborhood parks 1.6 km (1 mi), community parks 4.8 km (3 mi), and regional parks 8.0 km (5 mi). This aligns the park catchment values with the park accessibility goals of the City of Phoenix.
+
+The G2SFCA method is vulnerable to the "edge effect" problem wherein phenomena contributing to the spatial patterns of an analysis unit may lie outside of that unit [@chen2017]. In other words, accessibility scores for block groups on the periphery of Phoenix may be negatively impacted if block groups from surrounding cities are not included in the analysis. This is because residents of these other cities can use Phoenix parks, thus diluting the amount of tree cover available to Phoenix residents. The edge effect was accounted for in the demand portion of the method because the populations of `r nrow(park_bg_pw) - nrow(phx_bg_all)` block groups from surrounding cities that lie within a park catchment area were included in the calculation of the supply/demand ratios ($R_j$ and $R_l$). The edge effect can also impact the supply of park tree canopy area since Phoenix residents can access parks in other cities. However, this is not relevant to the current study because the purpose was to measure the access of residents only to those parks maintained by the City Phoenix. Hence, public parks located in nearby cities were not included in the analysis.
+
+### Regression analysis of tree canopy cover disparities {#sec-methods-regress}
+
+Evaluating demographic disparities in block group-level tree canopy cover began with ordinary least squares (OLS) regression models using PTCC and PTAS as the predictor variables and percent Hispanic population, percent Black population, and ADI national percentile rank as the independent variables. PTAS was highly right-skewed, so a square-root transformation was performed to normalize the values. Percent White population was excluded due to collinearity with the percent Hispanic population. Percent of the population under 18 years old and over 64 years old were considered as predictors, but both had an insignificant impact on the OLS results.
+
+Demographic and environmental variables often exhibit spatial autocorrelation, meaning the residuals in a given block group are likely to be similar to their surrounding block groups. The presence of spatial autocorrelation violates the assumption of independent residuals necessary for OLS regression, necessitating the use of spatially aware regression models. The global Moran's *I* index was calculated to measure the overall spatial autocorrelation of the residuals of both OLS regression models using the following formula:
+
+$$I = \frac{N}{S_0} \frac {\sum_{i=1}^N \sum_{j=1}^N w_{ij}(x_i-\bar x) (x_j-\bar x)} {\sum_{i=1}^N (x_i-\bar x)^2},$$
+
+where $N$ is the number of block groups indexed by $i$ and $j$, $x$ is the variable of interest (i.e., OLS residuals), $\bar{x}$ is the mean of $x$*,* $w_{ij}$ is a spatial weights matrix that represents the degree of spatial proximity between block groups $i$ and $j$. The distance matrix was calculated based on the eight nearest neighbors of each block group. This method allowed for all block groups to be included in the computation, resulting in no isolated "islands" of block groups. A Monte Carlo simulation with 999 iterations was used, and the *p*-value was set at 0.01 to evaluate the significance of the global Moran's *I* index. The value of Moran's *I* ranges from -1 to 1; positive values indicate clustering, negative values indicate dispersion, and 0 indicates a random distribution of residuals.
+
+Since spatial autocorrelation was present in the residuals of the OLS models for both dependent variables, spatial regression models were warranted. Lagrange Multiplier (LM) tests were used to determine the appropriate spatial regression specification for each outcome, following the decision rule recommended by Anselin and Serge [@anselin1991]: if the robust LM error statistic is significant and the robust LM lag statistic is not, a spatial error model is selected; if robust LM lag is significant and robust LM error is not, a spatial lag model is selected. LM tests indicated that a spatial error specification was appropriate for both PTCC and PTAS (see Results).
+
+In a spatial error model, spatial dependence is captured in the error term rather than the outcome itself. This specification is appropriate when neighboring block groups have similar residuals due to unmeasured place-based factors that cluster spatially and affect tree canopy cover, such as housing age or homeowners association planting guidelines. By modeling this spatial structure as an error term, the spatial error model isolates the independent effects of racial/ethnic composition and socioeconomic disadvantage on tree canopy outcomes. The spatial error model takes the following form:
+
+$$y = X \beta + u,$$
+
+where $y$ is the outcome (PTCC or PTAS), $X$ represents the predictor variables (percent Hispanic population, percent Black population, and ADI rank), $\beta$ represents the coefficients, and $u$ is an error term modeled as:
+
+$$u = \lambda Wu + \epsilon,$$
+
+where $\lambda$ is the spatial error coefficient, $Wu$ is the weighted average of neighboring errors based on a spatial weights matrix of the eight nearest neighbors, and $\epsilon$ is a random independent error term.
+
+### Compensatory tree canopy access (need better title) {#sec-methods-multinom}
+
+After separately identifying spatial patterns in private tree canopy cover and public park tree access scores, block groups were classified as either high PTCC or low PTCC. Those with a PTCC of 15% or higher were classified into the high PTCC category and the rest were considered low PTCC. This threshold is based on the recommendation of the non-profit organization American Forests that desert cities should maintain a 15% tree canopy cover to achieve tree equity [@cityofphoenix]. In the absence of a clear policy guideline for park tree access score, block groups with a PTAS below the median were categorized as low PTAS, and those at or above the median were categorized as high PTAS. The two factors were then combined to create four tree canopy access categories: a) high PTCC/high PTAC (HH), b) high PTCC/low PTAS (HL), c) low PTCC/high PTAS (LH), or d) low PTCC/low PTAS (LL).
+
+Multinomial logistic regression was used to examine whether demographic characteristics predicted membership in each tree canopy access category relative to the high PTCC/high PTAS condition (HH). Unlike binary logistic regression, multinomial logistic regression estimates the probability of membership in each of $K$ categories simultaneously, making it appropriate for the four-category tree canopy access typology (HH, HL, LH, LL) used here. The probability that block group $i$ belongs to category $k$ is given by:
+
+$$\Pr(Y_i=k) = \frac{e^{\beta_k \cdot \mathbf{X}_i}}{\sum_{j=1}^{K} e^{\boldsymbol\beta_j \cdot \mathbf{X}_i}}, \;\;\;\;\;\;1\leq k \le K,$$
+
+where $Y_i$ is the tree canopy access category of block group $i$; $k$ is one of $K = 4$ possible categories (HH, HL, LH, LL); $\beta_k$ is the vector of coefficients associated with category $k$; and $\mathbf{X}_i$ is the vector of predictor values for block group $i$, including percent Hispanic population, percent Black population, and ADI national percentile rank. The denominator normalizes the probabilities so that they sum to 1 across all categories. The reference category (HH) is identified by setting $\beta_{HH} = 0$, so that all coefficients are interpreted relative to the high PTCC/high PTAS category.
+
+## Results {#sec-results}
+
+### Impact of public parks on tree canopy cover {#sec-res-impact}
+
+```{r}
+#| label: ttcc-median
+#| include: false
+
+# Compute median values of block group TTCC with and without parks
+ttcc_med <- formatC(median(phx_bg_parks$pct_tree_wo_parks), format = "f", digits = 2)
+ptcc_med <- formatC(median(phx_bg_parks$pct_tree_parks), format = "f", digits = 2)
+
+ttcc_med_parks <- phx_bg_all |> 
+  filter(has_park) |>
+  st_drop_geometry() |>
+  summarise(median = median(pct_tree_parks, na.rm = TRUE)) |>
+  pull(median) |>
+  formatC(format = "f", digits = 2)
+
+ttcc_med_wo_parks <- phx_bg_all |> 
+  filter(!has_park) |>
+  st_drop_geometry() |>
+  summarise(median = median(pct_tree_parks, na.rm = TRUE)) |>
+  pull(median) |>
+  formatC(format = "f", digits = 2)
+
 ```
 
 ```{r}
-#| output: false
-avg_years_between_eruptions <- mean(diff(eruptions[-n_eruptions]))
-avg_years_between_eruptions
+#| label: mann-wilcoxon
+#| include: false
+
+# Compute Mann's U statistic for median TTCC with and without parks
+mann <- wilcox.test(pct_tree_parks ~ has_park, data = phx_bg_all)
+
+mann_u <- formatC(mann$statistic, format = "f", digits = 0)
+mann_p <- ifelse(mann$p.value < 0.001, "0.001",
+                 formatC(mann$p.value, format = "f", digits = 3))
+
+# Compute Wilcoxon's V statistic for median PTCC with and without parks
+wilcox <- wilcox.test(phx_bg_parks$pct_tree_parks, phx_bg_parks$pct_tree_wo_parks, paired = T)
+
+wilcox_v <- formatC(wilcox$statistic, format = "f", digits = 0)
+wilcox_p <- ifelse(wilcox$p.value < 0.001, "0.001",
+                   formatC(wilcox$p.value, format = "f", digits = 3))
 ```
 
-Based on data up to and including 1971, eruptions on La Palma happen every `{r} round(avg_years_between_eruptions, 1)` years on average.
+Percent total tree canopy cover (TTCC) is the amount of tree canopy cover in a block group including the tree cover provided by public parks. Across the entire city, the `r sum(phx_bg_all$has_park)` block groups that contain parks have a median TTCC of `r ttcc_med_parks`, while the `r nrow(filter(phx_bg_all, has_park == FALSE))` without parks have a median TTCC of `r ttcc_med_wo_parks`. This difference is non-significant (Mann-Whitney *U* = `r mann_u`, *p* = `r mann_p`), suggesting that parks are evenly distributed across the canopy spectrum rather than concentrated in already-green neighborhoods.
 
-Studies of the magma systems feeding the volcano, such as @marrero2019, have proposed that there are two main magma reservoirs feeding the Cumbre Vieja volcano; one in the mantle (30-40km depth) which charges and in turn feeds a shallower crustal reservoir (10-20km depth).
+Percent private tree canopy cover (PTCC) is the tree cover in a block group excluding the tree cover provided by public parks. TTCC and PTCC were compared in the `r nrow(phx_bg_parks)` block groups that contain parks to determine whether the parks significantly contribute to block group-level tree canopy cover in Phoenix. The median TTCC was `r ttcc_med`%, while PTCC was higher at `r ptcc_med`% . This difference was statistically significant (Wilcoxon signed-rank test, *V* = `r wilcox_v`, *p* \< `r wilcox_p`), confirming that parks meaningfully contribute to tree canopy cover when they are present in a neighborhood.
 
-Eight eruptions have been recorded since the late 1400s (@fig-timeline).
+### Regression analysis of tree canopy cover {#sec-res-regress}
 
-Data and methods are discussed in @sec-data-methods.
+Based on the OLS model, percent Hispanic population, percent Black population, and ADI rank were all negatively correlated with PTCC, significant at the *p* \< 0.001 level (see @tbl-regress). For every 1% increase in the Hispanic population, private tree canopy cover within a block group is expected to decrease by 3.5%; a 1% increase in the population of Black residents is associated with a 7.3% decrease in PTCC; and a 1-point increase in the ADI rank is associated with an 8.5% decrease in PTCC.
 
-Let $x$ denote the number of eruptions in a year. Then, $x$ can be modeled by a Poisson distribution
+Residual diagnostics for the PTAS outcome indicated substantial right skew, so a square root transofrmation was applied prior to regression analysis. The percentage of Hispanic residents in a block group is not significantly associated with PTAS, but there was a significant positive association between PTAS and both Black resident percentage (*p* = 0.002) and ADI rank (*p* \< 0.001; see @tbl-regress).
 
-$$
-p(x) = \frac{e^{-\lambda} \lambda^{x}}{x !}
-$$ {#eq-poisson}
+These findings suggest that while neighborhoods with a higher Black population and lower socioeconomic status have lower tree canopy cover provided by trees on private property, street trees, and trees in private parks, the public parks near these neighborhoods provide greater access to tree canopy cover than in neighborhoods with lower Black populations and higher socioeconomic status.
 
-where $\lambda$ is the rate of eruptions per year. Using @eq-poisson, the probability of an eruption in the next $t$ years can be calculated.
+```{r}
+#| label: global-morans
+#| include: false
 
-| Name                 | Year   |
-| -------------------- | ------ |
-| Current              | 2021   |
-| Teneguía             | 1971   |
-| Nambroque            | 1949   |
-| El Charco            | 1712   |
-| Volcán San Antonio   | 1677   |
-| Volcán San Martin    | 1646   |
-| Tajuya near El Paso  | 1585   |
-| Montaña Quemada      | 1492   |
+# Create weight matrix
+phx_bg_pw <- readRDS("phx_bg_pw.rds")
+nb8 <- knn2nb(knearneigh(phx_bg_pw, k = 8))
+nbw8 <- nb2listw(nb8, style = "W")
 
-: Recent historic eruptions on La Palma {#tbl-history}
+# Global Moran's I for tree canopy
+moran_canopy <- moran.mc(phx_bg$ols_canopy_resid, nbw8, nsim = 999)
 
-@tbl-history summarises the eruptions recorded since the colonization of the islands by Europeans in the late 1400s.
+moran_c_I <- formatC(moran_canopy$statistic, format = "f", digits = 3)
 
-![Map of La Palma](images/la-palma-map.png){#fig-map}
+# Global Moran's I for park tree access
+moran_access <- moran.mc(phx_bg$ols_access_resid, nbw8, nsim = 999)
 
-La Palma is one of the west most islands in the Volcanic Archipelago of the Canary Islands (@fig-map). 
+moran_a_I <- formatC(moran_access$statistic, format = "f", digits = 3)
 
-{{< embed notebooks/explore-earthquakes.qmd#fig-spatial-plot >}}
+```
 
-@fig-spatial-plot shows the location of recent Earthquakes on La Palma.
+Global Moran's *I* was significant (*p* \< 0.001) for both the PTCC and PTAS residuals from the OLS models. The PTCC index was `r moran_c_I`, indicating moderate spatial clustering of private tree canopy values, and the PTAS index was `r moran_a_I`, indicating strong spatial clustering of park tree access scores.
 
-## Data & Methods {#sec-data-methods}
+Spatial error model results are presented in @tbl-regress along with OLS estimates for comparison. Similar to the OLS model, all three predictor variables are negatively correlated with PTCC, indicating that block groups with larger Hispanic populations, larger Black populations, or higher ADI rank are more likely to have lower private tree canopy cover.
 
-## Conclusion
+The spatial error model for the square-root transformed PTAS also indicates that there is no correlation between park tree access and Hispanic population percent. The coefficient of 0.019 for the Black population percent (significant only at the *p* \< 0.1 level) suggests that there may be a slight increase in park tree access as the Black population increases. The significant positive relationship between PTAS and ADI rank indicates that the park tree access score increases as socioeconomic status decreases.
+
+The lambda ($\lambda$) term indicates how neighboring observations influence one another's errors. The positive $\lambda$ in both spatial error models indicates that unmeasured error in one block group significantly impacts the errors in adjoining block groups for both PTCC and PTAS.
+
+```{r}
+#| label: regress-models
+#| include: false
+
+# Run OLS model on bg canopy
+ols_canopy <- lm(pct_tree ~ pct_hispanic + pct_black + adi_rank, 
+                 data = phx_bg)
+
+# Run OLS model on sqrt of tree access score
+
+ols_access_sqrt <- lm(sqrt_tree_access ~ pct_hispanic + pct_black + adi_rank, 
+                      data = phx_bg)
+
+
+# Lagrange tests
+lm.RStests(ols_canopy, nbw8, test = "all")
+
+lm.RStests(ols_access_sqrt, nbw8, test = "all")
+
+
+# Run spatial error model on bg canopy
+err_canopy <- errorsarlm(pct_tree~ pct_hispanic + pct_black + adi_rank,
+                         data = phx_bg,
+                         listw = nbw8)
+
+# Run spatial error model on sqrt of tree access score
+err_access_sqrt <- errorsarlm(sqrt_tree_access ~ pct_hispanic + pct_black + adi_rank,
+                              data = phx_bg,
+                              listw = nbw8)
+```
+
+```{r}
+#| label: tbl-regress
+#| tbl-cap: "Results of OLS and spatial error regression models for PTCC and PTAS"
+
+modelsummary(list("OLS" = ols_canopy,
+                  "Spatial error" = err_canopy,
+                  "OLS" = ols_access_sqrt,
+                  "Spatial error" = err_access_sqrt
+                  ),
+             coef_rename = c(
+               "pct_hispanic" = "Hispanic population (%)",
+               "pct_black" = "Black population (%)",
+               "adi_rank" = "ADI rank"),
+             estimate = "{estimate}{stars}",
+             statistic = NULL,
+             gof_map = "R2",
+             output = "gt") |> 
+  tab_spanner(label = "PTCC models",
+              columns = 2:3) |> 
+  tab_spanner(label = "√PTAS models",
+              columns = 4:5) |> 
+  tab_source_note(source_note = md(paste0("&#42; *p* < 0.1, ** *p* < 0.05, *** *p* < 0.01")))|> 
+  tab_source_note(source_note = md(paste0("*N* = ", nrow(phx_bg))))
+```
+
+```{r}
+#| label: fig-PTAS-PTCA-map
+#| fig-cap: "Park tree access score (PTAS) of block groups and park tree canopy area (PTCA)"
+
+tm_shape(phx_bg) +
+  tm_polygons(fill = "tree_access", fill.scale = tm_scale(values = "brewer.blues")) +
+  tm_shape(parks) +
+  tm_polygons(fill = "tree_area", col = "lightgreen", 
+fill.scale = tm_scale_intervals(style = "quantile",values = "brewer.greens"))
+```
+
+### Demographic inequities in tree canopy access {#sec-res-demographic}
+
+Block groups were organized into one of four tree canopy access categories based on their PTCC and PTAS values @fig-canopy-access-map. The least common category was high PTCC/high PTAS (HH) comprising only 9% of all block groups. These neighborhoods with both high private tree canopy and high park tree access are rare in Phoenix and mostly confined to isolated pockets in the northeastern part of the city. Another 12.3% of the block groups were in the high PTCC/low PTAS category (HL), representing neighborhoods with an abundance of private tree cover but lower than average access to park trees. The most common category, with 40.9% of all block groups, was low PTCC/high PTAS (LH). These neighborhoods are lacking in private tree canopy cover, but have greater access to park tree canopy cover. They are located mostly in the center and northern portions of the city where most of the public parks are located. The remaining 37.8% of block groups belong to the low PTCC/low PTAS (LL) category. These neighborhoods are "tree deserts", lacking both private tree canopy cover and access to public park tree canopy. They tend to be found on the periphery of the city.
+
+The multinomial logistic regression model estimates the odds that a particular demographic factor (Hispanic population, Black population, or ADI rank) predicts whether a block group belongs to either the HL, LH, or LL tree access category rather than the baseline HH category. The results show that block groups are equally likely to be in the HL category compared to the HH category, regardless of the demographic makeup of the block group. In other words, neighborhoods with high private tree canopy cover and high park tree canopy access are not demographically distinct from those with high private canopy and low park tree access.
+
+All three demographic factors were significantly associated with membership in the LH category (*p*\<0.05). For every 1% increase in the Hispanic population, there is a 2% increase in the odds that a block group belongs to the LH category vs. the HH category. A 1% increase in Black population is associated with a 5% increase in the odds of belonging to the LH category. A one-point increase in ADI rank is associated with an 8% increase in the odds of being in the LH category.
+
+For the LL tree access category, only ADI rank is significant (*p*\<0.001). For every one-point increase in ADI rank, there is a 6% increase in the odds that a block group belongs to this category compared to the HH category.
+
+Higher ADI rank was associated with greater odds of belonging to both low PTCC categories, LH and LL, relative to HH. This supports the previous finding that low socioeconomic status is linked to reduced private tree canopy cover in Phoenix. But there is no clear relationship between the socioeconomic level of a block group and its likelihood of having greater access to public park tree canopy cover (@tbl-multinom).
+
+The higher odds of a block group with a larger Black or Hispanic population belonging to the LH category suggests that these neighborhoods are more likely to have high park tree access despite their lower private tree canopy cover. However, the multinomial logistic model does not directly test a compensatory effect of park canopy.
+
+```{r}
+#| label: setup-multinom
+#| message: false
+#| warning: false
+#| tbl-cap: "Multinomial logistic regression odds ratios for canopy access categories"
+
+
+# Run multinomial regression model on canopy access category (HH, HL, LH, LL)
+multinom1 <- multinom(canopy_access_type_15 ~ 
+                          pct_hispanic + pct_black + adi_rank, 
+                        data = phx_bg)
+
+# Run multinom model with interactions
+multinom2 <- multinom(canopy_access_type_15 ~
+                        adi_rank * pct_hispanic + adi_rank * pct_black, 
+                      data = phx_bg)
+
+# Save model objects
+odds <- exp(coef(multinom1))
+ci <- exp(confint(multinom1))
+z_15 <- summary(multinom1)$coefficients / summary(multinom1)$standard.errors
+p_15 <- (1 - pnorm(abs(z_15), 0, 1)) * 2
+
+```
+
+```{r}
+#| label: tbl-multinom
+#| message: false
+#| warning: false
+#| tbl-cap: Multinomial logistic regression odds ratios for canopy access categories
+
+# Create results table
+# Format stars
+fmt_stars <- function(p) {
+  ifelse(p < 0.01, "***",
+    ifelse(p < 0.05, "**",
+      ifelse(p < 0.1, "*", "")))
+}
+
+# Build data frame
+mn_table <- data.frame(
+  Predictor = c("Hispanic population (%)", "Black population (%)", "ADI rank"),
+  HL_OR = paste0(formatC(odds[1, 2:4], format = "f", digits = 2),
+                 fmt_stars(p_15[1, 2:4])),
+  HL_CI = paste0(formatC(ci[2:4, 1, 1], format = "f", digits = 2), ", ",
+                 formatC(ci[2:4, 2, 1], format = "f", digits = 2)),
+  LH_OR = paste0(formatC(odds[2, 2:4], format = "f", digits = 2),
+                 fmt_stars(p_15[2, 2:4])),
+  LH_CI = paste0(formatC(ci[2:4, 1, 2], format = "f", digits = 2), ", ",
+                 formatC(ci[2:4, 2, 2], format = "f", digits = 2)),
+  LL_OR = paste0(formatC(odds[3, 2:4], format = "f", digits = 2),
+                 fmt_stars(p_15[3, 2:4])),
+  LL_CI = paste0(formatC(ci[2:4, 1, 3], format = "f", digits = 2), ", ",
+                 formatC(ci[2:4, 2, 3], format = "f", digits = 2))
+)
+
+# Build gt table
+mn_table |>
+  gt::gt() |>
+  gt::tab_spanner(label = "HL", columns = 2:3) |>
+  gt::tab_spanner(label = "LH", columns = 4:5) |>
+  gt::tab_spanner(label = "LL", columns = 6:7) |>
+  gt::cols_label(
+    HL_OR = "OR", HL_CI = "95% CI",
+    LH_OR = "OR", LH_CI = "95% CI",
+    LL_OR = "OR", LL_CI = "95% CI"
+  ) |>
+  cols_width(2:7 ~ "15%") |> 
+  cols_align(align = "center",
+             columns = 2:7) |> 
+  gt::tab_footnote("OR: Odds ratio; CI: Confidence interval") |>
+  gt::tab_footnote("Reference category: HH (High PTCC/High PTAS)") |>
+  gt::tab_footnote(md("&#42; *p* < 0.1, ** *p* < 0.05, *** *p* < 0.01")) |>
+  gt::tab_footnote(md("*N* = 988: HH = 89 (9.0%), HL = 122 (12.3%), LH = 404 (40.9%), LL = 373 (37.8%)"))
+```
+
+```{r}
+#| label: fig-canopy-access-map
+#| message: false
+#| warning: false
+#| fig-cap: "Block group tree canopy access categories: High PTCC/High PTAS, Low PTCC/Low PTAS, High PTAC/Low PTAS, Low PTCC/High PTAS"
+
+# Create legend
+legend_access <- tm_shape(phx_bg) +
+  tm_polygons(fill = "white", col = "white") +
+  tm_add_legend(
+    title = "Tree canopy access categories",
+    type = "polygons",
+    fill = c("#FF0000", "#f4ada8", "#a7adf9", "#0000FF", "gray90"),
+    col = c("black", "black", "black", "black"),
+    labels = c("High PTCC/High PTAS", 
+               "High PTCC/Low PTAS", 
+               "Low PTCC/High PTAS",
+               "Low PTCC/Low PTAS",
+               "No data"),
+    frame = TRUE
+    ) +
+    tm_layout(legend.only = TRUE)
+
+# Create map of tree canopy access categories
+map_access <- tm_shape(phx_city_limits) +
+  tm_polygons(fill = "gray90", 
+              col = "black", 
+              lwd = 1.3) +
+  tm_shape(phx_bg) +
+  tm_polygons(fill = "canopy_access_type_15",
+              fill.scale = tm_scale_ordinal(levels = c("HH", "HL", "LH", "LL", "No data"),
+                                            values = c("#FF0000", "#f4ada8", "#a7adf9", "#0000FF", "gray90"),
+                                            labels = c("High PTCC/High PTAS", "Low PTCC/Low PTAS", "High PTCC/Low PTAS", "Low PTCC/High PTAS"))) +
+  tm_layout(frame = FALSE, legend.show = FALSE)
+
+# Plot map and legend
+ggdraw() +
+  draw_plot(tmap_grob(map_access)) +
+  draw_plot(tmap_grob(legend_access), 
+            x = 0.06, 
+            y = 0.55, 
+            width = 0.3, 
+            height = 0.35)
+
+```
+
+## Discussion {#sec-discussion}
 
 ## References {.unnumbered}
 
-:::{#refs}
-
+::: {#refs}
 :::
+
+\`\`\`\`
