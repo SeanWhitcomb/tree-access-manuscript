@@ -15,10 +15,12 @@ library(gtsummary)
 library(performance)
 
 # Save RDS files
-saveRDS(phx_bg, "G:/My Drive/Research/Phoenix park tree access/phx_bg.rds")
-saveRDS(ols_canopy, "G:/My Drive/Research/Phoenix park tree access/ols_canopy.rds")
-saveRDS(ols_access, "G:/My Drive/Research/Phoenix park tree access/ols_access.rds")
-saveRDS(ols_access_sqrt, "G:/My Drive/Research/Phoenix park tree access/ols_access_sqrt.rds")
+saveRDS(phx_bg, "phx_bg.rds")
+saveRDS(ols_canopy, "ols_canopy.rds")
+saveRDS(ols_access, "ols_access.rds")
+saveRDS(ols_access_sqrt, "ols_access_sqrt.rds")
+saveRDS(err_canopy, "err_canopy.rds")
+saveRDS(err_access_sqrt, "err_access_sqrt.rds")
 
 # Write objects to geopackage layers
 st_write(phx_bg, "phx_park_tree_access.gpkg", layer = "phx_bg", delete_layer = T)
@@ -27,6 +29,8 @@ st_write(phx_bg, "phx_park_tree_access.gpkg", layer = "phx_bg", delete_layer = T
 phx_bg <- readRDS("G:/My Drive/Research/Phoenix park tree access/phx_bg.rds")
 ols_canopy <- readRDS("G:/My Drive/Research/Phoenix park tree access/ols_canopy.rds")
 ols_access_sqrt <- readRDS("G:/My Drive/Research/Phoenix park tree access/ols_access_sqrt.rds")
+err_canopy <- readRDS("G:/My Drive/Research/Phoenix park tree access/ols_canopy.rds")
+err_access_sqrt <- readRDS("G:/My Drive/Research/Phoenix park tree access/ols_access_sqrt.rds")
 
 
 # Attach dataframe
@@ -205,10 +209,15 @@ ols_canopy |>
 # ols_access_all <- lm(tree_access ~ pct_hispanic + pct_under18 + pct_65plus + adi, 
 # data = phx_bg)
 # 
-# ols_access <- lm(tree_access ~ pct_hispanic + pct_black + adi_rank, 
-#                  data = phx_bg)
-# 
-# summary(ols_access)
+ols_access <- lm(tree_access ~ pct_hispanic + pct_black + adi_rank,
+                 data = phx_bg)
+
+summary(ols_access)
+
+qqPlot(ols_access)
+
+shapiro.test(residuals(ols_access))
+
 # 
 # ols_access |> 
 #   as_flextable()
@@ -247,6 +256,9 @@ dev.off()
 # Q-Q plots 
 qqPlot(ols_canopy)
 qqPlot(ols_access_sqrt)
+
+# Shapiro test
+shapiro.test(residuals(ols_access_sqrt))
 
 # Histograms of residuals
 h_ols_canopy <- phx_bg |> 
@@ -308,7 +320,7 @@ map_ols_access <- tm_shape(phx_bg) +
 
 tmap_arrange(map_ols_canopy, map_ols_access, ncol = 1)
 
-## Test for spatial autocorrelation =================================
+## Test OLS residuals for spatial autocorrelation =================================
 
 # Create neighborhood matrix based on 8 nearest neighbors
 phx_bg_pw <- readRDS("phx_bg_pw.rds")
@@ -351,3 +363,4 @@ title = "Block group canopy regression results")
 
 stargazer(ols_access_sqrt, err_access_sqrt, 
 title = "Park tree canopy access regression results")
+
