@@ -43,11 +43,15 @@ LH_glm <- readRDS(here::here("LH_glm.rds"))
 LH_glm_sf <- readRDS(here::here("LH_glm_sf.rds"))
 LL_glm <- readRDS(here::here("LL_glm.rds"))
 LL_glm_sf <- readRDS(here::here("LL_glm_sf.rds"))
-ols_canopy <- readRDS(here::here("G:/My Drive/Research/Phoenix park tree access/ols_canopy.rds"))
-ols_access_sqrt <- readRDS(here::here("G:/My Drive/Research/Phoenix park tree access/ols_access_sqrt.rds"))
-err_canopy <- readRDS(here::here("G:/My Drive/Research/Phoenix park tree access/err_canopy.rds"))
-err_access_sqrt <- readRDS(here::here("G:/My Drive/Research/Phoenix park tree access/err_access_sqrt.rds"))
-multinom1 <- readRDS(here::here("G:/My Drive/Research/Phoenix park tree access/multinom1.rds"))
+ols_canopy <- readRDS(here::here("ols_canopy.rds"))
+ols_access_sqrt <- readRDS(here::here("ols_access_sqrt.rds"))
+err_canopy <- readRDS(here::here("err_canopy.rds"))
+err_access_sqrt <- readRDS(here::here("err_access_sqrt.rds"))
+multinom1 <- readRDS(here::here("multinom1.rds"))
+odds <- readRDS(here::here("odds.rds"))
+ci <- readRDS(here::here("ci.rds"))
+z_15 <- readRDS(here::here("z_15.rds"))
+p_15 <- readRDS(here::here("p_15.rds"))
 
 library(sf)
 library(tidyverse)
@@ -125,7 +129,9 @@ park_types <- data.frame(
 ) 
 
 park_types |> 
-  gt()
+  gt() |> 
+  cols_align("center",
+             columns = 3:4)
 
 ```
 
@@ -139,11 +145,9 @@ The Wilcoxon signed-rank test was performed on the block groups that contain pub
 
 ### Demographic factors {#sec-demographic}
 
-Total population and race/ethnicity data at the block group level were sourced from the 2024 American Community Survey (ACS) 5-year estimate [@uscensusbureau] using tidycensus. These factors were used to calculate the percentage of Black and Hispanic residents per block group.
+Total population and race/ethnicity data at the block group level were sourced from the 2024 American Community Survey (ACS) 5-year estimate [@uscensusbureau] using the tidycensus R package. These factors were used to calculate the percentage of Black and Hispanic residents per block group.
 
 The area deprivation index (ADI) at the block group level was acquired from the University of Wisconsin School of Medicine Public Health [-@universityofwisconsinschoolofmedicinepublichealth2023]. The ADI is a validated measure of socioeconomic status based on 17 indicators of income, education, employment, and housing quality [@rollings2023]. The raw ADI score of a block group is compared against all other block groups in the nation and ranked on a percentile scale from 1-100, where 1 indicates the lowest level of disadvantage and 100 indicates the highest disadvantage. Block groups with predominantly group housing (college dormitories or jails) do not have ADI data available, so they were excluded from the analysis. The resulting dataset contained `r nrow(phx_bg)` block groups used in the demographic analysis. @fig-bg-parks shows the locations of block groups with land cover and/or demographic data available and the public parks within those block groups.
-
-Median household income was considered as an additional explanatory variable, but it was excluded due to its high correlation with ADI rank (*r* = -0.70) and the presence of 50 block groups with suppressed income estimates in the ACS data.
 
 ```{r}
 #| label: boundary
@@ -232,7 +236,7 @@ ggdraw() +
             height = 0.4)
 ```
 
-MAPS of Hispanic, Black, and ADI by block group
+Median household income is often used as a predictor variable in green space access research, but it was excluded from this study due to its high correlation with ADI rank (*r* = -0.70) and the presence of 50 block groups with suppressed income estimates in the ACS data. The percent Black population, percent Hispanic population, and ADI rank of each block group are shown in @fig-bg-demographics.
 
 ```{r}
 #| label: fig-bg-demographics
@@ -240,36 +244,69 @@ MAPS of Hispanic, Black, and ADI by block group
 #| fig-alt: "Maps show the percentage of Hispanic and Black residents and the ADI rank per block group in Phoenix"
 
 # Create map of Hispanic population
-map_hisp <-   tm_shape(phx_city_limits) +
+map_hisp <- tm_shape(phx_city_limits) +
   tm_polygons(fill = "gray90", 
               col = "black", 
               lwd = 1.3) +
   tm_shape(phx_bg) +
-  tm_polygons(fill = "pct_hispanic") +
+  tm_polygons(fill = "pct_hispanic",
+              fill.scale = tm_scale_intervals(
+                values = "brewer.blues",              
+                style = "jenks",
+                values.range = c(0.3, 1),
+                value.na = "gray90",
+                label.na = "Missing data",
+                label.format = list(digits = 1)),
+              fill.legend = tm_legend(title = "Hispanic population (%)",
+                                      position = tm_pos_out("center",
+                                                            "bottom",
+                                                            pos.h = "center"))) +
   tm_layout(frame = FALSE, legend.show = TRUE)
 
 # Create map of Black population
-map_black <-   tm_shape(phx_city_limits) +
+map_black <- tm_shape(phx_city_limits) +
   tm_polygons(fill = "gray90", 
               col = "black", 
               lwd = 1.3) +
   tm_shape(phx_bg) +
   tm_polygons(fill = "pct_black", 
-              palette = "brewer.purples") +
-  tm_layout(frame = FALSE, legend.show = TRUE)
+              fill.scale = tm_scale_intervals(
+                values = "brewer.purples",
+                style = "jenks",
+                values.range = c(0.4, 1),
+                value.na = "gray90",
+                label.na = "Missing data",
+                label.format = list(digits = 1)),
+              fill.legend = tm_legend(title = "Black population (%)",
+                                      position = tm_pos_out("center",
+                                                            "bottom",
+                                                            pos.h = "center"))) +
+  tm_layout(frame = FALSE, 
+            legend.show = TRUE) 
+  
 
 # Create map of ADI ranke
-map_adi <-   tm_shape(phx_city_limits) +
+map_adi <- tm_shape(phx_city_limits) +
   tm_polygons(fill = "gray90", 
               col = "black", 
               lwd = 1.3) +
   tm_shape(phx_bg) +
   tm_polygons(fill = "adi_rank", 
-              palette = "brewer.oranges") +
+              fill.scale = tm_scale_intervals(
+                values = "brewer.oranges",
+                style = "jenks",
+                values.range = c(0.3, 1),
+                value.na = "gray90",
+                label.na = "Missing data",
+                label.format = list(digits = 0)),
+              fill.legend = tm_legend(title = "ADI rank",
+                                      position = tm_pos_out("center",
+                                                            "bottom",
+                                                            pos.h = "center"))) +
   tm_layout(frame = FALSE, legend.show = TRUE)
 
-
-tmap_arrange(map_hisp, map_black, map_adi, nrow = 3)
+# Arrange all three maps in one row
+tmap_arrange(map_hisp, map_black, map_adi, nrow = 1)
 ```
 
 ### Spatial access to park tree canopy cover {#sec-methods-spatial}
@@ -648,31 +685,6 @@ ggdraw() +
 ```
 
 The multinomial logistic regression model estimates the odds that a particular demographic factor (Hispanic population, Black population, or ADI rank) predicts whether a block group belongs to either the HL, LH, or LL tree access category rather than the baseline HH category. The results show that block groups are equally likely to be in the HL category compared to the HH category, regardless of the demographic makeup of the block group. In other words, neighborhoods with high private tree canopy cover and high park tree canopy access are not demographically distinct from those with high private canopy and low park tree access (@tbl-multinom).
-
-```{r}
-#| label: setup-multinom
-#| message: false
-#| warning: false
-#| include: false
-
-
-# Run multinomial regression model on canopy access category (HH, HL, LH, LL)
-multinom1 <- multinom(canopy_access_type_15 ~ 
-                          pct_hispanic + pct_black + adi_rank, 
-                        data = phx_bg)
-
-# Run multinom model with interactions
-multinom2 <- multinom(canopy_access_type_15 ~
-                        adi_rank * pct_hispanic + adi_rank * pct_black, 
-                      data = phx_bg)
-
-# Save model objects
-odds <- exp(coef(multinom1))
-ci <- exp(confint(multinom1))
-z_15 <- summary(multinom1)$coefficients / summary(multinom1)$standard.errors
-p_15 <- (1 - pnorm(abs(z_15), 0, 1)) * 2
-
-```
 
 ```{r}
 #| label: tbl-multinom
