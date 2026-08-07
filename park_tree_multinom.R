@@ -24,6 +24,11 @@ saveRDS(LH_glm, "LH_glm.rds")
 saveRDS(LH_glm_sf, "LH_glm_sf.rds")
 saveRDS(LL_glm, "LL_glm.rds")
 saveRDS(LL_glm_sf, "LL_glm_sf.rds")
+saveRDS(odds, "odds.rds")
+saveRDS(ci, "ci.rds")
+saveRDS(z_15, "z_15.rds")
+saveRDS(p_15, "p_15.rds")
+
 
 # Write objects to geopackage layers
 st_write(phx_bg, "phx_park_tree_access.gpkg", layer = "phx_bg", delete_layer = T)

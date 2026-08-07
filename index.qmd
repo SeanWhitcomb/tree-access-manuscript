@@ -11,6 +11,9 @@ keywords:
   - green space equity
 date: last-modified
 format: 
+  docx:
+    toc: true
+    number-sections: true
   nature-html:
     journal:
       cite-style: sn-basic
@@ -52,6 +55,7 @@ odds <- readRDS(here::here("odds.rds"))
 ci <- readRDS(here::here("ci.rds"))
 z_15 <- readRDS(here::here("z_15.rds"))
 p_15 <- readRDS(here::here("p_15.rds"))
+map_bg_parks <- readRDS(here::here("map_bg_parks.rds"))
 
 library(sf)
 library(tidyverse)
@@ -137,7 +141,7 @@ park_types |>
 
 The percentage of total tree canopy cover (TTCC) per block group was calculated using the zonal histogram tool in QGIS. TTCC represents the total amount of tree canopy cover within a block group, including street trees and those in private yards, businesses, and parks. Public park polygons were then clipped from the land cover raster to calculate the percentage of tree cover on the non-park land within block groups, known as the private tree canopy cover (PTCC). @fig-tree-cover shows the effect of trees within a public park on the tree canopy cover within a block group. Although PTCC includes street trees maintained by the City of Phoenix, for this study they are considered "private" since they are not within public parks and have a more direct impact on residents' daily lives.
 
-![The effect of a public park on block group tree canopy cover](images/fig-bg-tree-cover.png){#fig-tree-cover fig-alt="Map showing a block group with 11.7% tree canopy cover. The tree canopy reduces to 8.2% when a large park is clipped out of the block group."}
+![The effect of public park tree canopy cover on total tree canopy cover](images/fig-bg-tree-cover.png){#fig-tree-cover fig-alt="Map showing a block group with 11.7% tree canopy cover. The tree canopy reduces to 8.2% when a large park is clipped out of the block group."}
 
 The Mann-Whitney *U* test was performed to determine whether TTCC within block groups is affected by the presence of public parks. The median TTCC value of the `r nrow(phx_bg_parks)` block groups with parks was compared to the TTCC value of the `r nrow(filter(phx_bg_all, has_park == FALSE))`block groups without parks, and the *U* statistic was calculated.
 
@@ -147,167 +151,36 @@ The Wilcoxon signed-rank test was performed on the block groups that contain pub
 
 Total population and race/ethnicity data at the block group level were sourced from the 2024 American Community Survey (ACS) 5-year estimate [@uscensusbureau] using the tidycensus R package. These factors were used to calculate the percentage of Black and Hispanic residents per block group.
 
-The area deprivation index (ADI) at the block group level was acquired from the University of Wisconsin School of Medicine Public Health [-@universityofwisconsinschoolofmedicinepublichealth2023]. The ADI is a validated measure of socioeconomic status based on 17 indicators of income, education, employment, and housing quality [@rollings2023]. The raw ADI score of a block group is compared against all other block groups in the nation and ranked on a percentile scale from 1-100, where 1 indicates the lowest level of disadvantage and 100 indicates the highest disadvantage. Block groups with predominantly group housing (college dormitories or jails) do not have ADI data available, so they were excluded from the analysis. The resulting dataset contained `r nrow(phx_bg)` block groups used in the demographic analysis. @fig-bg-parks shows the locations of block groups with land cover and/or demographic data available and the public parks within those block groups.
+The area deprivation index (ADI) at the block group level was acquired from the University of Wisconsin School of Medicine Public Health [-@universityofwisconsinschoolofmedicinepublichealth2023]. The ADI is a validated measure of socioeconomic status based on 17 indicators of income, education, employment, and housing quality [@rollings2023]. The raw ADI score of a block group is compared against all other block groups in the nation and ranked on a percentile scale from 1-100, where 1 indicates the lowest level of disadvantage and 100 indicates the highest disadvantage. Block groups with predominantly group housing (college dormitories or jails) do not have ADI data available, so they were excluded from the analysis. The resulting dataset contained `r nrow(phx_bg)` block groups used in the demographic analysis. @fig-bg-parks shows the locations of block groups with land cover and/or demographic data available and the types of public parks within the block groups.
 
-```{r}
-#| label: boundary
-#| include: false
+\# Create boundary objects for mapping
 
-# Create boundary objects for mapping
 options(tigris_use_cache = TRUE)
 
-az_state <- states(cb= TRUE) |> filter(STUSPS == "AZ")
-az_county <- counties(state = "AZ", cb = TRUE)
-maricopa <- az_county |> filter(NAME == "Maricopa")
-```
+us_states \<- us_states \|\>
+
+mutate(is_az = ifelse(NAME == "Arizona", "Arizona", "Other"))
+
+az_state \<- states(cb= TRUE) \|\>
+
+filter(STUSPS == "AZ")
+
+az_county \<- counties(state = "AZ", cb = TRUE)
+
+maricopa \<- az_county \|\>
+
+filter(NAME == "Maricopa")
 
 ```{r}
 #| label: fig-bg-parks
 #| fig-cap: "Block groups and public parks in Phoenix, Arizona"
 #| fig-alt: "A map of the locations of block groups and public parks in Phoenix, Maricopa County, Arizona"
 
-# Change county and state labels
-maricopa <- maricopa |> mutate(label = "Maricopa County")
-az_state <- az_state
-
-# Create inset map
-inset_phx <- tm_shape(az_state) +
-  tm_polygons(fill = "white", col = "gray40", lwd = 0.5) +
-  tm_text("NAME", size = 1, ymod = 5) +
-  tm_shape(maricopa) +
-  tm_polygons(fill = "lightblue") +
-  tm_text("NAMELSAD", size = 0.8, xmod = 3.5, ymod = 5.5) +
-  tm_shape(phx_city_limits) +
-  tm_polygons(fill = "darkblue") +
-  tm_text(text = "Phoenix", col = "darkblue", size = 0.6, xmod = 4, ymod = -3) +
-  tm_layout(frame = TRUE, inner.margins = 0.1, frame.lwd = 0.3)
-
-# Create legend element
-legend_bg_parks <- tm_shape(phx_bg_all) +
-  tm_polygons(fill = "#fee08b") +
-  tm_add_legend(
-    title = "Block groups",
-    type = "polygons",
-    fill = c("#fee08b", "#fdae61", "gray90"),
-    col = c("black", "black", "black"),
-    labels = c("Land cover data only",
-               "Land cover & demographic data",
-               "No data"),
-    frame = TRUE
-  ) +
-  tm_add_legend(
-    title = "Parks",
-    type = "polygons",
-    fill = "#1a9641",
-    col = "darkgreen",
-    labels = "Public parks",
-    frame = TRUE
-  ) +
-  tm_layout(legend.only = TRUE,
-            legend.frame = TRUE,
-            legend.frame.lwd = 1,
-            legend.bg.col = "white")
-
-# Create map of block groups and parks
-map_phx <-   tm_shape(phx_city_limits) +
-  tm_polygons(fill = "gray90", 
-              col = "black", 
-              lwd = 1.3) +
-  tm_shape(phx_bg_all) +
-  tm_polygons(fill = "#fee08b") +
-  tm_shape(phx_bg) +
-  tm_polygons(fill = "#fdae61") +
-  tm_shape(parks) +
-  tm_polygons(fill = "#1a9641", col = "darkgreen") +
-  tm_layout(frame = FALSE, legend.show = FALSE)
-
-# Plot all three elements
-ggdraw() +
-  draw_plot(tmap_grob(map_phx)) +
-  draw_plot(tmap_grob(legend_bg_parks), 
-            x = 0.06, 
-            y = 0.55, 
-            width = 0.3, 
-            height = 0.35) +
-  draw_plot(tmap_grob(inset_phx), 
-            x = 0.003, 
-            y = 0.1, 
-            width = 0.4, 
-            height = 0.4)
+# Render block group and park types maps
+map_bg_parks
 ```
 
-Median household income is often used as a predictor variable in green space access research, but it was excluded from this study due to its high correlation with ADI rank (*r* = -0.70) and the presence of 50 block groups with suppressed income estimates in the ACS data. The percent Black population, percent Hispanic population, and ADI rank of each block group are shown in @fig-bg-demographics.
-
-```{r}
-#| label: fig-bg-demographics
-#| fig-cap: "Maps of Hispanic population (%), Black population (%), and ADI national percentile rank by block group"
-#| fig-alt: "Maps show the percentage of Hispanic and Black residents and the ADI rank per block group in Phoenix"
-
-# Create map of Hispanic population
-map_hisp <- tm_shape(phx_city_limits) +
-  tm_polygons(fill = "gray90", 
-              col = "black", 
-              lwd = 1.3) +
-  tm_shape(phx_bg) +
-  tm_polygons(fill = "pct_hispanic",
-              fill.scale = tm_scale_intervals(
-                values = "brewer.blues",              
-                style = "jenks",
-                values.range = c(0.3, 1),
-                value.na = "gray90",
-                label.na = "Missing data",
-                label.format = list(digits = 1)),
-              fill.legend = tm_legend(title = "Hispanic population (%)",
-                                      position = tm_pos_out("center",
-                                                            "bottom",
-                                                            pos.h = "center"))) +
-  tm_layout(frame = FALSE, legend.show = TRUE)
-
-# Create map of Black population
-map_black <- tm_shape(phx_city_limits) +
-  tm_polygons(fill = "gray90", 
-              col = "black", 
-              lwd = 1.3) +
-  tm_shape(phx_bg) +
-  tm_polygons(fill = "pct_black", 
-              fill.scale = tm_scale_intervals(
-                values = "brewer.purples",
-                style = "jenks",
-                values.range = c(0.4, 1),
-                value.na = "gray90",
-                label.na = "Missing data",
-                label.format = list(digits = 1)),
-              fill.legend = tm_legend(title = "Black population (%)",
-                                      position = tm_pos_out("center",
-                                                            "bottom",
-                                                            pos.h = "center"))) +
-  tm_layout(frame = FALSE, 
-            legend.show = TRUE) 
-  
-
-# Create map of ADI ranke
-map_adi <- tm_shape(phx_city_limits) +
-  tm_polygons(fill = "gray90", 
-              col = "black", 
-              lwd = 1.3) +
-  tm_shape(phx_bg) +
-  tm_polygons(fill = "adi_rank", 
-              fill.scale = tm_scale_intervals(
-                values = "brewer.oranges",
-                style = "jenks",
-                values.range = c(0.3, 1),
-                value.na = "gray90",
-                label.na = "Missing data",
-                label.format = list(digits = 0)),
-              fill.legend = tm_legend(title = "ADI rank",
-                                      position = tm_pos_out("center",
-                                                            "bottom",
-                                                            pos.h = "center"))) +
-  tm_layout(frame = FALSE, legend.show = TRUE)
-
-# Arrange all three maps in one row
-tmap_arrange(map_hisp, map_black, map_adi, nrow = 1)
-```
+Median household income is often used as a predictor variable in green space access research, but it was excluded from this study due to its high correlation with ADI rank (*r* = -0.70) and the presence of 50 block groups with suppressed income estimates in the ACS data.
 
 ### Spatial access to park tree canopy cover {#sec-methods-spatial}
 
@@ -442,15 +315,15 @@ Percent total tree canopy cover (TTCC) is the amount of tree canopy cover in a b
 
 Percent private tree canopy cover (PTCC) is the tree cover in a block group excluding the tree cover provided by public parks. TTCC and PTCC were compared in the `r nrow(phx_bg_parks)` block groups that contain parks to determine whether the parks significantly contribute to block group-level tree canopy cover in Phoenix. The median TTCC was `r ttcc_med`%, while PTCC was higher at `r ptcc_med`% . This difference was statistically significant (Wilcoxon signed-rank test, *V* = `r wilcox_v`, *p* \< `r wilcox_p`), confirming that parks meaningfully contribute to tree canopy cover when they are present in a neighborhood.
 
-### Regression analysis of tree canopy cover {#sec-res-regress}
+### Regression analysis {#sec-res-regress}
 
-@tbl-desc-stats presents descriptive statistics for the block group characteristics and outcome variables (PTCC and PTAS) used in the regression analyses. Block group population is included for reference, but it was not used as a predictor variable. Based on the OLS model, percent Hispanic population, percent Black population, and ADI rank were all negatively associated with PTCC (*p* \< 0.001; see @tbl-regress). For every 1% increase in the Hispanic population, private tree canopy cover within a block group is expected to decrease by 3.5%; a 1% increase in the population of Black residents is associated with a 7.3% decrease in PTCC; and a 1-point increase in the ADI rank is associated with an 8.5% decrease in PTCC.
+@tbl-desc-stats presents descriptive statistics for the block group characteristics and outcome variables (PTCC and PTAS) used in the regression analyses. Block group population is included for reference, but it was not used as a predictor variable. Maps of PTCC and PTAS are shown in @fig-ptcc-ptas-map, and maps of the three predictor variables (percent Hispanic population, percent Black population, and ADI rank) are depicted in @fig-bg-demographics.
 
 ```{r}
 #| label: tbl-desc-stats
 #| tbl-cap: "Descriptive statistics of the dataset"
 
-# 
+# Create descriptive statistics table
 desc_table <- phx_bg |> 
   sf::st_drop_geometry() |> 
   summarise(
@@ -511,7 +384,7 @@ desc_table |>
              rows = Variable %in% c("Hispanic population (%)", 
                                     "Black population (%)",
                                     "Private tree canopy cover (%)",
-                                    "Park tree canopy access score"),
+                                    "Park tree access score"),
              decimals = 1) |>
   cols_label(Variable = "") |> 
   tab_footnote(footnote = md("*N* = 988 block groups")) |> 
@@ -521,6 +394,26 @@ desc_table |>
     locations = list(cells_footnotes())
   )
 ```
+
+```{r}
+#| label: fig-ptcc-ptas-map
+#| fig-cap: "Private tree canopy cover (PTCC) and park tree access score (PTAS) of Phoenix block groups"
+
+map_ptcc_ptas
+
+```
+
+```{r}
+#| label: fig-bg-demographics
+#| fig-cap: "Maps of Hispanic population (%), Black population (%), and ADI national percentile rank in Phoenix block groups"
+#| fig-alt: "Maps show the percentage of Hispanic and Black residents and the ADI rank per block group in Phoenix"
+
+# Render demographics maps
+map_demographics
+
+```
+
+Based on the OLS model, percent Hispanic population, percent Black population, and ADI rank were all negatively associated with PTCC (*p* \< 0.001; see @tbl-regress). For every 1% increase in the Hispanic population, private tree canopy cover within a block group is expected to decrease by 3.5%; a 1% increase in the population of Black residents is associated with a 7.3% decrease in PTCC; and a 1-point increase in the ADI rank is associated with an 8.5% decrease in PTCC.
 
 The percentage of Hispanic residents in a block group is not significantly associated with the square root of PTAS, but there was a significant positive association between the square root of PTAS and both Black resident percentage (*p* \< 0.05) and ADI rank (*p* \< 0.001; see @tbl-regress).
 
@@ -584,17 +477,6 @@ modelsummary(list("OLS" = ols_canopy,
     style = cell_text(align = "left"),
     locations = list(cells_footnotes())
   )
-```
-
-```{r}
-#| label: fig-PTAS-PTCA-map
-#| fig-cap: "Park tree access score (PTAS) of block groups and park tree canopy area (PTCA)"
-
-tm_shape(phx_bg) +
-  tm_polygons(fill = "tree_access", fill.scale = tm_scale(values = "brewer.blues")) +
-  tm_shape(parks) +
-  tm_polygons(fill = "tree_area", col = "lightgreen", 
-fill.scale = tm_scale_intervals(style = "quantile",values = "brewer.greens"))
 ```
 
 ### Demographic inequities in tree canopy access {#sec-res-demographic}
@@ -835,6 +717,12 @@ coef_table
 ```
 
 ## Discussion {#sec-discussion}
+
+Public parks contribute to the total tree canopy cover found within Phoenix neighborhoods. Although the average increase in tree cover is small, it is statistically significant. On average, Phoenix neighborhoods that contain parks have higher tree canopy cover than they would have if the parks were not present.
+
+This study confirms that tree canopy cover is inequitably distributed across Phoenix. Previous studies have shown that total tree canopy cover is highest in block groups with lower racial and ethnic minorities and higher socioeconomic status. This study adds to these findings that this pattern also applies to private tree canopy cover, excluding the tree canopy provided by public parks.
+
+This is the first study to analyze access to public park tree canopy cover in Phoenix. It is also the first study to use the Gaussian two-step floating catchment area (G2SFCA) method to analyze access to tree canopy cover in parks. This method is superior to traditional measures of park access that only consider presence/absence of parks and use a binary distance metric to determine access. G2SFCA accounts for both tree canopy area and population-based demand on the tree canopy while also applying distance-based weighting to the calculation of distance from block groups to parks. The use of actual park entrances for determining distance-to-park is also an improvement over centroid- or perimeter-based methods that may over- or under-estimate the true distances from residential areas to the parks. G2SFCA could be applied to other cities to determine whether access to public tree cover is equitably distributed.
 
 ## References {.unnumbered}
 
