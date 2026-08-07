@@ -56,6 +56,7 @@ ci <- readRDS(here::here("ci.rds"))
 z_15 <- readRDS(here::here("z_15.rds"))
 p_15 <- readRDS(here::here("p_15.rds"))
 map_bg_parks <- readRDS(here::here("map_bg_parks.rds"))
+map_access <- readRDS(here::here("map_access.rds"))
 
 library(sf)
 library(tidyverse)
@@ -523,45 +524,10 @@ canopy_access |>
 #| label: fig-canopy-access-map
 #| message: false
 #| warning: false
-#| fig-cap: "Block group tree canopy access categories: High PTCC/High PTAS, Low PTCC/Low PTAS, High PTAC/Low PTAS, Low PTCC/High PTAS"
+#| fig-cap: "Tree canopy access categories of Phoenix block groups"
 
-# Create legend
-legend_access <- tm_shape(phx_bg) +
-  tm_polygons(fill = "white", col = "white") +
-  tm_add_legend(
-    title = "Tree canopy access categories",
-    type = "polygons",
-    fill = c("#FF0000", "#f4ada8", "#a7adf9", "#0000FF", "gray90"),
-    col = c("black", "black", "black", "black"),
-    labels = c("HH (High PTCC/High PTAS)", 
-               "HL (High PTCC/Low PTAS)", 
-               "LH (Low PTCC/High PTAS)",
-               "LL (Low PTCC/Low PTAS)",
-               "No data"),
-    frame = TRUE
-  ) +
-  tm_layout(legend.only = TRUE)
-
-# Create map of tree canopy access categories
-map_access <- tm_shape(phx_city_limits) +
-  tm_polygons(fill = "gray90", 
-              col = "black", 
-              lwd = 1.3) +
-  tm_shape(phx_bg) +
-  tm_polygons(fill = "canopy_access_type_15",
-              fill.scale = tm_scale_ordinal(levels = c("HH", "HL", "LH", "LL", "No data"),
-                                            values = c("#FF0000", "#f4ada8", "#a7adf9", "#0000FF", "gray90"),
-                                            labels = c("High PTCC/High PTAS", "Low PTCC/Low PTAS", "High PTCC/Low PTAS", "Low PTCC/High PTAS"))) +
-  tm_layout(frame = FALSE, legend.show = FALSE)
-
-# Plot map and legend
-ggdraw() +
-  draw_plot(tmap_grob(map_access)) +
-  draw_plot(tmap_grob(legend_access), 
-            x = 0.06, 
-            y = 0.55, 
-            width = 0.3, 
-            height = 0.35)
+# Render tree canopy access categories map
+map_access
 
 
 ```

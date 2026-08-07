@@ -1,4 +1,4 @@
-## Map of block group data and park types
+## Map of block group data and park types ======================================
 
 # Create boundary objects for mapping
 options(tigris_use_cache = TRUE)
@@ -119,6 +119,8 @@ saveRDS(map_bg_parks, "map_bg_parks.rds")
 
 
 ## Maps of private tree canopy cover and park tree access score
+
+# Create map of PTCC
 map_ptcc <- tm_shape(phx_city_limits) +
   tm_polygons(fill = "gray90", 
               col = "black", 
@@ -137,6 +139,7 @@ map_ptcc <- tm_shape(phx_city_limits) +
   tm_layout(frame = FALSE, 
             legend.show = TRUE)
 
+# Create map of PTAS
 map_ptas <- tm_shape(phx_city_limits) +
   tm_polygons(fill = "gray90", 
               col = "black", 
@@ -156,13 +159,14 @@ map_ptas <- tm_shape(phx_city_limits) +
             legend.show = TRUE)
 
 
+# Combine maps
 map_ptcc_ptas <- tmap_arrange(map_ptcc, map_ptas, nrow = 1)
 
 map_ptcc_ptas
 
 saveRDS(map_ptcc_ptas, "map_ptcc_ptas.rds")
 
-## Maps of demographic factors
+## Maps of demographic factors =========================================
 
 # Create map of Hispanic population
 map_hisp <- tm_shape(phx_city_limits) +
@@ -230,3 +234,31 @@ map_adi <- tm_shape(phx_city_limits) +
 map_demographics <- tmap_arrange(map_hisp, map_black, map_adi, nrow = 1)
 
 saveRDS(map_demographics, "map_demographics.rds")
+
+# Map of tree access canopy categories =====================================================
+
+
+# Create map of tree canopy access categories
+map_access <- tm_shape(phx_city_limits) +
+  tm_polygons(fill = "gray90", 
+              col = "black", 
+              lwd = 1.3) +
+  tm_shape(phx_bg) +
+  tm_polygons(fill = "canopy_access_type_15",
+              fill.scale = tm_scale_ordinal(levels = c("HH", "HL", "LH", "LL"),
+                                            values = c("#FF0000", "#f4ada8", "#a7adf9", "#0000FF"),
+                                            labels = c("HH (High PTCC/High PTAS)", 
+                                                       "HL (High PTCC/Low PTAS)", 
+                                                       "LH (Low PTCC/High PTAS)", 
+                                                       "LL (Low PTCC/Low PTAS)"),
+                                            value.na = "gray90",
+                                            label.na = "Missing data"),
+                                            fill.legend = tm_legend(title = "Tree canopy access categories",
+                                                                    position = tm_pos_out("center",
+                                                                                          "bottom",
+                                                                                          pos.h = "center"))) +
+  tm_layout(frame = FALSE, legend.show = TRUE)
+
+map_access
+
+saveRDS(map_access, "map_access.rds")
