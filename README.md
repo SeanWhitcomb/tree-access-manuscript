@@ -1,4 +1,4 @@
-## A Quarto Manuscript Template
+## Quarto manuscript on Phoenix tree canopy access
 
-This is a template repo for generating a manuscript from Quarto that accompanies the tutorial at: [Quarto Manuscripts: RStudio](https://quarto.org/docs/manuscripts/authoring/rstudio.html)
+This is a repo for the manuscript on tree canopy access in Phoenix, Arizona by Sean Whitcomb
 
