@@ -122,8 +122,8 @@ park_types <- data.frame(
     "Playground; small open area; picnic areas",
     "Linear open space; walking/biking path; fitness equipment; picnic areas",
     "Open space; playground; sports fields; fitness equipment; picnic areas",
-    "Amenities in neighborhood parks plus: swimming pool; recreational center; dog park; skate plaza; pond",
-    "Amenities in community parks plus: community/senior center; sports complex and concessions; skate park"
+    "Amenities found in neighborhood parks, plus: swimming pool; recreational center; dog park; skate plaza; pond",
+    "Amenities found in community parks, plus: community/senior center; sports complex and concessions; skate park"
   ),
   `Size (ha)` = c("<0.8", "Various", "0.8-11.7", "12-20", ">20"),
   `Service area (km)` = c("0.8", "0.8", "1.6", "4.8", "8.0"),
@@ -156,7 +156,7 @@ The area deprivation index (ADI) at the block group level was acquired from the 
 ```{r}
 #| label: fig-bg-parks
 #| fig-cap: "Block groups and public parks in Phoenix, Arizona"
-#| fig-alt: "A map of the locations of block groups and public parks in Phoenix, Maricopa County, Arizona"
+#| fig-alt: "A map shows that most block groups in Phoenix have land cover and demographic data available; some only have land cover data; the five types of public parks are scattered throughout the city"
 
 # Render block group and park types maps
 map_bg_parks
@@ -379,16 +379,17 @@ desc_table |>
 
 ```{r}
 #| label: fig-ptcc-ptas-map
-#| fig-cap: "Residential tree canopy cover (RTCC) and park tree access score (PTAS) of Phoenix block groups"
+#| fig-cap: "Residential tree canopy cover (%) and park tree access score of Phoenix block groups"
+#| fig-alt: "Residential tree canopy cover is highest in the central and northeastern parts of Phoenix. Park tree access score is highest in the central part."
 
-map_ptcc_ptas
+map_rtcc_ptas
 
 ```
 
 ```{r}
 #| label: fig-bg-demographics
 #| fig-cap: "Maps of Hispanic population (%), Black population (%), and ADI national percentile rank in Phoenix block groups"
-#| fig-alt: "Maps show the percentage of Hispanic and Black residents and the ADI rank per block group in Phoenix"
+#| fig-alt: "Hispanic population is highest in the southwestern part of Phoenix; Black population is highest in the southern part with a small pocket in the north; ADI rank is highest in the western part with a high cluster in the north"
 
 # Render demographics maps
 map_demographics
@@ -506,6 +507,7 @@ canopy_access |>
 #| message: false
 #| warning: false
 #| fig-cap: "Tree canopy access categories of Phoenix block groups"
+#| fig-alt: "HH block groups are mostly in the northeast of Phoenix; HL block groups are in the eastern part; LH are mostly in the central part; LL are mostly on the edges of the city"
 
 # Render tree canopy access categories map
 map_access

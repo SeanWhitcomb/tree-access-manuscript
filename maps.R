@@ -1,3 +1,11 @@
+library(tidyverse)
+library(tmap)
+library(sf)
+library(tigris)
+library(spdep)
+library(ggplot2)
+library(cowplot)
+
 ## Map of block group data and park types ======================================
 
 # Create boundary objects for mapping
@@ -94,7 +102,7 @@ map_phx <-   tm_shape(phx_city_limits) +
   ) +
   tm_layout(frame = FALSE, legend.show = FALSE)
 
-# Plot all  elements
+# Plot all elements
 map_bg_parks <- ggdraw() +
   draw_plot(tmap_grob(map_phx)) +
   draw_plot(tmap_grob(legend_bg_parks), 
@@ -118,10 +126,10 @@ map_bg_parks
 saveRDS(map_bg_parks, "map_bg_parks.rds")
 
 
-## Maps of private tree canopy cover and park tree access score
+## Maps of Residential tree canopy cover and park tree access score
 
-# Create map of PTCC
-map_ptcc <- tm_shape(phx_city_limits) +
+# Create map of RTCC
+map_rtcc <- tm_shape(phx_city_limits) +
   tm_polygons(fill = "gray90", 
               col = "black", 
               lwd = 1.3) +
@@ -132,7 +140,7 @@ map_ptcc <- tm_shape(phx_city_limits) +
                                     values.range = c(0.4, 1),
                                     value.na = "gray90",
                                     label.na = "Missing data"),
-              fill.legend = tm_legend(title = "Private tree canopy cover (PTCC)",
+              fill.legend = tm_legend(title = md("Residential tree \ncanopy cover (%)"),
                                       position = tm_pos_out("center",
                                                             "bottom",
                                                             pos.h = "center"))) +
@@ -151,7 +159,7 @@ map_ptas <- tm_shape(phx_city_limits) +
                                     values.range = c(0.4, 1),
                                     value.na = "gray90",
                                     label.na = "Missing data"),
-              fill.legend = tm_legend(title = "Park tree access score (PTAS)",
+              fill.legend = tm_legend(title = "Park tree \naccess score",
                                       position = tm_pos_out("center",
                                                             "bottom",
                                                             pos.h = "center"))) +
@@ -160,11 +168,11 @@ map_ptas <- tm_shape(phx_city_limits) +
 
 
 # Combine maps
-map_ptcc_ptas <- tmap_arrange(map_ptcc, map_ptas, nrow = 1)
+map_rtcc_ptas <- tmap_arrange(map_rtcc, map_ptas, nrow = 1)
 
-map_ptcc_ptas
+map_rtcc_ptas
 
-saveRDS(map_ptcc_ptas, "map_ptcc_ptas.rds")
+saveRDS(map_rtcc_ptas, "map_rtcc_ptas.rds")
 
 ## Maps of demographic factors =========================================
 
@@ -247,10 +255,10 @@ map_access <- tm_shape(phx_city_limits) +
   tm_polygons(fill = "canopy_access_type_15",
               fill.scale = tm_scale_ordinal(levels = c("HH", "HL", "LH", "LL"),
                                             values = c("#FF0000", "#f4ada8", "#a7adf9", "#0000FF"),
-                                            labels = c("HH (High PTCC/High PTAS)", 
-                                                       "HL (High PTCC/Low PTAS)", 
-                                                       "LH (Low PTCC/High PTAS)", 
-                                                       "LL (Low PTCC/Low PTAS)"),
+                                            labels = c("HH (High RTCC/High PTAS)", 
+                                                       "HL (High RTCC/Low PTAS)", 
+                                                       "LH (Low RTCC/High PTAS)", 
+                                                       "LL (Low RTCC/Low PTAS)"),
                                             value.na = "gray90",
                                             label.na = "Missing data"),
                                             fill.legend = tm_legend(title = "Tree canopy access categories",
