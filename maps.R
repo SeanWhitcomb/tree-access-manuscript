@@ -83,7 +83,7 @@ legend_bg_parks <- tm_shape(phx_bg_all) +
             legend.bg.col = "white")
 
 # Create map of block groups and parks
-map_phx <-   tm_shape(phx_city_limits) +
+map_phx <- tm_shape(phx_city_limits) +
   tm_polygons(fill = "gray90", 
               col = "black", 
               lwd = 1.3) +
@@ -100,13 +100,16 @@ map_phx <-   tm_shape(phx_city_limits) +
                                               "Regional" = "#a65628")
               )
   ) +
+  tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
+              position = tm_pos_out("right", "bottom"),
+              text.size = 0.8) +
   tm_layout(frame = FALSE, legend.show = FALSE)
 
 # Plot all elements
 map_bg_parks <- ggdraw() +
   draw_plot(tmap_grob(map_phx)) +
   draw_plot(tmap_grob(legend_bg_parks), 
-            x = 0.7, 
+            x = 0.5, 
             y = 0.55, 
             width = 0.3, 
             height = 0.35) +
@@ -143,7 +146,14 @@ map_rtcc <- tm_shape(phx_city_limits) +
               fill.legend = tm_legend(title = md("Residential tree \ncanopy cover (%)"),
                                       position = tm_pos_out("center",
                                                             "bottom",
-                                                            pos.h = "center"))) +
+                                                            pos.h = 0.25,
+                                                            pos.v = 1))) +
+  tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
+              position = tm_pos_out("center", 
+                                    "bottom", 
+                                    pos.h = 0.7,
+                                    pos.v = 1),
+              text.size = 0.8) +
   tm_layout(frame = FALSE, 
             legend.show = TRUE)
 
@@ -162,7 +172,14 @@ map_ptas <- tm_shape(phx_city_limits) +
               fill.legend = tm_legend(title = "Park tree \naccess score",
                                       position = tm_pos_out("center",
                                                             "bottom",
-                                                            pos.h = "center"))) +
+                                                            pos.h = 0.25,
+                                                            pos.v = 1))) +
+  tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
+              position = tm_pos_out("center", 
+                                    "bottom", 
+                                    pos.h = 0.7,
+                                    pos.v = 1),
+              text.size = 0.8) +
   tm_layout(frame = FALSE, 
             legend.show = TRUE)
 
@@ -193,7 +210,14 @@ map_hisp <- tm_shape(phx_city_limits) +
               fill.legend = tm_legend(title = "Hispanic population (%)",
                                       position = tm_pos_out("center",
                                                             "bottom",
-                                                            pos.h = "center"))) +
+                                                            pos.h = 0.25,
+                                                            pos.v = 1))) +
+  tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
+              position = tm_pos_out("center", 
+                                    "bottom", 
+                                    pos.h = 0.8,
+                                    pos.v = 1),
+              text.size = 0.8) +
   tm_layout(frame = FALSE, legend.show = TRUE)
 
 # Create map of Black population
@@ -213,7 +237,14 @@ map_black <- tm_shape(phx_city_limits) +
               fill.legend = tm_legend(title = "Black population (%)",
                                       position = tm_pos_out("center",
                                                             "bottom",
-                                                            pos.h = "center"))) +
+                                                            pos.h = 0.25,
+                                                            pos.v = 1))) +
+  tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
+              position = tm_pos_out("center", 
+                                    "bottom", 
+                                    pos.h = 0.8,
+                                    pos.v = 1),
+              text.size = 0.8) +
   tm_layout(frame = FALSE, 
             legend.show = TRUE) 
 
@@ -235,11 +266,20 @@ map_adi <- tm_shape(phx_city_limits) +
               fill.legend = tm_legend(title = "ADI rank",
                                       position = tm_pos_out("center",
                                                             "bottom",
-                                                            pos.h = "center"))) +
+                                                            pos.h = 0.25,
+                                                            pos.v = 1))) +
+  tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
+              position = tm_pos_out("center", 
+                                    "bottom", 
+                                    pos.h = 0.8,
+                                    pos.v = 1),
+              text.size = 0.8) +
   tm_layout(frame = FALSE, legend.show = TRUE)
 
 # Arrange all three maps in one row
 map_demographics <- tmap_arrange(map_hisp, map_black, map_adi, nrow = 1)
+
+map_demographics
 
 saveRDS(map_demographics, "map_demographics.rds")
 

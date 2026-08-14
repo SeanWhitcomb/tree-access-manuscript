@@ -54,6 +54,8 @@ z_15 <- readRDS(here::here("z_15.rds"))
 p_15 <- readRDS(here::here("p_15.rds"))
 map_bg_parks <- readRDS(here::here("map_bg_parks.rds"))
 map_access <- readRDS(here::here("map_access.rds"))
+map_rtcc_ptas <- readRDS(here::here("map_rtcc_ptas.rds"))
+map_demographics <- readRDS(here::here("map_demographics.rds"))
 
 library(sf)
 library(tidyverse)
@@ -72,37 +74,60 @@ library(labelled)
 library(gt)
 library(broom)
 library(purrr)
+library(scales)
 ```
 
 ## Introduction {#sec-introduction}
 
-Urban trees, whether in private yards, planted along streets, or in public parks, are a critical component of sustainable cities. The urban forest provides numerous ecosystem services that benefit city residents, including shade, stormwater removal, and air pollution mitigation (CITE). Tree canopy cover (TCC), defined as the area of ground covered by tree leaves, stems, and branches, is especially crucial in hot arid cities like Phoenix, Arizona, where shaded ground can be up to XX C cooler than bare ground (CITE). Adequate shade can be a lifesaving amenity in Phoenix, which experienced XXX heat-related deaths in 2025 (CITE).
+Urban trees, whether in private yards, planted along streets, or in public parks, are a critical component of sustainable cities. The urban forest provides numerous ecosystem services that benefit city residents, including shade, stormwater removal, and air pollution mitigation (CITE). Tree canopy cover, defined as the area of ground covered by tree leaves, stems, and branches, is especially crucial in hot arid cities like Phoenix, Arizona, where shaded ground can be up to XX C cooler than bare ground (CITE). Adequate shade can be a lifesaving amenity in Phoenix, which experienced XXX heat-related deaths in 2025 (CITE).
 
-Like many urban amenities, tree canopy cover is often not equitably distributed across cities. Several studies have shown that residents of lower socioeconomic status tend to live in "tree deserts," or neighborhoods with lower TCC (CITE). Some studies also report that neighborhoods with larger populations of ethnic and racial minorities are more likely to be tree deserts (CITE). Wang, et al. (2024) demonstrated that these patterns hold true in Phoenix as well, finding a positive association between TCC and median household income, a negative correlation between TCC and percent Black population, and a negative correlation between TCC and percent Hispanic population at the block group level [@wang2024].
+Like many urban amenities, tree canopy cover is often not equitably distributed across cities. Several studies have shown that residents of lower socioeconomic status tend to live in neighborhoods with lower tree canopy cover (CITE). Several studies in U.S. cities also report that neighborhoods with larger proportions of ethnic and racial minorities tend to have less tree canopy [@schwarz2015, @locke2021, @foster2024]. Wang, et al. (2024) demonstrated that these patterns hold true in Phoenix as well, finding a positive association between TCC and median household income, a negative correlation between TCC and percent Black population, and a negative correlation between TCC and percent Hispanic population at the block group level [@wang2024].
 
-As a source of publicly available tree canopy cover, municipal parks could potentially act as "tree oases" and compensate for the lack of tree cover in disadvantaged neighborhoods. However, numerous studies have shown that public parks also tend to be inequitably distributed across cities (CITE). Public parks in XXX and XXX are more concentrated in more affluent neighborhoods with larger White populations, but the evidence for park inequities in Phoenix is mixed. Lara-Valencia (2018) found that Hispanic residents of Phoenix tend to have greater access to municipal parks due to a higher concentration of parks in the urban core [@lara-valencia2018]. However, Ibes (2015) analyzed access to public parks in Phoenix by type of park and found that "green neighborhood parks" are more concentrated in neighborhoods with higher White populations while "urban core parks" are more often found in areas with lower incomes and more minority residents [@ibes2015]. Corley (2024) found no association between park acreage and minority status or poverty level at the block group level in Phoenix [@corley2024]. The previously mentioned studies on Phoenix park access did not account for spatial autocorrelation of variables, i.e, observations that are spatially proximate tend to be more similar than expected under random distribution (CITE). When Kim, et al. (2023) used spatial regressive models to investigate park access in Phoenix and nearby Mesa, AZ, they found that more affluent neighborhoods had access to greater park acreage within walking distance, but there were no significant correlations between race/ethnicity of residents and the number of parks, size of parks, or distance to the nearest park [@kim2023].
+------
+
+This study investigated the differences between the amount of shade covering typical activity areas in playgrounds of higher and lower socioeconomic status (SES) areas within metropolitan Sydney, Australia. Shade coverage was significantly associated with SES of an area and with type of activity area. The lowest SES areas had the highest proportion of activity areas with no shade at all (54%) compared to the next lowest and highest SES areas (34% and 16% respectively). [@anderson2014]
+
+---------
+
+After auditing all public parks in Portland and gathering green cover data from publicly accessible repositories, we used a suite of statistical tests to evaluate distribution of parks and green cover across Census block groups, comprising race, ethnicity, income, and educational attainment characteristics. Right-of-way tree canopy cover was the most significant urban green space inequity identified in bivariate analysis (rs = −0.73). Spatial autoregressive models identified that right-of-way, private, and overall tree canopy cover (Nagelkerke pseudo-R2 = 0.66, 0.77, and 0.67, respectively) significantly decreased with the proportion of minoritized racial population and increased with median income.
+
+---------
+
+As a source of publicly available tree canopy cover, municipal parks could potentially act as "tree refuges" and compensate for the lack of tree cover in disadvantaged neighborhoods. While park equity studies have yielded mixed results, some have shown consistent patterns of disparities in park access. A 2016 literature review by Rigolon et al. found that White neighborhoods with high White populations had the greatest park access in 18 out of 20 papers examined [@rigolon2016]. A spatial analysis of urban parks across the U.S. found that parks are more common in areas with larger White populations, and these parks tend to have greater tree coverage [@winkler2024].
+
+Lara-Valencia (2018) found that Hispanic residents of Phoenix tend to have greater access to municipal parks due to a higher concentration of parks in the urban core [@lara-valencia2018]. However, Ibes (2015) analyzed access to public parks in Phoenix by type of park and found that "green neighborhood parks" are more concentrated in neighborhoods with higher White populations while "urban core parks" are more often found in areas with lower incomes and more minority residents [@ibes2015]. Corley (2024) found no association between park acreage and minority status or poverty level at the block group level in Phoenix [@corley2024]. The previously mentioned studies on Phoenix park access did not account for spatial autocorrelation of variables, i.e, observations that are spatially proximate tend to be more similar than expected under random distribution (CITE). When Kim, et al. (2023) used spatial regressive models to investigate park access in Phoenix and nearby Mesa, AZ, they found that more affluent neighborhoods had access to greater park acreage within walking distance, but there were no significant correlations between race/ethnicity of residents and the number of parks, size of parks, or distance to the nearest park [@kim2023]. Nesbitt et al. (2019) likewise found no association between access to park area and the race, ethnicity, income, or educational attainment of residents in Phoenix [@nesbitt2019]. Given the apparent lack of
 
 All of the aforementioned studies on Phoenix-area parks have used a simple Euclidean distance metric to determine "access," but this method does not account for the actual distance that residents must travel to visit the parks. The travel distance from a home to a public amenity can vary greatly from the Euclidean distance depending on the layout of the road network (CITE). Most studies consider "park access" to be a binary variable, where a resident has complete access to any parks within a given catchment area and no access to parks outside of the catchment area. However, this approach does not capture the reality of park visitation–people are more likely to visit nearby parks, but will still travel a greater distance to visit larger parks. Kim et al. (2023) found that Phoenix residents tend to favor local parks within 1 km of their neighborhood, but the likelihood that they will travel beyond 1 km to visit larger amenity-rich parks increases as the size of the local parks decreases [@kim_green_2023]. Traditional park access research also tends to only address the "supply" side of access by quantifying park number, area, or amenities (CITE) and ignoring the "demand" side, or the number of people competing for access to the parks. Other studies incorporate the population factor by simply dividing the total park area by the population within a given catchment [@lara-valencia_disparities_2018] (CITE MORE?). The Gaussian two-step floating catchment area (G2SFCA) method addresses these shortcomings by incorporating a park supply factor (e.g., total area or amenities), a demand factor (the population of residents with access to the parks), and a travel distance metric that weights closer parks more heavily than distant parks [@zhang_assessing_2023].
 
-An accurate assessment of park access using the G2SFCA method depends on the choice of supply and demand origin points used to determine travel distance from residents to parks. Census block group centroids are often used as demand origin points because they represent the "average" location of residents within a reasonably small area (CITE). However, population-weighted block group centroids are less likely to underestimate accessibility [@kim2024]. For example, the geographic centroid of a large block group with housing concentrated in one small corner is likely to be located far from areas where most people live, leading to a suboptimal estimate of the travel distance to a public park. Likewise, the geographic centroid of a park is commonly used as the supply origin point, but this choice can provide an inaccurate picture of park access, especially in large parks or long linear parks where the centroid is far from the entrances. Residents also may not be able to access parks at any point along the boundary but are instead limited to a small number of entrances. Using park entrances rather than centroids as the supply origin points in a G2SFCA analysis overcomes these limitations [@zhang_assessing_2023].
+An accurate assessment of park access using the G2SFCA method depends on the choice of supply and demand origin points used to determine travel distance from residents to parks. Census block group centroids are often used as demand origin points because they represent the "average" location of residents within a reasonably small area (CITE). However, population-weighted block group centroids are less likely to underestimate accessibility [@kim2024]. For example, the geographic centroid of a large block group with housing concentrated in one corner is likely to be located far from areas where most people live, leading to a suboptimal estimate of the travel distance to a public park. Likewise, the geographic centroid of a park is commonly used as the supply origin point, but this choice can provide an inaccurate picture of park access, especially in large parks or long linear parks where the centroid is far from the entrances. Residents also may not be able to access parks at any point along the boundary but are instead limited to a small number of entrances. Using park entrances rather than centroids as the supply origin points in a G2SFCA analysis overcomes these limitations [@zhang_assessing_2023].
 
-Residential tree canopy cover provided by trees in neighborhoods and commercial areas likely has a more direct impact on residents' lives than the tree canopy in public parks since residential trees shade people's homes, workplaces, and travel routes. But parks may act as tree canopy oases, allowing people to temporarily enjoy the benefits of trees that may be lacking in their daily lives. No studies have investigated the relationship between residential tree canopy cover and access to park tree canopy cover, but a 2013 study by Zhou and Kim investigated neighborhood tree canopy disparities and general walking-distance access to parks in six Illinois cities [@zhou2013]. They found that in four of the cities, a higher proportion of Black residents was associated with lower tree canopy cover, but there were no disparities in access to parks. However, this study did not quantify the tree canopy cover within parks. This is a serious limitation because parks can vary widely in size and they may not all contain adequate tree cover to provide shade for nearby residents.
+Residential tree canopy cover provided by trees in neighborhoods and commercial areas likely has a more direct impact on residents' lives than the tree canopy in public parks since residential trees shade people's homes, workplaces, and travel routes. But parks may act as tree canopy refuges, allowing people to temporarily enjoy the benefits of trees that may be lacking in their daily lives. No studies have investigated the relationship between residential tree canopy cover and access to park tree canopy cover, but a 2013 study by Zhou and Kim investigated neighborhood tree canopy disparities and walking-distance access to parks in six Illinois cities [@zhou2013]. They found that in four of the cities, a higher proportion of Black residents was associated with lower neighborhood tree canopy cover, but there were no disparities in access to parks. However, this study did not quantify the tree canopy cover within parks.
 
-Past research on tree canopy equity has identified tree deserts in Phoenix neighborhoods, but no studies to date have isolated residential tree canopy cover from public park canopy cover. There is also a lack of research addressing whether Phoenix public parks act as tree canopy refuges that partially compensate for lack of tree cover in the surrounding neighborhoods. This study attempts to address these research gaps by answering the following questions:
+A spatial analysis of urban parks across the U.S. found that parks are more common in areas with larger White populations, and these parks tend to have greater tree coverage [@winkler2024].
+
+-------
+
+Interestingly, socioeconomic variables appear to be less often associated with access to park area, as evidenced by the weaker bivariate correlations among socioeconomic factors and park area, the lower level of SAR model fit across study cities, smaller z-statistics associated with socioeconomic factors in those models, and the reduced number of socioeconomic factors present in best-fit parsimonious models of park area (Table 5). Higher education and per capita income are most common in the SAR models of park access across cities, with only two cities showing racial factors associated with park area. These findings suggest that parks are more equitably distributed and that the increased inequity observed in the distribution of mixed and woody vegetation may be due to vegetation located on private land or streets. These findings also highlight that the ecosystem services provided by urban vegetation are differentially distributed, with recreational benefits more equitably distributed than the microclimatic and psychological benefits provided by mixed and woody vegetation near residential buildings. It is important to note that parks are discrete and sparsely distributed in the urban landscape. Thus, disadvantaged urban residents are more likely to have access to recreational green spaces but they are also more likely to have to leave their homes to experience the microclimatic and psychological benefits provided by mixed and woody vegetation in parks. [@nesbitt2019]
+
+---------
+
+Past research on tree canopy equity has identified tree deserts in Phoenix neighborhoods, but no studies to date have isolated and separately analyzed residential tree canopy cover that excludes public park canopy cover. Given that multiple studies have failed to find significant inequities in park access in Phoenix, it is reasonable to assume that public parks act as tree canopy refuges that partially compensate for lack of tree cover in neighborhoods with high minority populations and low socioeconomic status. However, no research to date has analyzed this topic. This study attempts to address these research gaps by answering the following questions:
 
 1.  To what extent do racial/ethnic composition and socioeconomic deprivation predict residential (non-park) tree canopy cover across Phoenix neighborhoods?
 
 2.  To what extent do racial/ethnic composition and socioeconomic deprivation predict public park tree canopy accessibility in Phoenix, and does this relationship diverge from the patterns observed for residential tree canopy?
 
-3.  Do Phoenix public parks function as tree canopy refuges — i.e., do neighborhoods with low residential tree canopy have disproportionately high access to park tree canopy — and does this compensatory pattern hold uniformly across racial/ethnic groups and deprivation levels?
+3.  Do Phoenix public parks function as tree canopy refuges in areas with low residential tree canopy cover, and does this compensatory pattern hold uniformly across racial/ethnic groups and socioeconomic levels?
+
+This research expands on existing studies of tree canopy cover in Phoenix by isolating residential tree canopy from the canopy cover provided by public park trees. It also improves on the analyses of park tree canopy access by using the G2SFCA method to capture a more realistic picture of accessibility compared to traditional Euclidean distance methods that ignore population demand and the limited availability of park entrances. It uses spatially aware regression methods to analyze associations between tree canopy cover and demographic factors to ensure that spatial autocorrelation does not overly influence the models.
 
 ## Materials and methods {#sec-methods}
 
 ### Study area
 
-The study area is the city of Phoenix in Maricopa County, Arizona, USA. AREA... It has a population of 1.67 million as of 2024, making it the fifth largest city in the country [@quickfa]. The Phoenix metro area consists of 26 municipalities with a total of 4.7 million inhabitants. The population of Phoenix is ethnically and racially diverse. Of the block groups included in this study, Hispanic residents make up `r round(mean(na.omit(phx_bg_all$pct_hispanic)), 1)`% of the population, and Black residents make up `r round(mean(na.omit(phx_bg_all$pct_black)), 1)`%, according to data from the 2021-2024 5-year American Community Survey (ACS). The median household income is \$`r mean(na.omit(phx_bg_all$median_income))`. FIX THIS
+Phoenix, Arizona is the fifth largest city in the United States with a population of about 1.67 million as of 2024 within a 1,342 km^2^ area [@u.s.censusbureau2024]. Phoenix has a desert climate with mild winters and extremely hot summers. Daily maximum temperatures frequently exceed 38°C, making Phoenix the hottest large city in the country. Average annual precipitation is 195 mm, with most rainfall occurring during the winter and summer wet seasons [@fan2015].
 
-Phoenix is located in the Sonoran Desert and has a semi-arid climate with hot summers and mild winters. The average daily mean temperature...
+Hispanic residents make up 43% of the city's population. The racial makeup of Phoenix is 40% White, 7% Black, 5% Asian, and 1% Native American, with 4% of the population identifying as multiracial. The median household income is \$85,246, with 12% of residents having an income below the federal poverty level of \$15,960 per person [@u.s.censusbureau2024].
 
 ### Block groups and parks
 
@@ -168,27 +193,65 @@ Median household income is often used as a predictor variable in green space acc
 
 The Gaussian two-step floating catchment area (G2SFCA) method was used to determine Phoenix residents' spatial access to tree canopy cover in public parks. This method accounts for both the supply of public amenities and demand on those amenities when calculating accessibility. In previous studies of green space equity, park size and amenities have often been used as the supply term (CITE). The population of areas surrounding an amenity represents the demand on the amenity. More people living near a park leads to greater competition for the park's amenities, including tree canopy cover.
 
-Park tree canopy area in hectares (PTCA) was used as the supply term in this study and was calculated by multiplying the percent tree canopy cover of a park by its total area (@tbl-parks). Since PTCA values are affected by both park size and percent tree canopy cover, residents living near several small tree-dense parks may have access to more tree canopy than residents near a single large park with scant tree cover.
+Park tree canopy area in hectares (PTCA) was used as the supply term and was calculated by multiplying the percent tree canopy cover of a park by its total area (@tbl-parks). Since PTCA values are affected by both park size and percent tree canopy cover, residents living near several small tree-dense parks may have access to more tree canopy than residents near a single large park with scant tree cover. @fig-park-types-tree-area shows the range of tree canopy area by park type and for all parks combined.
 
 ```{r}
 #| label: tbl-parks  
 #| tbl-cap: "Total park area and park tree canopy cover area in Phoenix public parks"    
  
 # Create gt table of descriptive statistics
-datasummary((`Total park area (ha)` = area_ha) + 
-              (`Park tree canopy area (ha)` = tree_area) ~ 
+datasummary((`Park area (ha)` = area_ha) + 
+              (`Park tree canopy cover (%)` = tree_pct) ~ 
               Mean + SD + Median + Min + Max, 
             data = st_drop_geometry(parks),
             output = "gt"
 ) |> 
-  tab_footnote(footnote = md(paste0("*N* = ", nrow(parks)))) |> 
+  tab_footnote(footnote = md(paste0("*N* = ", nrow(parks), " parks"))) |> 
   tab_style(
     style = cell_text(align = "left"),
     locations = list(cells_footnotes())
   )
 ```
 
-The original 2SFCA, developed by Luo and Wang (2003) [@luo2003], considers an amenity to be fully accessible if it lies within a given travel time or distance from a residential area and fully inaccessible if it lies outside this catchment area. However, the decision to visit an amenity is not dichotomous; for example, a resident may choose to travel farther to visit a park with more tree canopy even though there are other parks nearby that provide less shade. The Gaussian 2SFCA method used in this study improves on the original method by applying a continuous weighting function to the travel distance, where nearby parks are given more weight than those farther away within the same catchment area. Residents who choose more distant parks will thus encounter greater travel friction [@dai2011].
+```{r}
+#| label: fig-park-types-tree-area
+#| fig-cap: "Tree area (ha) by park type"
+
+parks_all <- parks |> 
+  mutate(park_type = "All parks")
+
+parks_plot <- bind_rows(parks,
+                        parks_all) |> 
+  mutate(park_type = factor(
+    park_type,
+    levels = c("Pocket",
+               "Linear",
+               "Neighborhood",
+               "Community",
+               "Regional",
+               "All parks")
+  ))
+
+ggplot(parks_plot, aes(x = park_type, 
+                       y = tree_area,
+                       fill = park_type)) +
+  geom_boxplot() +
+  scale_fill_manual(values = c(
+    "Pocket" = "#e41a1c",
+    "Linear" = "#377eb8",
+    "Neighborhood" = "#4daf4a",
+    "Community" = "#984ea3",
+    "Regional" = "#a65628",
+    "All parks" = "gray70")) +
+  scale_y_continuous(trans = pseudo_log_trans(base = 10, sigma = 0.01), 
+                     breaks = c(0, 0.1, 1, 10),
+                     labels = scales::label_number()) +
+  labs(x = "Park type", y = "Tree canopy area (ha, log scale)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+The original 2SFCA method, developed by Luo and Wang (2003) [@luo2003], considers an amenity to be fully accessible if it lies within a given travel time or distance from a residential area and fully inaccessible if it lies outside this catchment area. However, the decision to visit an amenity is not dichotomous; for example, a resident may choose to travel farther to visit a park with more tree canopy even though there are other parks nearby that provide less shade. The Gaussian 2SFCA method used in this study improves on the original method by applying a continuous weighting function to the travel distance, where nearby parks are given more weight than those farther away within the same catchment area. Residents who choose more distant parks will thus encounter greater travel friction [@dai2011].
 
 The first step in the G2SFCA method is to compute the ratio of park tree canopy area to the surrounding block group population at each park location. The population-weighted centroid of block groups was used as the population location ($k$) in calculating the distance between block groups and parks. This point represents the mean location of residents within the block group. Populations at each block group location $k$ are weighted using a Gaussian function. This ratio is calculated as:
 
@@ -208,7 +271,7 @@ $$A_i = \sum_{l \in \ d_{il} \leq d_0} G (d_{il}, d_0)R_l,$$ {#eq-access}
 
 where $l$ denotes all parks within the catchment of block group $i$, and all other notations are the same as in @eq-sd-ratio. The park tree canopy accessibility score ($A_i$) represents the amount of park tree canopy cover (in hectares) available to each resident in a given block group. Raw accessibility scores are very small values and thus were re-scaled by a factor of 1,000,000 for reporting purposes; the re-scaled values are hereafter referred to as park tree access scores (PTAS).
 
-Public park access studies often use the park centroid as the destination point. However, this can bias the results against large parks since users may have to walk long distances from a park entrance to the centroid. Parks may also have multiple points of entry that are separated by significant distances [@zhang2023a]. This study used park entrances, determined by visual examination using QGIS, as destination locations for parks larger than 2 ha. For smaller parks, the centroid was used since travel time would be minimally affected by the access point location.
+Public park access studies often use the park centroid as the destination point (CITE). However, this can bias the results against large parks since users may have to walk long distances from a park entrance to the centroid. Parks may also have multiple points of entry that are separated by significant distances [@zhang2023a]. This study used park entrances, determined by visual examination using QGIS, as destination locations for parks larger than 2 ha. For smaller parks, the centroid was used since travel time would be minimally affected by the access point location.
 
 Travel distance ($d_{kj}$) from block group centroids ($k$) to park entrances ($j$) was computed using the driving profile in the osrm R package [@osrm]. This method uses the Open Source Routing Machine to identify the shortest driving path between any two points based on the OpenStreetMap road network. A distance matrix of all block group population-weighted centroids to all park entrances was created and then limited to the distance from a block group to only the nearest entrance within any given park.
 
@@ -218,9 +281,9 @@ The G2SFCA method is vulnerable to the "edge effect" problem wherein phenomena c
 
 ### Regression analysis of tree canopy cover disparities {#sec-methods-regress}
 
-Evaluating demographic disparities in block group-level tree canopy cover began with ordinary least squares (OLS) regression models using RTCC and PTAS as the predictor variables and percent Hispanic population, percent Black population, and ADI national percentile rank as the independent variables. An initial OLS model using the untransformed PTAS score showed non-normal residuals (Shapiro-Wilk *W* = 0.843, *p* \< .001) with visible right skew in a Q-Q plot. A square root transformation was applied to PTAS and the model re-estimated; residual normality improved substantially (*W* = 0.955) but remained significantly non-normal (*p* \< .001). Percent White population was excluded from the analyses due to collinearity with the percent Hispanic population. Percent of the population under 18 years old and over 64 years old were considered as predictors, but both had an insignificant impact on the OLS results.
+The first step in evaluating demographic disparities in block group-level tree canopy cover was to apply ordinary least squares (OLS) regression models using RTCC and PTAS as the outcome variables and percent Hispanic population, percent Black population, and ADI national percentile rank as the predictor variables. An initial OLS model using the untransformed PTAS score showed non-normal residuals (Shapiro-Wilk *W* = 0.843, *p* \< .001) with visible right skew in a Q-Q plot. A square root transformation was applied to PTAS and the model re-estimated; residual normality improved substantially (*W* = 0.955) but remained significantly non-normal (*p* \< .001). Percent of the population under 18 years old and over 64 years old were considered as predictors, but both had an insignificant impact on the OLS results.
 
-Demographic and environmental variables often exhibit spatial autocorrelation, meaning the residuals in a given block group are likely to be similar to their surrounding block groups. The presence of spatial autocorrelation violates the assumption of independent residuals necessary for OLS regression, necessitating the use of spatially aware regression models. The global Moran's *I* index was calculated to measure the overall spatial autocorrelation of the residuals of both OLS regression models using the following formula:
+Demographic and environmental variables often exhibit spatial autocorrelation, meaning the residuals in a given block group are likely to be similar to their surrounding block groups. The presence of spatial autocorrelation violates the assumption of independent residuals required for for OLS regression, necessitating the use of spatially aware regression models. The global Moran's *I* index was calculated to measure the overall spatial autocorrelation of the residuals of both OLS regression models using the following formula:
 
 $$I = \frac{N}{S_0} \frac {\sum_{i=1}^N \sum_{j=1}^N w_{ij}(x_i-\bar x) (x_j-\bar x)} {\sum_{i=1}^N (x_i-\bar x)^2},$$ {#eq-morans}
 
@@ -242,9 +305,9 @@ where $\lambda$ is the spatial error coefficient, $Wu$ is the weighted average o
 
 After separately identifying spatial patterns in residential tree canopy cover and public park tree access scores, block groups were classified as either high RTCC or low RTCC. Those with a RTCC of 15% or higher were classified into the high RTCC category and the rest were considered low RTCC. This threshold is based on the recommendation of the non-profit organization American Forests that desert cities should maintain a 15% tree canopy cover to achieve tree equity [@cityofphoenix]. In the absence of a clear policy guideline for park tree access score, block groups with a PTAS below the median were categorized as low PTAS, and those at or above the median were categorized as high PTAS. The two factors were then combined to create four tree canopy access categories: a) high RTCC/high PTAC (HH), b) high RTCC/low PTAS (HL), c) low RTCC/high PTAS (LH), or d) low RTCC/low PTAS (LL).
 
-Multinomial logistic regression was used to examine whether the percent Hispanic, percent Black, or ADI rank predicted a block group's membership in each tree canopy access category relative to the high RTCC/high PTAS condition (HH). Given that spatial autocorrelation was detected in the residuals of both the RTCC and PTAS regression residuals, it was expected that the residuals of the tree access category logistic regression model might exhibit similar spatial dependence. However, global Moran's *I* cannot be calculated directly on the residuals of a multinomial logistic model, since the outcome comprises four unordered categories rather than a single continuous or binary residual vector. To address this, each tree canopy access category (HH, HL, LH, LL) was recast as a binary outcome (one-vs-rest) and modeled separately via logistic regression on the same three demographic predictors. Global Moran's *I* was then calculated on the residuals of each binary model to test for spatial autocorrelation.
+Multinomial logistic regression was used to examine whether the percent Hispanic population, percent Black population, or ADI rank predicted a block group's membership in each tree canopy access category relative to the high RTCC/high PTAS condition (HH). Given that spatial autocorrelation was detected in the residuals of both the RTCC and PTAS regression residuals, it was expected that the residuals of the tree access category logistic regression model might exhibit similar spatial dependence. However, global Moran's *I* cannot be calculated directly on the residuals of a multinomial logistic model, since the outcome comprises four unordered categories rather than a single continuous or binary residual vector. To address this, each tree canopy access category (HH, HL, LH, LL) was recast as a binary outcome (one-vs-rest) and modeled separately via logistic regression on the same three demographic predictors. Global Moran's *I* was then calculated on the residuals of each binary model to test for spatial autocorrelation.
 
-Significant spatial autocorrelation was detected on the residuals of all four binary regression models (see @sec-results), so the Moran eigenvector spatial filtering approach was used to incorporate spatial predictors into the models [@griffith2006]. This approach decomposes a spatial weights matrix into orthogonal eigenvectors, each representing a distinct spatial pattern at a different scale. These eigenvectors are incorporated into regression model as additional predictors, thereby absorbing the spatial signal that would otherwise be part of the model's error term. Eigenvector selection was implemented using the spatialreg R package [@spatialreg], using the eight nearest-neighbors matrix used previously. Each eigenvector was tested iteratively, and those that significantly reduced Moran's *I* (α = 0.08) were retained. The selected eigenvectors were added as additional covariates to each binary logistic model, and global Moran's *I* was recalculated on the resulting residuals to assess the degree to which spatial autocorrelation had been reduced.
+Significant spatial autocorrelation was detected on the residuals of all four binary regression models (see @sec-results), so the Moran eigenvector spatial filtering approach was used to incorporate spatial predictors into the models [@griffith2006]. This approach decomposes a spatial weights matrix into orthogonal eigenvectors, each representing a distinct spatial pattern at a different scale. These eigenvectors are incorporated into the regression model as additional predictors, thereby absorbing the spatial signal that would otherwise be part of the model's error term. Eigenvector selection was implemented using the spatialreg R package [@spatialreg], using the eight-nearest-neighbors matrix used previously. Each eigenvector was tested iteratively, and those that significantly reduced Moran's *I* (α = 0.08) were retained. The selected eigenvectors were added as additional covariates to each binary logistic model, and global Moran's *I* was recalculated on the resulting residuals to assess the degree to which spatial autocorrelation had been reduced.
 
 ## Results {#sec-results}
 
@@ -261,14 +324,14 @@ ptcc_med <- formatC(median(phx_bg_parks$pct_tree_parks), format = "f", digits = 
 ttcc_med_parks <- phx_bg_all |> 
   filter(has_park) |>
   st_drop_geometry() |>
-  summarise(median = median(pct_tree_parks, na.rm = TRUE)) |>
+  summarize(median = median(pct_tree_parks, na.rm = TRUE)) |>
   pull(median) |>
   formatC(format = "f", digits = 2)
 
 ttcc_med_wo_parks <- phx_bg_all |> 
   filter(!has_park) |>
   st_drop_geometry() |>
-  summarise(median = median(pct_tree_parks, na.rm = TRUE)) |>
+  summarize(median = median(pct_tree_parks, na.rm = TRUE)) |>
   pull(median) |>
   formatC(format = "f", digits = 2)
 
@@ -291,11 +354,70 @@ wilcox <- wilcox.test(phx_bg_parks$pct_tree_parks, phx_bg_parks$pct_tree_wo_park
 wilcox_v <- formatC(wilcox$statistic, format = "f", digits = 0)
 wilcox_p <- ifelse(wilcox$p.value < 0.001, "0.001",
                    formatC(wilcox$p.value, format = "f", digits = 3))
+
+# Calculate number of block groups with negative diff between TTCC and RTCC
+negative_diff <- phx_bg_parks |> 
+  st_drop_geometry() |> 
+  mutate(diff = pct_tree_parks - pct_tree_wo_parks) |> 
+  summarize(
+    n_neg = sum(diff < 0, na.rm = TRUE),
+    pct_neg = round(mean(diff < 0, na.rm = TRUE) * 100, 1)
+  )
 ```
 
-Percent total tree canopy cover (TTCC) is the amount of tree canopy cover in a block group including the tree cover provided by public parks. Across the entire city, the `r sum(phx_bg_all$has_park)` block groups that contain parks have a median TTCC of `r ttcc_med_parks`, while the `r nrow(filter(phx_bg_all, has_park == FALSE))` without parks have a median TTCC of `r ttcc_med_wo_parks`. This difference is non-significant (Mann-Whitney *U* = `r mann_u`, *p* = `r mann_p`), suggesting that parks are evenly distributed across the canopy spectrum rather than concentrated in already-green neighborhoods.
+Percent total tree canopy cover (TTCC) is the amount of tree canopy cover in a block group including the tree cover provided by public parks. Across the entire city, the `r sum(phx_bg_all$has_park)` block groups that contain parks have a median TTCC of `r ttcc_med_parks`, while the `r nrow(filter(phx_bg_all, has_park == FALSE))` block groups without parks have a median TTCC of `r ttcc_med_wo_parks`. This difference is non-significant (Mann-Whitney *U* = `r mann_u`, *p* = `r mann_p`), suggesting that parks are evenly distributed across the canopy spectrum rather than concentrated in already-green neighborhoods.
 
-Percent residential tree canopy cover (RTCC) is the tree cover in a block group excluding the tree cover provided by public parks. TTCC and RTCC were compared in the `r nrow(phx_bg_parks)` block groups that contain parks to determine whether the parks significantly contribute to block group-level tree canopy cover in Phoenix. The median TTCC was `r ttcc_med`%, while RTCC was higher at `r ptcc_med`% . This difference was statistically significant (Wilcoxon signed-rank test, *V* = `r wilcox_v`, *p* \< `r wilcox_p`), confirming that parks meaningfully contribute to tree canopy cover when they are present in a neighborhood.
+Percent residential tree canopy cover (RTCC) is the tree cover in a block group excluding the tree cover provided by public parks. TTCC and RTCC were compared in the `r nrow(phx_bg_parks)` block groups that contain parks to determine whether the parks significantly contribute to block group-level tree canopy cover in Phoenix. The median TTCC was `r ttcc_med`%, while RTCC was higher at `r ptcc_med`% (@tbl-ttcc-rtcc). This difference was statistically significant (Wilcoxon signed-rank test, *V* = `r wilcox_v`, *p* \< `r wilcox_p`), confirming that parks meaningfully contribute to tree canopy cover when they are present in a neighborhood. Although the presence of parks had an overall positive impact on TTCC, `r negative_diff$n_neg` (`r negative_diff$pct_neg`%) of the park-containing block groups saw a reduction in TTCC compared to RTCC. This occurs when a park with low tree canopy cover is located in a block group with a higher canopy cover, thus reducing the neighborhood's total tree canopy percentage.
+
+```{r}
+#| label: tbl-ttcc-rtcc
+#| tbl-cap: "Total tree canopy cover (TTCC) and residential tree canopy cover (RTCC) in block groups that contain parks"
+
+ttcc_rtcc_table <- phx_bg_parks |> 
+  st_drop_geometry() |> 
+  mutate(diff = pct_tree_parks - pct_tree_wo_parks) |> 
+  select(pct_tree_parks, pct_tree_wo_parks, diff) |> 
+  pivot_longer(
+    cols = everything(),
+    names_to = "variable",
+    values_to = "value"
+  ) |> 
+  mutate(
+    variable = factor(
+      variable,
+      levels = c("pct_tree_parks",
+                 "pct_tree_wo_parks",
+                 "diff")
+    )
+  ) |> 
+  group_by(variable) |> 
+  summarize(
+    Mean = mean(value, na.rm = TRUE),
+    SD = sd(value, na.rm = TRUE),
+    Median = median(value, na.rm = TRUE),
+    Min = min(value, na.rm = TRUE),
+    Max = max(value, na.rm = TRUE)
+  ) |> 
+  mutate(
+    variable = case_match(
+      variable,
+      "pct_tree_parks" ~ "Total tree canopy cover (%)",
+      "pct_tree_wo_parks" ~ "Residential tree canopy cover (%)",
+      "diff" ~ "TTCC - RTCC (%)"
+    )
+  )
+
+ttcc_rtcc_table |> 
+  gt(rowname_col = "variable") |> 
+  cols_label(variable = "") |> 
+  fmt_number(columns = c(Mean, SD, Median, Min, Max), decimals = 2)|> 
+  tab_footnote(footnote = "TTCC: Total tree canopy cover; RTCC: Residential tree canopy cover", 
+               locations = cells_stub(rows = "TTCC - RTCC (%)")) |> 
+    tab_footnote(footnote = md("*N* = 176 block groups containing parks")) |> 
+  tab_style(
+    style = cell_text(align = "left"),
+    locations = list(cells_footnotes()))
+```
 
 ### Regression analysis {#sec-res-regress}
 
@@ -308,7 +430,7 @@ Percent residential tree canopy cover (RTCC) is the tree cover in a block group 
 # Create descriptive statistics table
 desc_table <- phx_bg |> 
   sf::st_drop_geometry() |> 
-  summarise(
+  summarize(
     across(
       c(population, pct_hispanic, pct_black, adi_rank, pct_tree, tree_access),
       list(
@@ -425,11 +547,13 @@ moran_a_I <- formatC(moran_access$statistic, format = "f", digits = 3)
 
 Global Moran's *I* was significant (*p* \< 0.001) for both the RTCC and PTAS residuals from the OLS models. The RTCC index was `r moran_c_I`, indicating moderate spatial clustering of residential tree canopy values, and the PTAS index was `r moran_a_I`, indicating strong spatial clustering of park tree access scores.
 
-Spatial error model results are presented in @tbl-regress along with OLS estimates for comparison. Similar to the OLS model, all three predictor variables are negatively correlated with RTCC, indicating that block groups with larger Hispanic populations, larger Black populations, or higher ADI rank are more likely to have lower residential tree canopy cover.
+Spatial error model results are presented in @tbl-regress along with OLS estimates for comparison. The lambda ($\lambda$) term indicates how neighboring observations influence one another's errors. The positive $\lambda$ in both spatial error models indicates that unmeasured error in one block group significantly impacts the errors in adjoining block groups for both RTCC and √PTAS. The substantially higher lambda in the √PTAS models ($\lambda$ = 0.731) relative to the RTCC models ($\lambda$ = 0.462) likely reflects the spatial smoothing inherent to the G2FSCA construction of PTAS, in which overlapping park catchments induce autocorrelation among neighboring block groups regardless of demographic makeup.
 
-The spatial error model for the square-root transformed PTAS also indicates that there is no correlation between park tree access and Hispanic population percent. The coefficient of 0.019 for the Black population percent (significant only at the *p* \< 0.1 level) suggests that there may be a slight increase in park tree access as the Black population increases. The significant positive relationship between PTAS and ADI rank indicates that the park tree access score increases as socioeconomic status decreases.
+Similar to the OLS model, all three predictor variables are negatively correlated with RTCC in the spatial error model, indicating that block groups with larger Hispanic populations, larger Black populations, or higher ADI rank are more likely to have lower residential tree canopy cover.
 
-The lambda ($\lambda$) term indicates how neighboring observations influence one another's errors. The positive $\lambda$ in both spatial error models indicates that unmeasured error in one block group significantly impacts the errors in adjoining block groups for both RTCC and PTAS.
+The spatial error model for the square-root transformed PTAS confirms that there is no association between park tree canopy access and Hispanic population percent. Accounting for spatial structure reduces the percent Black population coefficient in the √PTAS from 0.027 (*p* \< 0.01) in the OLS model to 0.019 (*p* \< 0.05) in the spatial error model. This finding is consistent with a portion of the OLS association reflecting shared spatial structure in park tree canopy cover rather than a completely demographic effect.
+
+The significant positive relationship between √PTAS and ADI rank indicates that the park tree access score increases as socioeconomic status decreases. This finding remained significant after factoring spatial autocorrelation into the regression model.
 
 ```{r}
 #| label: tbl-regress
@@ -576,7 +700,7 @@ All three demographic factors were significantly associated with membership in t
 
 For the LL tree access category, only ADI rank is significant (*p*\<0.001). For every one-point increase in ADI rank, there is a 6% increase in the odds that a block group belongs to this category compared to the HH category.
 
-Higher ADI rank was associated with greater odds of belonging to both low RTCC categories, LH and LL, relative to HH. This supports the previous finding that low socioeconomic status is linked to reduced residential tree canopy cover in Phoenix. But there is no clear relationship between the socioeconomic level of a block group and its likelihood of having greater access to public park tree canopy cover.
+Higher ADI rank was associated with greater odds of belonging to both low RTCC categories, LH and LL, relative to HH. This supports the previous finding that low socioeconomic status is linked to reduced residential tree canopy cover in Phoenix. But there is no clear relationship between the socioeconomic level of a low-RTCC block group and its likelihood of having greater access to public park tree canopy cover.
 
 The higher odds of a block group with a larger Black or Hispanic population belonging to the LH category suggests that these neighborhoods are more likely to have parks that act as tree canopy refuges, providing higher park tree canopy access despite having low residential tree canopy cover.
 
@@ -631,7 +755,7 @@ all_coefs <- all_coefs |>
 
 # Recode column names to readable labels
 term_labels <- c(
-  "(Intercept)" = "Intercept",
+  "(Intercept)" = "(Intercept)",
   "pct_hispanic" = "Hispanic population (%)",
   "pct_black" = "Black population (%)", 
   "adi_rank" = "ADI rank"
@@ -667,13 +791,29 @@ coef_table
 
 ## Discussion {#sec-discussion}
 
-### Public park contribution to tree canopy cover
+1.  To what extent do racial/ethnic composition and socioeconomic deprivation predict residential (non-park) tree canopy cover across Phoenix neighborhoods?
 
-Public parks contribute to the total tree canopy cover found within Phoenix neighborhoods. Although the average increase in tree cover is small, it is statistically significant. On average, Phoenix neighborhoods that contain parks have higher tree canopy cover than they would have if the parks were not present.
+2.  To what extent do racial/ethnic composition and socioeconomic deprivation predict public park tree canopy accessibility in Phoenix, and does this relationship diverge from the patterns observed for residential tree canopy?
 
-### Inequitable distribution of tree canopy cover
+3.  Do Phoenix public parks function as tree canopy refuges — i.e., do neighborhoods with low residential tree canopy have disproportionately high access to park tree canopy — and does this compensatory pattern hold uniformly across racial/ethnic groups and deprivation levels?
 
-This study confirms that tree canopy cover is inequitably distributed across Phoenix. Previous studies have shown that total tree canopy cover is highest in block groups with lower racial and ethnic minorities and higher socioeconomic status. This study adds to these findings that this pattern also applies to residential tree canopy cover, excluding the tree canopy provided by public parks.
+This study examined the ability of Phoenix residents to access both residential tree canopy cover and public park tree canopy cover. It uncovered patterns of demographic inequity in how tree canopy access is distributed throughout the city.
+
+### Public park contribution to tree canopy cover {#sec-disc-park}
+
+Public parks contribute to the total tree canopy cover found within Phoenix neighborhoods. Although the average increase in tree cover is small, it is statistically significant. On average, Phoenix neighborhoods that contain parks have higher tree canopy cover than they would have if the parks were not present. Although Phoenix parks contribute to the limited tree cover in this hot, arid city, the tree cover is not evenly distributed across all parks.
+
+### Residential tree canopy cover inequity
+
+Previous studies in numerous cities have shown that total tree canopy cover is often negatively associated with higher concentrations of racial and ethnic minorities but positively associated with higher socioeconomic status (CITE), and this pattern has been documented in Phoenix [@wang2024]. The current study demonstrates this inequitable pattern of tree canopy cover applies specifically to residential tree canopy cover (RTCC), excluding the tree canopy provided by public parks. RTCC is negatively associated with percent Hispanic population and percent Black population, indicating that neighborhoods with a higher concentration of minority residents have lower tree canopy cover provided by trees in private yards, parking lots, schools, and other publicly accessible areas. The negative relationship between RTCC and area deprivation index (ADI) rank is even more pronounced; block groups with more economically vulnerable residents have significantly lower residential tree canopy.
+
+These disparities in tree canopy cover may partially explain why low-income communities are disproportionately impacted by urban heat island effects [@zhu2022].
+
+### Park tree canopy access {#sec-disc-ptas}
+
+Access to public park tree canopy is unevenly distributed in Phoenix. Unlike residential
+
+### Inequitable distribution of tree canopy cover {#sec-disc-canopy}
 
 This is the first study to analyze access to public park tree canopy cover in Phoenix. It is also the first study to use the Gaussian two-step floating catchment area (G2SFCA) method to analyze access to tree canopy cover in parks. This method is superior to traditional measures of park access that only consider presence/absence of parks and use a binary distance metric to determine access. G2SFCA accounts for both tree canopy area and population-based demand on the tree canopy while also applying distance-based weighting to the calculation of distance from block groups to parks. The use of actual park entrances for determining distance-to-park is also an improvement over centroid- or perimeter-based methods that may over- or under-estimate the true distances from residential areas to the parks. Zhang et al. (2023) found that the use of centroids in a park access study underestimated the disparities in accessibility compared to the use of park entrances @zhang_assessing_2023.
 
@@ -681,7 +821,9 @@ G2SFCA could be applied to other cities to determine whether access to public tr
 
 Park tree access score is better than amount of tree canopy area available to each block group because it takes population demand into account. Other studies focus on access to parks but don't consider park tree cover as an amenity. Some studies
 
-### Limitations and future research
+### Limitations and future research {#sec-disc-limit}
+
+Edge effect of PTAS - people can access parks in other cities
 
 ## References {.unnumbered}
 

@@ -1,4 +1,4 @@
-This is LuaHBTeX, Version 1.24.0 (TeX Live 2026)  (format=lualatex 2026.6.1)  1 JUN 2026 11:53
+This is LuaHBTeX, Version 1.24.0 (TeX Live 2026)  (format=lualatex 2026.6.1)  12 AUG 2026 14:53
  restricted system commands enabled.
 **index.tex
 (./index.tex
@@ -781,18 +781,87 @@ File: lstmisc.sty 2025/11/14 1.11b (Carsten Heinz)
 File: listings.cfg 2025/11/14 1.11b listings configuration
 ))
 Package: listings 2025/11/14 1.11b (Carsten Heinz)
-(c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/caption/caption.sty
+(c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/colortbl/colortbl.sty
+Package: colortbl 2026/05/01 v1.0l Color table columns (DPC)
+new hooks used!!
+\minrowclearance=\skip85
+\rownum=\count373
+) (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/pdflscape/pdflscape.sty
+Package: pdflscape 2025-06-23 v0.14 Display of landscape pages in PDF
+(c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/pdflscape/pdflscape-nometadata.sty
+Package: pdflscape-nometadata 2025-06-23 v0.14 Display of landscape pages in PDF (HO)
+(c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/graphics/lscape.sty
+Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
+)
+Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
+)) (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/tabu/tabu.sty
+Package: tabu 2019/01/11 v2.9 - flexible LaTeX tabulars (FC+tabu-fixed)
+(c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/varwidth/varwidth.sty
+Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
+\@vwid@box=\box88
+\sift@deathcycles=\count374
+\@vwid@loff=\dimen281
+\@vwid@roff=\dimen282
+)
+==> First Aid for varwidth.sty applied!
+\c@taburow=\count375
+\tabu@nbcols=\count376
+\tabu@cnt=\count377
+\tabu@Xcol=\count378
+\tabu@alloc=\count379
+\tabu@nested=\count380
+\tabu@target=\dimen283
+\tabu@spreadtarget=\dimen284
+\tabu@naturalX=\dimen285
+\tabucolX=\dimen286
+\tabu@Xsum=\dimen287
+\extrarowdepth=\dimen288
+\abovetabulinesep=\dimen289
+\belowtabulinesep=\dimen290
+\tabustrutrule=\dimen291
+\tabu@thebody=\toks44
+\tabu@footnotes=\toks45
+\tabu@box=\box89
+\tabu@arstrutbox=\box90
+\tabu@hleads=\box91
+\tabu@vleads=\box92
+\tabu@cellskip=\skip86
+) (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/threeparttablex/threeparttablex.sty
+Package: threeparttablex 2013/07/23 v0.3 by daleif
+(c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/environ/environ.sty
+Package: environ 2014/05/04 v0.3 A new way to define environments
+(c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+Package: trimspaces 2009/09/17 v1.1 Trim spaces around a token list
+))
+\TPTL@width=\skip87
+) (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/generic/ulem/ulem.sty
+\UL@box=\box93
+\UL@hyphenbox=\box94
+\UL@skip=\skip88
+\UL@hook=\toks46
+\UL@height=\dimen292
+\UL@pe=\count381
+\UL@pixel=\dimen293
+\ULC@box=\box95
+Package: ulem 2019/11/18
+\ULdepth=\dimen294
+) (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/makecell/makecell.sty
+Package: makecell 2009/08/03 V0.1e Managing of Tab Column Heads and Cells
+\rotheadsize=\dimen295
+\c@nlinenum=\count382
+\TeXr@lab=\toks47
+) (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/caption/caption.sty
 Package: caption 2023/08/05 v3.6o Customizing captions (AR)
 (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/caption/caption3.sty
 Package: caption3 2023/07/31 v2.4d caption3 kernel (AR)
-\caption@tempdima=\dimen281
-\captionmargin=\dimen282
-\caption@leftmargin=\dimen283
-\caption@rightmargin=\dimen284
-\caption@width=\dimen285
-\caption@indent=\dimen286
-\caption@parindent=\dimen287
-\caption@hangindent=\dimen288
+\caption@tempdima=\dimen296
+\captionmargin=\dimen297
+\caption@leftmargin=\dimen298
+\caption@rightmargin=\dimen299
+\caption@width=\dimen300
+\caption@indent=\dimen301
+\caption@parindent=\dimen302
+\caption@hangindent=\dimen303
 Package caption Info: Unknown document class (or package),
 (caption)             standard defaults will be used.
 Package caption Info: \@makecaption = \long macro:#1#2->\ifx \FigName \@captype \vskip \abovecaptionskip \@figurecaption {#1}{#2} \else \@tablecaption {#1}{#2} \vskip \belowcaptionskip \fi  on input line 1175.
@@ -802,8 +871,8 @@ Package caption Warning: Unknown document class (or package),
 (caption)                standard defaults will be used.
 See the caption package documentation for explanation.
 
-\c@caption@flags=\count373
-\c@continuedfloat=\count374
+\c@caption@flags=\count383
+\c@continuedfloat=\count384
 Package caption Info: float package is loaded.
 Package caption Info: hyperref package is loaded.
 Package caption Info: listings package is loaded.
@@ -814,45 +883,47 @@ Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
 Package caption Info: rotating package is loaded.
 Package caption Info: threeparttable package is loaded.
 Package caption Info: wrapfig package is loaded.
+) (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/anyfontsize/anyfontsize.sty
+Package: anyfontsize 2007/11/22 anyfontsize.sty by pts
 )
-\@float@every@codelisting=\toks44
-\c@codelisting=\count375
+\@float@every@codelisting=\toks48
+\c@codelisting=\count385
 (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/caption/subcaption.sty
 Package: subcaption 2023/07/28 v1.6b Sub-captions (AR)
 Package caption Info: New subtype `subfigure' on input line 238.
-\c@subfigure=\count376
+\c@subfigure=\count386
 Package caption Info: New subtype `subtable' on input line 238.
-\c@subtable=\count377
+\c@subtable=\count387
 ) (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/bookmark/bookmark.sty
 Package: bookmark 2026-05-21 v1.32 PDF bookmarks (HO)
 (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/bookmark/bkm-luatex.def
 File: bkm-luatex.def 2026-05-21 v1.32 bookmark driver for luaTeX (HO)
-\BKM@id=\count378
+\BKM@id=\count388
 ))
-Package hyperref Info: Option `colorlinks' set `true' on input line 216.
+Package hyperref Info: Option `colorlinks' set `true' on input line 232.
 No file index.aux.
 
 \openout1 = index.aux
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 233.
-LaTeX Font Info:    ... okay on input line 233.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 233.
-LaTeX Font Info:    ... okay on input line 233.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 233.
-LaTeX Font Info:    ... okay on input line 233.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 233.
-LaTeX Font Info:    ... okay on input line 233.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 233.
-LaTeX Font Info:    ... okay on input line 233.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 233.
-LaTeX Font Info:    ... okay on input line 233.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 233.
-LaTeX Font Info:    ... okay on input line 233.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 233.
-LaTeX Font Info:    ... okay on input line 233.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 233.
-LaTeX Font Info:    ... okay on input line 233.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 233.
-LaTeX Font Info:    ... okay on input line 233.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 249.
+LaTeX Font Info:    ... okay on input line 249.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 249.
+LaTeX Font Info:    ... okay on input line 249.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 249.
+LaTeX Font Info:    ... okay on input line 249.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 249.
+LaTeX Font Info:    ... okay on input line 249.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 249.
+LaTeX Font Info:    ... okay on input line 249.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 249.
+LaTeX Font Info:    ... okay on input line 249.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 249.
+LaTeX Font Info:    ... okay on input line 249.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 249.
+LaTeX Font Info:    ... okay on input line 249.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 249.
+LaTeX Font Info:    ... okay on input line 249.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 249.
+LaTeX Font Info:    ... okay on input line 249.
 *geometry* driver: auto-detecting
 *geometry* detected driver: luatex
 *geometry* verbose mode - [ preamble ] result:
@@ -894,22 +965,22 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 48
 (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 ))
-Package hyperref Info: Link coloring ON on input line 233.
+Package hyperref Info: Link coloring ON on input line 249.
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
-(Font)                  OT1/lmr/m/n --> TU/lmr/m/n on input line 233.
+(Font)                  OT1/lmr/m/n --> TU/lmr/m/n on input line 249.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
-(Font)                  OT1/lmr/m/it --> TU/lmr/m/it on input line 233.
+(Font)                  OT1/lmr/m/it --> TU/lmr/m/it on input line 249.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
-(Font)                  OT1/lmr/bx/n --> TU/lmr/bx/n on input line 233.
+(Font)                  OT1/lmr/bx/n --> TU/lmr/bx/n on input line 249.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/lmss/m/n --> TU/lmss/m/n on input line 233.
+(Font)                  OT1/lmss/m/n --> TU/lmss/m/n on input line 249.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/lmss/bx/n --> TU/lmss/bx/n on input line 233.
+(Font)                  OT1/lmss/bx/n --> TU/lmss/bx/n on input line 249.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/lmtt/m/n --> TU/lmtt/m/n on input line 233.
+(Font)                  OT1/lmtt/m/n --> TU/lmtt/m/n on input line 249.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/lmtt/m/n --> TU/lmtt/bx/n on input line 233.
-LaTeX Font Info:    Calculating math sizes for size <10.03749> on input line 233.
+(Font)                  OT1/lmtt/m/n --> TU/lmtt/bx/n on input line 249.
+LaTeX Font Info:    Calculating math sizes for size <10.03749> on input line 249.
 
 Package fontspec Info: 
 (fontspec)             latinmodern-math scale = 0.999996472911964.
@@ -937,7 +1008,7 @@ Package fontspec Info:
 (fontspec)             <->s*[0.999996472911964]"[latinmodern-math.otf]:mode=base;script=math;language=dflt;mathfontdimen=xetex;"
 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(0)/m/n' will be
-(Font)              scaled to size 10.03749pt on input line 233.
+(Font)              scaled to size 10.03749pt on input line 249.
 
 Package fontspec Info: 
 (fontspec)             latinmodern-math scale = 0.999996472911964.
@@ -973,15 +1044,15 @@ Package fontspec Info:
 (fontspec)             <->s*[0.999996472911964]"[latinmodern-math.otf]:mode=base;script=math;language=dflt;mathfontdimen=xetex;"
 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 10.03749pt on input line 233.
+(Font)              scaled to size 10.03749pt on input line 249.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `normal' on input line 233.
+(Font)              `operators' in the math version `normal' on input line 249.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
-(Font)                  OT1/lmr/m/n --> TU/latinmodern-math.otf(1)/m/n on input line 233.
+(Font)                  OT1/lmr/m/n --> TU/latinmodern-math.otf(1)/m/n on input line 249.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `bold' on input line 233.
+(Font)              `operators' in the math version `bold' on input line 249.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
-(Font)                  OT1/lmr/bx/n --> TU/latinmodern-math.otf(1)/b/n on input line 233.
+(Font)                  OT1/lmr/bx/n --> TU/latinmodern-math.otf(1)/b/n on input line 249.
 
 Package fontspec Info: 
 (fontspec)             latinmodern-math scale = 0.999996472911964.
@@ -1017,13 +1088,13 @@ Package fontspec Info:
 (fontspec)             <->s*[0.999996472911964]"[latinmodern-math.otf]:mode=base;script=math;language=dflt;mathfontdimen=xetex;mathfontdimen=tex2;"
 
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `normal' on input line 233.
+(Font)              `symbols' in the math version `normal' on input line 249.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
-(Font)                  OMS/lmsy/m/n --> TU/latinmodern-math.otf(2)/m/n on input line 233.
+(Font)                  OMS/lmsy/m/n --> TU/latinmodern-math.otf(2)/m/n on input line 249.
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `bold' on input line 233.
+(Font)              `symbols' in the math version `bold' on input line 249.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
-(Font)                  OMS/lmsy/b/n --> TU/latinmodern-math.otf(2)/b/n on input line 233.
+(Font)                  OMS/lmsy/b/n --> TU/latinmodern-math.otf(2)/b/n on input line 249.
 
 Package fontspec Info: 
 (fontspec)             latinmodern-math scale = 0.999996472911964.
@@ -1059,52 +1130,55 @@ Package fontspec Info:
 (fontspec)             <->s*[0.999996472911964]"[latinmodern-math.otf]:mode=base;script=math;language=dflt;mathfontdimen=xetex;mathfontdimen=tex3;"
 
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
-(Font)              `largesymbols' in the math version `normal' on input line 233.
+(Font)              `largesymbols' in the math version `normal' on input line 249.
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
-(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/m/n on input line 233.
+(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/m/n on input line 249.
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
-(Font)              `largesymbols' in the math version `bold' on input line 233.
+(Font)              `largesymbols' in the math version `bold' on input line 249.
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
-(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/b/n on input line 233.
+(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/b/n on input line 249.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 7.02625pt on input line 233.
+(Font)              scaled to size 7.02625pt on input line 249.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 5.01874pt on input line 233.
-LaTeX Font Info:    Trying to load font information for OML+lmm on input line 233.
+(Font)              scaled to size 5.01874pt on input line 249.
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 249.
 (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 10.03749pt on input line 233.
+(Font)              scaled to size 10.03749pt on input line 249.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 7.02625pt on input line 233.
+(Font)              scaled to size 7.02625pt on input line 249.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 5.01874pt on input line 233.
+(Font)              scaled to size 5.01874pt on input line 249.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 10.03749pt on input line 233.
+(Font)              scaled to size 10.03749pt on input line 249.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 7.02625pt on input line 233.
+(Font)              scaled to size 7.02625pt on input line 249.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 5.01874pt on input line 233.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 233.
+(Font)              scaled to size 5.01874pt on input line 249.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 249.
 (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 233.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 249.
 (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-LaTeX Font Info:    Trying to load font information for U+rsfs on input line 233.
+LaTeX Font Info:    Trying to load font information for U+rsfs on input line 249.
 (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/jknapltx/ursfs.fd
 File: ursfs.fd 1998/03/24 rsfs font definition file (jk)
 )
-LaTeX Info: Redefining \microtypecontext on input line 233.
-Package microtype Info: Applying patch `item' on input line 233.
-Package microtype Info: Applying patch `toc' on input line 233.
-Package microtype Info: Applying patch `eqnum' on input line 233.
-Package microtype Info: Applying patch `footnote' on input line 233.
-Package microtype Info: Applying patch `verbatim' on input line 233.
-LaTeX Info: Redefining \microtypesetup on input line 233.
+Package microtype Info: Patching varwidth to enable character protrusion.
+\MT@vwid@leftmargin=\dimen304
+\MT@vwid@rightmargin=\dimen305
+LaTeX Info: Redefining \microtypecontext on input line 249.
+Package microtype Info: Applying patch `item' on input line 249.
+Package microtype Info: Applying patch `toc' on input line 249.
+Package microtype Info: Applying patch `eqnum' on input line 249.
+Package microtype Info: Applying patch `footnote' on input line 249.
+Package microtype Info: Applying patch `verbatim' on input line 249.
+LaTeX Info: Redefining \microtypesetup on input line 249.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using protrusion set `basicmath'.
@@ -1119,114 +1193,400 @@ Package microtype Info: No adjustment of kerning.
 File: mt-LatinModernRoman.cfg 2026/02/26 v1.2 microtype config. file: Latin Modern Roman (RS)
 )
 Couldn't patch \deferred@thm@head!
-\c@lstlisting=\count379
+\c@lstlisting=\count389
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
-LaTeX Font Info:    Calculating math sizes for size <12.045> on input line 235.
+LaTeX Font Info:    Calculating math sizes for size <12.045> on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/b/n' will be
-(Font)              scaled to size 12.045pt on input line 235.
+(Font)              scaled to size 12.045pt on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/b/n' will be
-(Font)              scaled to size 8.43146pt on input line 235.
+(Font)              scaled to size 8.43146pt on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/b/n' will be
-(Font)              scaled to size 6.02249pt on input line 235.
+(Font)              scaled to size 6.02249pt on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/b/n' will be
-(Font)              scaled to size 12.045pt on input line 235.
+(Font)              scaled to size 12.045pt on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/b/n' will be
-(Font)              scaled to size 8.43146pt on input line 235.
+(Font)              scaled to size 8.43146pt on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/b/n' will be
-(Font)              scaled to size 6.02249pt on input line 235.
+(Font)              scaled to size 6.02249pt on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/b/n' will be
-(Font)              scaled to size 12.045pt on input line 235.
+(Font)              scaled to size 12.045pt on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/b/n' will be
-(Font)              scaled to size 8.43146pt on input line 235.
+(Font)              scaled to size 8.43146pt on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/b/n' will be
-(Font)              scaled to size 6.02249pt on input line 235.
+(Font)              scaled to size 6.02249pt on input line 251.
 (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 ) (c:/Users/seana/AppData/Roaming/TinyTeX/texmf-dist/tex/latex/microtype/mt-msb.cfg
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
-
-LaTeX Font Warning: Font shape `U/rsfs/m/n' in size <8.43146> not available
-(Font)              size <8> substituted on input line 235.
-
-LaTeX Font Info:    Calculating math sizes for size <11.04124> on input line 235.
+LaTeX Font Info:    Calculating math sizes for size <11.04124> on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/b/n' will be
-(Font)              scaled to size 11.04124pt on input line 235.
+(Font)              scaled to size 11.04124pt on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/b/n' will be
-(Font)              scaled to size 7.72884pt on input line 235.
+(Font)              scaled to size 7.72884pt on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/b/n' will be
-(Font)              scaled to size 5.52061pt on input line 235.
+(Font)              scaled to size 5.52061pt on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/b/n' will be
-(Font)              scaled to size 11.04124pt on input line 235.
+(Font)              scaled to size 11.04124pt on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/b/n' will be
-(Font)              scaled to size 7.72884pt on input line 235.
+(Font)              scaled to size 7.72884pt on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/b/n' will be
-(Font)              scaled to size 5.52061pt on input line 235.
+(Font)              scaled to size 5.52061pt on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/b/n' will be
-(Font)              scaled to size 11.04124pt on input line 235.
+(Font)              scaled to size 11.04124pt on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/b/n' will be
-(Font)              scaled to size 7.72884pt on input line 235.
+(Font)              scaled to size 7.72884pt on input line 251.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/b/n' will be
-(Font)              scaled to size 5.52061pt on input line 235.
-
-LaTeX Font Warning: Font shape `U/rsfs/m/n' in size <5.52061> not available
-(Font)              size <6> substituted on input line 235.
-
-<index_files/figure-pdf/fig-timeline-1.pdf, id=4, 433.62pt x 108.405pt>
-File: index_files/figure-pdf/fig-timeline-1.pdf Graphic file (type pdf)
-<use index_files/figure-pdf/fig-timeline-1.pdf>
-Package luatex.def Info: index_files/figure-pdf/fig-timeline-1.pdf  used on input line 244.
-(luatex.def)             Requested size: 433.61894pt x 108.40472pt.
-
-LaTeX Warning: Reference `fig-timeline' on page 1 undefined on input line 261.
-
+(Font)              scaled to size 5.52061pt on input line 251.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
 [1
 
-{c:/Users/seana/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}<./index_files/figure-pdf/fig-timeline-1.pdf>]
+{c:/Users/seana/AppData/Roaming/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
-LaTeX Warning: Reference `sec-data-methods' on page 2 undefined on input line 263.
+[2]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[3]
+
+LaTeX Warning: Reference `tbl-park-types' on page 4 undefined on input line 432.
 
 
-LaTeX Warning: Reference `eq-poisson' on page 2 undefined on input line 273.
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 435.
+
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 12.0pt on input line 442.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 8.0pt on input line 442.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 6.0pt on input line 442.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 12.0pt on input line 442.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 8.0pt on input line 442.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 6.0pt on input line 442.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 12.0pt on input line 442.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 8.0pt on input line 442.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 6.0pt on input line 442.
+
+Overfull \hbox (462.16843pt too wide) in alignment at lines 442--452
+[] [] [] []
+ []
 
 
-Package longtable Warning: Column widths have changed
-(longtable)                in table 1 on input line 297.
+LaTeX Warning: Reference `fig-tree-cover' on page 4 undefined on input line 472.
 
-
-LaTeX Warning: Reference `tbl-history' on page 2 undefined on input line 299.
-
-<images/la-palma-map.png, id=24, 1927.2pt x 856.19875pt>
-File: images/la-palma-map.png Graphic file (type png)
-<use images/la-palma-map.png>
-Package luatex.def Info: images/la-palma-map.png  used on input line 306.
-(luatex.def)             Requested size: 1927.19533pt x 856.19666pt.
-
-LaTeX Warning: Reference `fig-map' on page 2 undefined on input line 315.
-
-<index_files/figure-latex/notebooks-explore-earthquakes-fig-spatial-plot-output-1.png, id=25, 505.89pt x 361.35pt>
-File: index_files/figure-latex/notebooks-explore-earthquakes-fig-spatial-plot-output-1.png Graphic file (type png)
-<use index_files/figure-latex/notebooks-explore-earthquakes-fig-spatial-plot-output-1.png>
-Package luatex.def Info: index_files/figure-latex/notebooks-explore-earthquakes-fig-spatial-plot-output-1.png  used on input line 321.
-(luatex.def)             Requested size: 505.88875pt x 361.34912pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[2<./images/la-palma-map.png>]
+[4]
+<images/fig-bg-tree-cover.png, id=39, 2072.74374pt x 672.5125pt>
+File: images/fig-bg-tree-cover.png Graphic file (type png)
+<use images/fig-bg-tree-cover.png>
+Package luatex.def Info: images/fig-bg-tree-cover.png  used on input line 483.
+(luatex.def)             Requested size: 2072.73871pt x 672.51085pt.
 
-LaTeX Warning: Reference `fig-spatial-plot' on page 3 undefined on input line 330.
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[5<./images/fig-bg-tree-cover.png>]
+
+LaTeX Warning: Reference `fig-bg-parks' on page 6 undefined on input line 523.
+
+<index_files/figure-pdf/fig-bg-parks-1.pdf, id=48, 397.485pt x 252.945pt>
+File: index_files/figure-pdf/fig-bg-parks-1.pdf Graphic file (type pdf)
+<use index_files/figure-pdf/fig-bg-parks-1.pdf>
+Package luatex.def Info: index_files/figure-pdf/fig-bg-parks-1.pdf  used on input line 532.
+(luatex.def)             Requested size: 397.48402pt x 252.94438pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[6<./index_files/figure-pdf/fig-bg-parks-1.pdf>]
+
+LaTeX Warning: Reference `tbl-parks' on page 7 undefined on input line 562.
 
 
-Package longtable Warning: Table widths have changed. Rerun LaTeX.
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 569.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 586--587
+
+ []
 
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
-[3<./index_files/figure-latex/notebooks-explore-earthquakes-fig-spatial-plot-output-1.png>] (./index.aux
+[7]
+
+LaTeX Warning: Reference `eq-sd-ratio' on page 8 undefined on input line 640.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[8]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[9]
+
+LaTeX Warning: Reference `sec-results' on page 10 undefined on input line 743.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[10]
+
+LaTeX Warning: Reference `sec-results' on page 11 undefined on input line 804.
+
+Missing character: There is no α (U+03B1) in font [lmroman10-regular]:+tlig;!
+Missing character: There is no α (U+03B1) in font [lmroman10-regular]:+tlig;!
+Missing character: There is no α (U+03B1) in font [lmroman10-regular]:+tlig;!
+
+LaTeX Warning: Reference `tbl-ttcc-rtcc' on page 11 undefined on input line 843.
+
+
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 847.
+
+
+Overfull \hbox (27.2401pt too wide) in alignment at lines 854--862
+[] [] [] [] [] []
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 865--866
+
+ []
+
+
+LaTeX Warning: Reference `tbl-desc-stats' on page 11 undefined on input line 874.
+
+
+LaTeX Warning: Reference `fig-ptcc-ptas-map' on page 11 undefined on input line 878.
+
+
+LaTeX Warning: Reference `fig-bg-demographics' on page 11 undefined on input line 880.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[11
+Missing character: There is no α (U+03B1) in font [lmroman10-regular]:+tlig;!
+]
+
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 883.
+
+
+Overfull \hbox (83.47227pt too wide) in alignment at lines 889--905
+[] [] [] [] [] []
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 908--909
+
+ []
+
+<index_files/figure-pdf/fig-ptcc-ptas-map-1.pdf, id=101, 397.485pt x 252.945pt>
+File: index_files/figure-pdf/fig-ptcc-ptas-map-1.pdf Graphic file (type pdf)
+<use index_files/figure-pdf/fig-ptcc-ptas-map-1.pdf>
+Package luatex.def Info: index_files/figure-pdf/fig-ptcc-ptas-map-1.pdf  used on input line 920.
+(luatex.def)             Requested size: 397.48402pt x 252.94438pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[12]
+<index_files/figure-pdf/fig-bg-demographics-1.pdf, id=112, 397.485pt x 252.945pt>
+File: index_files/figure-pdf/fig-bg-demographics-1.pdf Graphic file (type pdf)
+<use index_files/figure-pdf/fig-bg-demographics-1.pdf>
+Package luatex.def Info: index_files/figure-pdf/fig-bg-demographics-1.pdf  used on input line 934.
+(luatex.def)             Requested size: 397.48402pt x 252.94438pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[13<./index_files/figure-pdf/fig-ptcc-ptas-map-1.pdf>]
+
+LaTeX Warning: Reference `tbl-regress' on page 14 undefined on input line 946.
+
+
+LaTeX Warning: Reference `tbl-regress' on page 14 undefined on input line 957.
+
+
+LaTeX Warning: Reference `tbl-regress' on page 14 undefined on input line 972.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[14<./index_files/figure-pdf/fig-bg-demographics-1.pdf>]
+
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 995.
+
+
+Overfull \hbox (32.0763pt too wide) in alignment at lines 1002--1015
+[] [] [] [] []
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1018--1020
+
+ []
+
+
+LaTeX Warning: Reference `tbl-canopy-access' on page 15 undefined on input line 1031.
+
+
+LaTeX Warning: Reference `fig-canopy-access-map' on page 15 undefined on input line 1032.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[15]
+
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 1049.
+
+
+Overfull \hbox (176.46017pt too wide) in alignment at lines 1055--1064
+[] [] [] []
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1067--1068
+
+ []
+
+<index_files/figure-pdf/fig-canopy-access-map-1.pdf, id=140, 397.485pt x 252.945pt>
+File: index_files/figure-pdf/fig-canopy-access-map-1.pdf Graphic file (type pdf)
+<use index_files/figure-pdf/fig-canopy-access-map-1.pdf>
+Package luatex.def Info: index_files/figure-pdf/fig-canopy-access-map-1.pdf  used on input line 1079.
+(luatex.def)             Requested size: 397.48402pt x 252.94438pt.
+
+LaTeX Warning: Reference `tbl-multinom' on page 16 undefined on input line 1097.
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[16<./index_files/figure-pdf/fig-canopy-access-map-1.pdf>]
+
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 1100.
+
+
+Overfull \hbox (93.06352pt too wide) in alignment at lines 1107--1117
+[] [] [] [] [] [] []
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1120--1124
+
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[17]
+
+LaTeX Warning: Reference `tbl-bin-regress' on page 18 undefined on input line 1170.
+
+Missing character: There is no β (U+03B2) in font [lmroman10-regular]:+tlig;!
+Missing character: There is no β (U+03B2) in font [lmroman10-regular]:+tlig;!
+Missing character: There is no β (U+03B2) in font [lmroman10-regular]:+tlig;!
+Missing character: There is no β (U+03B2) in font [lmroman10-regular]:+tlig;!
+Missing character: There is no β (U+03B2) in font [lmroman10-regular]:+tlig;!
+Missing character: There is no β (U+03B2) in font [lmroman10-regular]:+tlig;!
+
+LaTeX Warning: No positions in optional float specifier.
+               Default added (so using `tbp') on input line 1189.
+
+Missing character: There is no β (U+03B2) in font [lmroman12-regular]:+tlig;!
+Missing character: There is no β (U+03B2) in font [lmroman12-regular]:+tlig;!
+Missing character: There is no β (U+03B2) in font [lmroman12-regular]:+tlig;!
+Missing character: There is no β (U+03B2) in font [lmroman12-regular]:+tlig;!
+
+Underfull \hbox (badness 10000) in paragraph at lines 1231--1232
+
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[18
+Missing character: There is no β (U+03B2) in font [lmroman10-regular]:+tlig;!
+Missing character: There is no β (U+03B2) in font [lmroman10-regular]:+tlig;!
+]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[19
+Missing character: There is no β (U+03B2) in font [lmroman12-regular]:+tlig;!
+Missing character: There is no β (U+03B2) in font [lmroman12-regular]:+tlig;!
+]
+Underfull \hbox (badness 2564) in paragraph at lines 1307--1307
+[]|\TU/lmr/m/n/10.03749 Lara-Valencia F, Garcia-Perez H (2018) Dis-par-i-ties in the pro-vi-sion
+ []
+
+
+Underfull \hbox (badness 5147) in paragraph at lines 1307--1307
+\TU/lmr/m/n/10.03749 of pub-lic parks in neigh-bour-hoods with var-ied latino com-po-si-tion
+ []
+
+
+Underfull \hbox (badness 3623) in paragraph at lines 1307--1307
+\TU/lmr/m/n/10.03749 in the phoenix metropoli-tan area. Local Envi-ron-ment 23:1107--1120.
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1320--1320
+[]|\TU/lmr/m/n/10.03749 Cor-ley EA (2024) Envi-ron-men-tal jus-tice and phoenix, ari-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1320--1320
+\TU/lmr/m/n/10.03749 zona neigh-bor-hood parks. Envi-ron-men-tal Jus-tice 17:256--266.
+ []
+
+
+Underfull \hbox (badness 2564) in paragraph at lines 1342--1342
+[]|\TU/lmr/m/n/10.03749 Lara-Valencia F, Garcia-Perez H (2018) Dis-par-i-ties in the pro-vi-sion
+ []
+
+
+Underfull \hbox (badness 4120) in paragraph at lines 1342--1342
+\TU/lmr/m/n/10.03749 of pub-lic parks in neigh-bour-hoods with var-ied Latino com-po-si-tion
+ []
+
+
+Underfull \hbox (badness 2460) in paragraph at lines 1342--1342
+\TU/lmr/m/n/10.03749 in the Phoenix Metropoli-tan Area. Local Envi-ron-ment 23:1107--1120.
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[20]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[21]
+Underfull \hbox (badness 8075) in paragraph at lines 1485--1485
+[]|\TU/lmr/m/n/10.03749 Grif-fith DA, Peres-Neto PR (2006) Spa-tial mod-el-ing in ecol-ogy:
+ []
+
+
+Underfull \hbox (badness 1259) in paragraph at lines 1485--1485
+\TU/lmr/m/n/10.03749 The flex-i-bil-ity of eigen-func-tion spa-tial anal-y-ses. Ecol-ogy 87:2603--2613.
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+[22] (./index.aux
 
 Package natbib Warning: Citation(s) may have changed.
 (natbib)                Rerun to get citations correct.
@@ -1239,16 +1599,16 @@ See the natbib package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.26 ...ommand\NAT@force@numbers{}\NAT@force@numbers
+l.129 ...mmand\NAT@force@numbers{}\NAT@force@numbers
                                                   
 
 Here is how much of LuaTeX's memory you used:
- 25080 strings out of 475703
+ 26646 strings out of 475703
  125086,1373583 words of node,token memory allocated
- 637 words of node memory still in use:
-   6 hlist, 1 vlist, 2 rule, 1 local_par, 1 dir, 3 glue, 4 kern, 2 penalty, 1 margin_kern, 3 glyph, 10 attribute, 72 glue_spec, 10 attribute_list, 2 if_stack, 1 write nodes
-   avail lists: 1:3,2:502,3:170,4:66,5:164,6:34,7:2495,8:41,9:344,10:9,11:106
- 47414 multiletter control sequences out of 65536+600000
- 93 fonts using 27383567 bytes
- 90i,9n,114p,1001b,486s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 727 words of node memory still in use:
+   6 hlist, 1 vlist, 2 rule, 1 local_par, 1 dir, 3 glue, 4 kern, 2 penalty, 1 margin_kern, 3 glyph, 24 attribute, 74 glue_spec, 24 attribute_list, 2 if_stack, 1 write, 4 pdf_action nodes
+   avail lists: 1:1,2:772,3:285,4:141,5:523,6:97,7:9061,8:64,9:722,10:25,11:488,12:1
+ 48819 multiletter control sequences out of 65536+600000
+ 118 fonts using 35782587 bytes
+ 90i,14n,114p,1001b,714s stack positions out of 10000i,1000n,20000p,200000b,200000s
 !  ==> Fatal error occurred, no output PDF file produced!
