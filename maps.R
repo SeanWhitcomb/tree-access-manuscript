@@ -8,6 +8,13 @@ library(cowplot)
 
 ## Map of block group data and park types ======================================
 
+# Create park colors pallette
+park_colors <- c("Pocket" = "#4daf4a",
+                 "Linear" = "#377eb8",
+                 "Neighborhood" = "#e41a1c",
+                 "Community" = "#984ea3",
+                 "Regional" = "#a65628")
+
 # Create boundary objects for mapping
 options(tigris_use_cache = TRUE)
 
@@ -30,14 +37,18 @@ inset_az <- tm_shape(us_states) +
       values = c("Arizona" = "lightblue", "Other" = "white")
     ),
     fill.legend = tm_legend(show = FALSE)
-  ) 
+  ) +
+  tm_layout(frame = TRUE, inner.margins = 0.1, frame.lwd = 0.3)
 
 # Create Phoenix inset map
 inset_phx <- tm_shape(az_state) +
-  tm_polygons(fill = "lightblue", col = "gray40", lwd = 0.5) +
+  tm_polygons(fill = "lightblue", 
+              col = "gray40", 
+              lwd = 0.5) +
   tm_text("NAME", size = 1.2, ymod = 5) +
   tm_shape(phx_city_limits) +
-  tm_polygons(fill = "darkblue") +
+  tm_polygons(fill = "darkblue",
+              col = "darkblue") +
   tm_text(text = "Phoenix",
           size = 0.8, 
           xmod = 4, 
@@ -54,22 +65,22 @@ legend_bg_parks <- tm_shape(phx_bg_all) +
     col = c("black", "black", "black"),
     labels = c("Land cover data only",
                "Land cover & demographic data",
-               "No data"),
+               "Missing data"),
     frame = TRUE
   ) +
   tm_add_legend(
-    title = "Park types",
-    type = "polygons",
-    fill = c("#e41a1c", 
-             "#377eb8", 
-             "#4daf4a", 
-             "#984ea3", 
-             "#a65628"),
-    col = c("black", 
-            "black", 
-            "black", 
-            "black", 
-            "black"),
+    title = "Park area (ha)",
+    type = "bubbles",
+    fill = "gray50",
+    size = c(0.3, 0.6, 1, 1.2, 1.4),
+    labels = c("< 10", "10 – 20", "20 – 40", "40 – 80", "80+")
+  ) +
+  tm_add_legend(
+    title = "Park type",
+    type = "bubbles",
+    size = 1,
+    fill = park_colors,
+    col = c("black"),
     labels = c("Pocket", 
                "Linear", 
                "Neighborhood", 
@@ -82,23 +93,56 @@ legend_bg_parks <- tm_shape(phx_bg_all) +
             legend.frame.lwd = 1,
             legend.bg.col = "white")
 
-# Create map of block groups and parks
+# # Create map of block groups and parks
+# map_phx <- tm_shape(phx_city_limits) +
+#   tm_polygons(fill = "gray90", 
+#               col = "black", 
+#               lwd = 1) +
+#   tm_shape(phx_bg_all) +
+#   tm_polygons(fill = "#fee08b",
+#               lwd = 0.3) +
+#   tm_shape(phx_bg) +
+#   tm_polygons(fill = "#fdae61") +
+#   tm_shape(parks) +
+#   tm_polygons("park_type",
+#               fill.scale = tm_scale(values =c("Pocket" = "#4daf4a", 
+#                                               "Linear" = "#377eb8", 
+#                                               "Neighborhood" = "#e41a1c", 
+#                                               "Community" = "#984ea3", 
+#                                               "Regional" = "#a65628")
+#               ),
+#               lwd = 0.8
+#   ) +
+#   tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
+#               position = tm_pos_out("right", "bottom"),
+#               text.size = 0.8) +
+#   tm_layout(frame = FALSE, legend.show = FALSE)
+
+# Create map of block groups and parks with parks as bubbles
 map_phx <- tm_shape(phx_city_limits) +
   tm_polygons(fill = "gray90", 
               col = "black", 
-              lwd = 1.3) +
+              lwd = 1) +
   tm_shape(phx_bg_all) +
-  tm_polygons(fill = "#fee08b") +
+  tm_polygons(fill = "#fee08b",
+              lwd = 0.3) +
   tm_shape(phx_bg) +
   tm_polygons(fill = "#fdae61") +
   tm_shape(parks) +
-  tm_polygons("park_type",
-              fill.scale = tm_scale(values =c("Pocket" = "#e41a1c", 
-                                              "Linear" = "#377eb8", 
-                                              "Neighborhood" = "#4daf4a", 
-                                              "Community" = "#984ea3", 
-                                              "Regional" = "#a65628")
-              )
+  tm_bubbles(size = "area_ha",
+             size.scale = tm_scale_intervals(values = 
+               c(0.3, 0.6, 1, 1.2, 1.4),
+               breaks = c(0, 10, 20, 40, 80, 120)
+             ),
+             fill = "park_type",
+             fill.scale = tm_scale_categorical(
+               values = c("Pocket" = "#4daf4a",
+               "Linear" = "#377eb8",
+               "Neighborhood" = "#e41a1c",
+               "Community" = "#984ea3",
+               "Regional" = "#a65628")),
+              lwd = 0.8,
+             fill_alpha = 0.8
   ) +
   tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
               position = tm_pos_out("right", "bottom"),
@@ -107,24 +151,29 @@ map_phx <- tm_shape(phx_city_limits) +
 
 # Plot all elements
 map_bg_parks <- ggdraw() +
-  draw_plot(tmap_grob(map_phx)) +
+  draw_plot(tmap_grob(map_phx),
+            x = 0.15) +
   draw_plot(tmap_grob(legend_bg_parks), 
-            x = 0.5, 
+            x = 0.75, 
             y = 0.55, 
             width = 0.3, 
             height = 0.35) +
   draw_plot(tmap_grob(inset_az),
-            x = 0.003,
+            x = 0.053,
             y = 0.4,
             width = 0.4,
             height = 0.4) +
   draw_plot(tmap_grob(inset_phx), 
-            x = 0.003, 
+            x = 0.053, 
             y = 0.05, 
             width = 0.4, 
             height = 0.4)
 
 map_bg_parks
+
+ggsave("images/map_bg_parks.png", plot = map_bg_parks, bg = "white", width = 8, height = 6)
+
+tmap_save(map_phx, "images/map_phx.png")
 
 saveRDS(map_bg_parks, "map_bg_parks.rds")
 
@@ -142,7 +191,8 @@ map_rtcc <- tm_shape(phx_city_limits) +
                                     style = "jenks",
                                     values.range = c(0.4, 1),
                                     value.na = "gray90",
-                                    label.na = "Missing data"),
+                                    label.na = "Missing data",
+                                    label.format = list(digits = 1)),
               fill.legend = tm_legend(title = md("Residential tree \ncanopy cover (%)"),
                                       position = tm_pos_out("center",
                                                             "bottom",
@@ -150,10 +200,16 @@ map_rtcc <- tm_shape(phx_city_limits) +
                                                             pos.v = 1))) +
   tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
               position = tm_pos_out("center", 
-                                    "bottom", 
-                                    pos.h = 0.7,
+                                    "bottom",
+                                    pos.h = 0.5,
                                     pos.v = 1),
               text.size = 0.8) +
+  tm_title_in("a", 
+              position = tm_pos_in("left", 
+                                   "top",
+                                   pos.h = 0.2,
+                                   pos.v = 1),
+              size = 1.4) +
   tm_layout(frame = FALSE, 
             legend.show = TRUE)
 
@@ -177,9 +233,15 @@ map_ptas <- tm_shape(phx_city_limits) +
   tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
               position = tm_pos_out("center", 
                                     "bottom", 
-                                    pos.h = 0.7,
+                                    pos.h = 0.5,
                                     pos.v = 1),
               text.size = 0.8) +
+  tm_title_in("b", 
+              position = tm_pos_in("left", 
+                                   "top",
+                                   pos.h = 0.2,
+                                   pos.v = 1),
+              size = 1.4) +
   tm_layout(frame = FALSE, 
             legend.show = TRUE)
 
@@ -215,9 +277,13 @@ map_hisp <- tm_shape(phx_city_limits) +
   tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
               position = tm_pos_out("center", 
                                     "bottom", 
-                                    pos.h = 0.8,
+                                    pos.h = 0.75,
                                     pos.v = 1),
               text.size = 0.8) +
+  tm_title_in("a", 
+              position = tm_pos_in("left", 
+                                   "top"),
+              size = 1.4) +
   tm_layout(frame = FALSE, legend.show = TRUE)
 
 # Create map of Black population
@@ -242,9 +308,13 @@ map_black <- tm_shape(phx_city_limits) +
   tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
               position = tm_pos_out("center", 
                                     "bottom", 
-                                    pos.h = 0.8,
+                                    pos.h = 0.75,
                                     pos.v = 1),
               text.size = 0.8) +
+  tm_title_in("b", 
+               position = tm_pos_in("left", 
+                                     "top"),
+               size = 1.4) +
   tm_layout(frame = FALSE, 
             legend.show = TRUE) 
 
@@ -271,9 +341,13 @@ map_adi <- tm_shape(phx_city_limits) +
   tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
               position = tm_pos_out("center", 
                                     "bottom", 
-                                    pos.h = 0.8,
+                                    pos.h = 0.64,
                                     pos.v = 1),
               text.size = 0.8) +
+  tm_title_in("c", 
+              position = tm_pos_in("left", 
+                                   "top"),
+              size = 1.4) +
   tm_layout(frame = FALSE, legend.show = TRUE)
 
 # Arrange all three maps in one row
