@@ -600,18 +600,7 @@ canopy_access |>
   )
 ```
 
-```{r}
-#| label: fig-canopy-access-map
-#| message: false
-#| warning: false
-#| fig-cap: "Tree canopy access categories of Phoenix block groups"
-#| fig-alt: "HH block groups are mostly in the northeast of Phoenix; HL block groups are in the eastern part; LH are mostly in the central part; LL are mostly on the edges of the city"
-
-# Render tree canopy access categories map
-map_access
-
-
-```
+![Tree canopy access categories](images/map_access.png){#fig-canopy-access-map fig-alt="HH block groups are mostly in the northeast of Phoenix; HL block groups are in the eastern part; LH are mostly in the central part; LL are mostly on the edges of the city"}
 
 The multinomial logistic regression model estimates the odds that a particular demographic factor (Hispanic population, Black population, or ADI rank) predicts whether a block group belongs to either the HL, LH, or LL tree access category rather than the baseline HH category. The results show that block groups are equally likely to be in the HL category compared to the HH category, regardless of the demographic makeup of the block group. In other words, neighborhoods with high residential tree canopy cover and high park tree canopy access are not demographically distinct from those with high residential canopy and low park tree access (@tbl-multinom).
 

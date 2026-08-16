@@ -378,7 +378,14 @@ map_access <- tm_shape(phx_city_limits) +
                                             fill.legend = tm_legend(title = "Tree canopy access categories",
                                                                     position = tm_pos_out("center",
                                                                                           "bottom",
-                                                                                          pos.h = "center"))) +
+                                                                                          pos.h = 0.1,
+                                                                                          pos.v = 1))) +
+  tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
+              position = tm_pos_out("center", 
+                                    "bottom", 
+                                    pos.h = 0.8,
+                                    pos.v = 1),
+              text.size = 0.8) +
   tm_layout(frame = FALSE, legend.show = TRUE)
 
 map_access
