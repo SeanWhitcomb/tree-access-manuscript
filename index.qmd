@@ -97,7 +97,7 @@ As a source of publicly available tree canopy cover, municipal parks could poten
 
 Lara-Valencia (2018) found that Hispanic residents of Phoenix tend to have greater access to municipal parks due to a higher concentration of parks in the urban core [@lara-valencia2018]. However, Ibes (2015) analyzed access to public parks in Phoenix by type of park and found that "green neighborhood parks" are more concentrated in neighborhoods with higher White populations while "urban core parks" are more often found in areas with lower incomes and more minority residents [@ibes2015]. Corley (2024) found no association between park acreage and minority status or poverty level at the block group level in Phoenix [@corley2024]. The previously mentioned studies on Phoenix park access did not account for spatial autocorrelation of variables, i.e, observations that are spatially proximate tend to be more similar than expected under random distribution (CITE). When Kim, et al. (2023) used spatial regressive models to investigate park access in Phoenix and nearby Mesa, AZ, they found that more affluent neighborhoods had access to greater park acreage within walking distance, but there were no significant correlations between race/ethnicity of residents and the number of parks, size of parks, or distance to the nearest park [@kim2023]. Nesbitt et al. (2019) likewise found no association between access to park area and the race, ethnicity, income, or educational attainment of residents in Phoenix [@nesbitt2019]. Given the apparent lack of
 
-All of the aforementioned studies on Phoenix-area parks have used a simple Euclidean distance metric to determine "access," but this method does not account for the actual distance that residents must travel to visit the parks. The travel distance from a home to a public amenity can vary greatly from the Euclidean distance depending on the layout of the road network (CITE). Most studies consider "park access" to be a binary variable, where a resident has complete access to any parks within a given catchment area and no access to parks outside of the catchment area. However, this approach does not capture the reality of park visitation–people are more likely to visit nearby parks, but will still travel a greater distance to visit larger parks. Kim et al. (2023) found that Phoenix residents tend to favor local parks within 1 km of their neighborhood, but the likelihood that they will travel beyond 1 km to visit larger amenity-rich parks increases as the size of the local parks decreases [@kim_green_2023]. Traditional park access research also tends to only address the "supply" side of access by quantifying park number, area, or amenities (CITE) and ignoring the "demand" side, or the number of people competing for access to the parks. Other studies incorporate the population factor by simply dividing the total park area by the population within a given catchment [@lara-valencia_disparities_2018] (CITE MORE?). The Gaussian two-step floating catchment area (G2SFCA) method addresses these shortcomings by incorporating a park supply factor (e.g., total area or amenities), a demand factor (the population of residents with access to the parks), and a travel distance metric that weights closer parks more heavily than distant parks [@zhang_assessing_2023].
+All of the aforementioned studies on Phoenix-area parks have used a simple Euclidean distance metric to determine "access," but this method does not account for the actual distance that residents must travel to visit the parks. The travel distance from a home to a public amenity can vary greatly from the Euclidean distance depending on the layout of the road network (CITE). Most studies consider "park access" to be a binary variable, where a resident has complete access to any parks within a given catchment area and no access to parks outside of the catchment area. However, this approach does not capture the reality of park visitation–people are more likely to visit nearby parks, but will still travel a greater distance to visit larger parks. Kim et al. (2023) found that Phoenix residents tend to favor local parks within 1 km of their neighborhood, but the likelihood that they will travel beyond 1 km to visit larger amenity-rich parks increases as the size of the local parks decreases [@kim_green_2023]. Traditional park access research also tends to only address the "supply" side of access by quantifying park number, area, or amenities (CITE) and ignoring the "demand" side, or the number of people competing for access to the parks. Other studies incorporate the population factor by simply dividing the total park area by the population within a given catchment [@lara-valencia2018] (CITE MORE?). The Gaussian two-step floating catchment area (G2SFCA) method addresses these shortcomings by incorporating a park supply factor (e.g., total area or amenities), a demand factor (the population of residents with access to the parks), and a travel distance metric that weights closer parks more heavily than distant parks [@zhang_assessing_2023].
 
 An accurate assessment of park access using the G2SFCA method depends on the choice of supply and demand origin points used to determine travel distance from residents to parks. Census block group centroids are often used as demand origin points because they represent the "average" location of residents within a reasonably small area (CITE). However, population-weighted block group centroids are less likely to underestimate accessibility [@kim2024]. For example, the geographic centroid of a large block group with housing concentrated in one corner is likely to be located far from areas where most people live, leading to a suboptimal estimate of the travel distance to a public park. Likewise, the geographic centroid of a park is commonly used as the supply origin point, but this choice can provide an inaccurate picture of park access, especially in large parks or long linear parks where the centroid is far from the entrances. Residents also may not be able to access parks at any point along the boundary but are instead limited to a small number of entrances. Using park entrances rather than centroids as the supply origin points in a G2SFCA analysis overcomes these limitations [@zhang_assessing_2023].
 
@@ -135,9 +135,9 @@ Hispanic residents make up 43% of the city's population. The racial makeup of Ph
 
 Census block groups were used as the unit of analysis in this study because this is the smallest geographic units for which detailed socioeconomic data are available. A block group is an area defined by the U.S. Census Bureau that encompasses several contiguous city blocks and usually contains between 600 and 3000 residents. Block group boundaries as of 2024 were downloaded from the United States Census Bureau using the tidycensus R package [@tidycensus].
 
-Phoenix public park boundaries were downloaded from OpenStreetMap [@openstre]. Desert preserves, parks established after 2021, and those missing land cover data were excluded, resulting `r nrow(parks)` public urban parks in the final dataset. Private planned community parks were excluded from the analysis as they are often only accessible to neighborhood residents [@cityofphoenixb].
+Phoenix public park boundaries were downloaded from the City of Phoenix Open Data portal [@phoenix_gis]. Parks established after 2021 and those missing land cover data were excluded, resulting in 177 public parks in the final dataset. Private planned community parks were excluded from the analysis as they are often only accessible to neighborhood residents [@cityofphoenixb].
 
-The City of Phoenix Parks and Recreation Department operates 187 urban parks and desert preserves [@gallego2024], classified into five categories based on their size and amenities. Each park category has a service area radius that represents the recommended distance from a Phoenix residence to the nearest park of a given type [@cityofphoenixparksandrecreationdepartment]. Park category characteristics are summarized in @tbl-park-types.
+The City of Phoenix Parks and Recreation Department classifies parks into five types based on their size and amenities. Each park type has a service area radius that represents the recommended distance from a Phoenix residence to the nearest park of a given type [@cityofphoenixparksandrecreationdepartment]. Park type characteristics are summarized in @tbl-park-types.
 
 ```{r}
 #| label: tbl-park-types
@@ -182,7 +182,7 @@ The area deprivation index (ADI) at the block group level was acquired from the 
 
 ![Phoenix block group data availability, park sizes, and park types](images/map_bg_parks.png){#fig-bg-parks fig-alt="A map shows that most block groups in Phoenix have land cover and demographic data available; some only have land cover data; parks of various sizes and types are scattered throughout the city"}
 
-Median household income is often used as a predictor variable in green space access research \[ @lara-valencia_disparities_2018, @zhou2013\], but it was excluded from this study due to its high correlation with ADI rank (*r* = -0.70) and the presence of 50 block groups with suppressed income estimates in the ACS data.
+Median household income is often used as a predictor variable in green space access research \[ @lara-valencia2018, @zhou2013\], but it was excluded from this study due to its high correlation with ADI rank (*r* = -0.70) and the presence of 50 block groups with suppressed income estimates in the ACS data.
 
 ### Spatial access to park tree canopy cover {#sec-methods-spatial}
 
@@ -488,15 +488,13 @@ desc_table |>
   )
 ```
 
-![a) Residential tree canopy cover (%) and b) park tree access score](images/map_rtcc_ptas.png){#fig-rtcc-ptas-map fig-alt="Residential tree canopy cover is highest in the central and northeastern parts of Phoenix. Park tree access score is highest in the central part."}
+![Block group tree canopy variables: a) Residential tree canopy cover (%) and b) park tree access score](images/map_rtcc_ptas.png){#fig-rtcc-ptas-map fig-alt="Residential tree canopy cover is highest in the central and northeastern parts of Phoenix. Park tree access score is highest in the central part."}
 
-![a) Hispanic population (%), b) Black population (%), and c) ADI national percentile rank](images/map_demographics.png){#fig-bg-demographics fig-alt="Hispanic population is highest in the southwest of Phoenix; Black population is highest in the southern part with a small pocket in the north; ADI rank is highest in the western part with a high cluster in the north"}
+![Block group demographic factors: a) Hispanic population (%), b) Black population (%), and c) ADI national percentile rank](images/map_demographics.png){#fig-bg-demographics fig-alt="Hispanic population is highest in the southwest of Phoenix; Black population is highest in the southern part with a small pocket in the north; ADI rank is highest in the western part with a high cluster in the north"}
 
 Based on the OLS model, percent Hispanic population, percent Black population, and ADI rank were all negatively associated with RTCC (*p* \< 0.001; see @tbl-regress). For every 1% increase in the Hispanic population, residential tree canopy cover within a block group is expected to decrease by 3.5%; a 1% increase in the population of Black residents is associated with a 7.3% decrease in RTCC; and a 1-point increase in the ADI rank is associated with an 8.5% decrease in RTCC.
 
-In the OLS model, the percentage of Hispanic residents in a block group is not significantly associated with the square root of PTAS, but there was a significant positive association between the square root of PTAS and both Black resident percentage (*p* \< 0.05) and ADI rank (*p* \< 0.001; see @tbl-regress).
-
-These findings suggest that while neighborhoods with a higher Black population and lower socioeconomic status have lower tree canopy cover provided by trees on private property, street trees, and trees in private parks, the public parks near these neighborhoods provide greater access to tree canopy cover than those near neighborhoods with lower Black populations and higher socioeconomic status.
+In the OLS model, the percentage of Hispanic residents in a block group is not significantly associated with the square root of PTAS, but there was a significant positive association between the square root of PTAS and both Black resident percentage (*p* \< 0.05) and ADI rank (*p* \< 0.001; see @tbl-regress). However, with an *R²* of only 0.073, these demographic factors explain very little of the variation in park tree access.
 
 ```{r}
 #| label: global-morans
@@ -521,19 +519,35 @@ moran_a_I <- formatC(moran_access$statistic, format = "f", digits = 3)
 
 Global Moran's *I* was significant (*p* \< 0.001) for both the RTCC and PTAS residuals from the OLS models. The RTCC index was `r moran_c_I`, indicating moderate spatial clustering of residential tree canopy values, and the PTAS index was `r moran_a_I`, indicating strong spatial clustering of park tree access scores.
 
-Spatial error model results are presented in @tbl-regress along with OLS estimates for comparison. The lambda ($\lambda$) term indicates how neighboring observations influence one another's errors. The positive $\lambda$ in both spatial error models indicates that unmeasured error in one block group significantly impacts the errors in adjoining block groups for both RTCC and √PTAS. The substantially higher lambda in the √PTAS models ($\lambda$ = 0.731) relative to the RTCC models ($\lambda$ = 0.462) likely reflects the spatial smoothing inherent to the G2FSCA construction of PTAS, in which overlapping park catchments induce autocorrelation among neighboring block groups regardless of demographic makeup.
+Spatial error model results are presented in @tbl-regress along with OLS estimates for comparison. Reduced Akaike Information Criterion (AIC) values indicate that the spatial error models perform better than OLS models for both RTCC and PTAS (square-root transformed). The lambda ($\lambda$) term indicates how neighboring observations influence one another's errors. The positive $\lambda$ in both spatial error models indicates that unmeasured error in one block group significantly impacts the errors in adjoining block groups for both RTCC and √PTAS. The substantially higher lambda in the √PTAS models ($\lambda$ = 0.731) relative to the RTCC models ($\lambda$ = 0.462) likely reflects the spatial smoothing inherent to the G2SFCA construction of PTAS, in which overlapping park catchments induce autocorrelation among neighboring block groups regardless of demographic makeup.
 
-Similar to the OLS model, all three predictor variables are negatively correlated with RTCC in the spatial error model, indicating that block groups with larger Hispanic populations, larger Black populations, or higher ADI rank are more likely to have lower residential tree canopy cover.
+Similar to the OLS model, all three predictor variables are negatively correlated with RTCC in the spatial error model, indicating that block groups with larger Hispanic populations, larger Black populations, or higher ADI rank are more likely to have lower residential tree canopy cover even after spatial autocorrelation is taken into account. The pseudo-*R*²value of 0.417 for the spatial error model fit is consistent with a reasonably strong model fit for RTCC.
 
-The spatial error model for the square-root transformed PTAS confirms that there is no association between park tree canopy access and Hispanic population percent. Accounting for spatial structure reduces the percent Black population coefficient in the √PTAS from 0.027 (*p* \< 0.01) in the OLS model to 0.019 (*p* \< 0.05) in the spatial error model. This finding is consistent with a portion of the OLS association reflecting shared spatial structure in park tree canopy cover rather than a completely demographic effect.
+The pseudo-*R*²value of 0.383 for the square-root transformed PTAS spatial error model is substantially higher than the OLS *R²* (0.073). Given the differing basis of these two statistics, this shift should be interpreted cautiously, but it is consistent with the much larger increase in $\lambda$ for PTAS relative to RTCC. Both results likely reflect the spatial structure inherent to the overlapping catchment areas in the G2SFCA method. This model is consistent with the OLS results finding no significant association between park tree canopy access and Hispanic population percent. Accounting for spatial structure reduces the percent Black population coefficient in the √PTAS from 0.027 (*p* \< 0.01) in the OLS model to 0.019 (*p* \< 0.05) in the spatial error model. This finding is consistent with a portion of the OLS-based association reflecting shared spatial structure in park tree canopy cover rather than a completely demographic effect.
 
-The significant positive relationship between √PTAS and ADI rank indicates that the park tree access score increases as socioeconomic status decreases. This finding remained significant after factoring spatial autocorrelation into the regression model.
+The significant positive relationship between √PTAS and ADI rank in the spatial error model again indicates that the park tree access score increases as socioeconomic status decreases. This relationship remained stable in both magnitude and significance after accounting for spatial autocorrelation, supporting ADI as the more robust predictor of access to park tree canopy in Phoenix.
 
 ```{r}
 #| label: tbl-regress
 #| tbl-cap: "Results of OLS and spatial error regression models for RTCC and PTAS"
 
-modelsummary(list("OLS" = ols_canopy,
+# Extract pseudo-r2 from spatial error models
+sum_err_canopy <- summary(err_canopy, Nagelkerke = TRUE)
+sum_err_access_sqrt <- summary(err_access_sqrt, Nagelkerke = TRUE)
+
+glance_custom.Sarlm <- function(x, ...) {
+  s <- summary(x, Nagelkerke = TRUE)
+  data.frame(nagelkerke = s$NK)
+}
+
+# Format R2 label
+gof_map <- tribble(~raw, ~clean, ~fmt,
+                   "aic", "AIC", 1,
+                   "r.squared", "R²", 3,
+                   "nagelkerke", "Pseudo-R²", 3)
+
+# Create table
+regress_table <- modelsummary(list("OLS" = ols_canopy,
                   "Spatial error" = err_canopy,
                   "OLS" = ols_access_sqrt,
                   "Spatial error" = err_access_sqrt
@@ -545,7 +559,7 @@ modelsummary(list("OLS" = ols_canopy,
              estimate = "{estimate}{stars}",
              statistic = NULL,
              stars = c("†" = .1, "*" = .05, "**" = .01, "***" = .001),
-             gof_map = "R2",
+             gof_map = gof_map,
              output = "gt") |> 
   cols_align_decimal(columns = 2:5) |> 
   tab_spanner(label = "RTCC models",
@@ -554,15 +568,25 @@ modelsummary(list("OLS" = ols_canopy,
               columns = 4:5) |> 
   tab_footnote(footnote = md(paste0("&#42; *p* < 0.05, ** *p* < 0.01, *** *p* < 0.001")))|> 
   tab_footnote(footnote = md(paste0("*N* = ", nrow(phx_bg)))) |> 
-  tab_style(
+  tab_footnote(footnote = "RTCC: Residential tree canopy cover; √PTAS: Park tree access score (square-root transformed)", 
+               locations = cells_column_spanners(spanners = c(
+                 "RTCC models", "√PTAS models"
+               ))) |> 
+  tab_footnote(
+    footnote = "R² is reported for OLS models; Nagelkerke pseudo-R² is reported for spatial error models",
+    locations = cells_column_labels(columns = c(2, 4))
+  ) |> 
+    tab_style(
     style = cell_text(align = "left"),
     locations = list(cells_footnotes())
   )
+
+regress_table
 ```
 
 ### Demographic inequities in tree canopy access {#sec-res-demographic}
 
-Block groups were organized into one of four tree canopy access categories based on their RTCC and PTAS values (@tbl-canopy-access). Of the 988 total block groups, 211 met the high-RTCC threshold and 777 fell below it; PTAS values were split evenly around the median (*n* = 494 high and 494 low). The spatial distribution of each category is illustrated in @fig-canopy-access-map. The least common category is HH, or neighborhoods with both abundant residential tree canopy and higher than average access to park tree canopy. These block groups are mostly confined to isolated pockets in the northeastern part of Phoenix. Block groups in the HL category have lower than average access to park trees, but the residential tree canopy is abundant. The most common category is LH, representing block groups with low residential tree canopy but high access to park canopy cover. These are low-canopy neighborhoods where public parks provide a tree canopy refuge to the residents. They are located mostly in the center and northern portions of the city. The remaining block groups belong to the LL category, or tree canopy deserts, lacking both residential tree canopy cover and access to public park tree canopy. They tend to be found on the periphery of the city.
+Block groups were organized into one of four tree canopy access categories based on their RTCC and PTAS values (@tbl-canopy-access). Of the 988 total block groups, 211 met the high-RTCC threshold and 777 fell below the threshold; PTAS values were split evenly around the median (*n* = 494 high and 494 low). The spatial distribution of each category is illustrated in @fig-canopy-access-map. The least common category is HH, or neighborhoods with both abundant residential tree canopy and higher than average access to park tree canopy. These block groups are mostly confined to isolated pockets in the northeastern part of Phoenix. Block groups in the HL category have abundant residential tree canopy, but lower than average access to park trees. The most common category is LH, representing low-residential canopy neighborhoods where public parks provide a tree canopy refuge to the residents. They are located mostly in the center and northern portions of the city. The remaining block groups belong to the LL category, or tree canopy deserts, lacking both residential tree canopy cover and access to public park tree canopy. They tend to be found on the periphery of the city.
 
 ```{r}
 #| label: tbl-canopy-access
@@ -600,9 +624,17 @@ canopy_access |>
   )
 ```
 
-![Tree canopy access categories](images/map_access.png){#fig-canopy-access-map fig-alt="HH block groups are mostly in the northeast of Phoenix; HL block groups are in the eastern part; LH are mostly in the central part; LL are mostly on the edges of the city"}
+![Block group tree canopy access categories](images/map_access.png){#fig-canopy-access-map fig-alt="HH block groups are mostly in the northeast of Phoenix; HL block groups are in the eastern part; LH are mostly in the central part; LL are mostly on the edges of the city"}
 
-The multinomial logistic regression model estimates the odds that a particular demographic factor (Hispanic population, Black population, or ADI rank) predicts whether a block group belongs to either the HL, LH, or LL tree access category rather than the baseline HH category. The results show that block groups are equally likely to be in the HL category compared to the HH category, regardless of the demographic makeup of the block group. In other words, neighborhoods with high residential tree canopy cover and high park tree canopy access are not demographically distinct from those with high residential canopy and low park tree access (@tbl-multinom).
+The multinomial logistic regression model estimates the odds that a particular demographic factor (Hispanic population, Black population, or ADI rank) predicts whether a block group belongs to either the HL, LH, or LL tree access category rather than the baseline HH category (@tbl-multinom). The results show that block groups are equally likely to be in the HL category compared to the HH category, regardless of the demographic makeup of the block group. In other words, neighborhoods with high residential tree canopy cover and high park tree canopy access are not demographically distinct from those with high residential canopy and low park tree access.
+
+All three demographic factors were significantly associated with membership in the LH category (*p*\<0.05). For every 1% increase in the Hispanic population, there is a 2% increase in the odds that a block group belongs to the LH category vs. the HH category. A 1% increase in Black population is associated with a 5% increase in the odds of belonging to the LH category. A one-point increase in ADI national percentile rank is associated with an 8% increase in the odds of being in the LH category.
+
+For the LL tree access category, only ADI rank is significant (*p*\<0.001). For every one-point increase in ADI rank, there is a 6% increase in the odds that a block group belongs to this category compared to the HH category.
+
+Higher ADI rank was associated with greater odds of belonging to both low RTCC categories, LH and LL, relative to HH. This supports the previous finding that low socioeconomic status is linked to reduced residential tree canopy cover in Phoenix. But there is no clear relationship between the socioeconomic level of a low-RTCC block group and its likelihood of having greater access to public park tree canopy cover.
+
+The higher odds of a block group with a larger Black or Hispanic population belonging to the LH category suggests that these neighborhoods are more likely to have parks that act as tree canopy refuges, providing higher park tree canopy access despite having low residential tree canopy cover.
 
 ```{r}
 #| label: tbl-multinom
@@ -658,14 +690,6 @@ mn_table |>
     locations = list(cells_footnotes())
   )
 ```
-
-All three demographic factors were significantly associated with membership in the LH category (*p*\<0.05). For every 1% increase in the Hispanic population, there is a 2% increase in the odds that a block group belongs to the LH category vs. the HH category. A 1% increase in Black population is associated with a 5% increase in the odds of belonging to the LH category. A one-point increase in ADI national percentile rank is associated with an 8% increase in the odds of being in the LH category.
-
-For the LL tree access category, only ADI rank is significant (*p*\<0.001). For every one-point increase in ADI rank, there is a 6% increase in the odds that a block group belongs to this category compared to the HH category.
-
-Higher ADI rank was associated with greater odds of belonging to both low RTCC categories, LH and LL, relative to HH. This supports the previous finding that low socioeconomic status is linked to reduced residential tree canopy cover in Phoenix. But there is no clear relationship between the socioeconomic level of a low-RTCC block group and its likelihood of having greater access to public park tree canopy cover.
-
-The higher odds of a block group with a larger Black or Hispanic population belonging to the LH category suggests that these neighborhoods are more likely to have parks that act as tree canopy refuges, providing higher park tree canopy access despite having low residential tree canopy cover.
 
 Because spatial autocorrelation was detected in the one-vs-rest binary logistic models underlying the four-category canopy access typology (Moran's *I*: HH = 0.140, HL = 0.144, LH = 0.267, LL = 0.232; all *p* \< 0.001), Moran eigenvector spatial filtering was applied to the models. Selected eigenvectors (HH: 9, HL: 14, LH: 30, LL: 23) were added as covariates to each binary model, substantially reducing spatial autocorrelation across all four categories. Moran's *I* was reduced by 76-85% in each model (HH = 0.033, HL = 0.030, LH = 0.040, LL = 0.034), though modest statistically significant spatial clustering remained in each case (*p* \< 0.05). This result is consistent with spatial structure operating at a scale broader than the local nearest-neighbor weighting could capture.
 
