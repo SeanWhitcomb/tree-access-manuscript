@@ -178,7 +178,7 @@ tmap_save(map_phx, "images/map_phx.png")
 saveRDS(map_bg_parks, "map_bg_parks.rds")
 
 
-## Maps of Residential tree canopy cover and park tree access score
+## Maps of Residential tree canopy cover and park tree access score ============================
 
 # Create map of RTCC
 map_rtcc <- tm_shape(phx_city_limits) +
@@ -193,7 +193,7 @@ map_rtcc <- tm_shape(phx_city_limits) +
                                     value.na = "gray90",
                                     label.na = "Missing data",
                                     label.format = list(digits = 1)),
-              fill.legend = tm_legend(title = md("Residential tree \ncanopy cover (%)"),
+              fill.legend = tm_legend(title = "Residential tree \ncanopy cover (%)",
                                       position = tm_pos_out("center",
                                                             "bottom",
                                                             pos.h = 0.25,
@@ -226,24 +226,36 @@ map_ptas <- tm_shape(phx_city_limits) +
                                     value.na = "gray90",
                                     label.na = "Missing data"),
               fill.legend = tm_legend(title = "Park tree \naccess score",
-                                      position = tm_pos_out("center",
-                                                            "bottom",
-                                                            pos.h = 0.25,
-                                                            pos.v = 1))) +
+                                      group_id = "combined_legend")) +
+  tm_shape(parks) +
+  tm_bubbles(size = "tree_area",
+             size.scale = tm_scale_continuous(values.range = c(0.3, 1.4),
+                                              ticks = c(1, 2, 4, 8, 16),
+                                              labels = c("0 - 0.9", 
+                                                         "1.0 - 1.9", 
+                                                         "2.0 - 3.9", 
+                                                         "4.0 - 7.9",  
+                                                         "8.0 - 16")
+             ),
+             fill = "#4daf4a",
+             lwd = 0.8,
+             fill_alpha = 0.6,
+             size.legend = tm_legend(title = "Tree canopy \narea (ha) in parks",
+                                     group_id = "combined_legend")) +
+  tm_components("combined_legend",
+                position = tm_pos_out("center", "bottom", pos.h = 0.15, pos.v = 1),
+                stack = "horizontal",
+                frame_combine = TRUE) +
   tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
-              position = tm_pos_out("center", 
-                                    "bottom", 
-                                    pos.h = 0.5,
-                                    pos.v = 1),
+              position = tm_pos_out("center", "bottom", pos.h = 0.6, pos.v = 1),
               text.size = 0.8) +
   tm_title_in("b", 
-              position = tm_pos_in("left", 
-                                   "top",
-                                   pos.h = 0.2,
-                                   pos.v = 1),
+              position = tm_pos_in("left", "top", pos.h = 0.2, pos.v = 1),
               size = 1.4) +
   tm_layout(frame = FALSE, 
             legend.show = TRUE)
+
+
 
 
 # Combine maps

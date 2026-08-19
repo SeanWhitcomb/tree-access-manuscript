@@ -83,15 +83,15 @@ Urban trees, whether in private yards, planted along streets, or in public parks
 
 Like many urban amenities, tree canopy cover is often not equitably distributed across cities. Several studies have shown that residents of lower socioeconomic status tend to live in neighborhoods with lower tree canopy cover (CITE). Several studies in U.S. cities also report that neighborhoods with larger proportions of ethnic and racial minorities tend to have less tree canopy [@schwarz2015, @locke2021, @foster2024]. Wang, et al. (2024) demonstrated that these patterns hold true in Phoenix as well, finding a positive association between TCC and median household income, a negative correlation between TCC and percent Black population, and a negative correlation between TCC and percent Hispanic population at the block group level [@wang2024].
 
-------
+------------------------------------------------------------------------
 
 This study investigated the differences between the amount of shade covering typical activity areas in playgrounds of higher and lower socioeconomic status (SES) areas within metropolitan Sydney, Australia. Shade coverage was significantly associated with SES of an area and with type of activity area. The lowest SES areas had the highest proportion of activity areas with no shade at all (54%) compared to the next lowest and highest SES areas (34% and 16% respectively). [@anderson2014]
 
----------
+------------------------------------------------------------------------
 
 After auditing all public parks in Portland and gathering green cover data from publicly accessible repositories, we used a suite of statistical tests to evaluate distribution of parks and green cover across Census block groups, comprising race, ethnicity, income, and educational attainment characteristics. Right-of-way tree canopy cover was the most significant urban green space inequity identified in bivariate analysis (rs = −0.73). Spatial autoregressive models identified that right-of-way, private, and overall tree canopy cover (Nagelkerke pseudo-R2 = 0.66, 0.77, and 0.67, respectively) significantly decreased with the proportion of minoritized racial population and increased with median income.
 
----------
+------------------------------------------------------------------------
 
 As a source of publicly available tree canopy cover, municipal parks could potentially act as "tree refuges" and compensate for the lack of tree cover in disadvantaged neighborhoods. While park equity studies have yielded mixed results, some have shown consistent patterns of disparities in park access. A 2016 literature review by Rigolon et al. found that White neighborhoods with high White populations had the greatest park access in 18 out of 20 papers examined [@rigolon2016]. A spatial analysis of urban parks across the U.S. found that parks are more common in areas with larger White populations, and these parks tend to have greater tree coverage [@winkler2024].
 
@@ -105,11 +105,11 @@ Residential tree canopy cover provided by trees in neighborhoods and commercial 
 
 A spatial analysis of urban parks across the U.S. found that parks are more common in areas with larger White populations, and these parks tend to have greater tree coverage [@winkler2024].
 
--------
+------------------------------------------------------------------------
 
 Interestingly, socioeconomic variables appear to be less often associated with access to park area, as evidenced by the weaker bivariate correlations among socioeconomic factors and park area, the lower level of SAR model fit across study cities, smaller z-statistics associated with socioeconomic factors in those models, and the reduced number of socioeconomic factors present in best-fit parsimonious models of park area (Table 5). Higher education and per capita income are most common in the SAR models of park access across cities, with only two cities showing racial factors associated with park area. These findings suggest that parks are more equitably distributed and that the increased inequity observed in the distribution of mixed and woody vegetation may be due to vegetation located on private land or streets. These findings also highlight that the ecosystem services provided by urban vegetation are differentially distributed, with recreational benefits more equitably distributed than the microclimatic and psychological benefits provided by mixed and woody vegetation near residential buildings. It is important to note that parks are discrete and sparsely distributed in the urban landscape. Thus, disadvantaged urban residents are more likely to have access to recreational green spaces but they are also more likely to have to leave their homes to experience the microclimatic and psychological benefits provided by mixed and woody vegetation in parks. [@nesbitt2019]
 
----------
+------------------------------------------------------------------------
 
 Discuss use of ADI vs. median income
 
@@ -488,7 +488,7 @@ desc_table |>
   )
 ```
 
-![Block group tree canopy variables: a) Residential tree canopy cover (%) and b) park tree access score](images/map_rtcc_ptas.png){#fig-rtcc-ptas-map fig-alt="Residential tree canopy cover is highest in the central and northeastern parts of Phoenix. Park tree access score is highest in the central part."}
+![Tree canopy variables: a) Block group residential tree canopy cover (%) and b) block group park tree access score with tree canopy area (ha) within parks](images/map_rtcc_ptas.png){#fig-rtcc-ptas-map fig-alt="Residential tree canopy cover is highest in the central and northeastern parts of Phoenix. Park tree access score is highest in the central part."}
 
 ![Block group demographic factors: a) Hispanic population (%), b) Black population (%), and c) ADI national percentile rank](images/map_demographics.png){#fig-bg-demographics fig-alt="Hispanic population is highest in the southwest of Phoenix; Black population is highest in the southern part with a small pocket in the north; ADI rank is highest in the western part with a high cluster in the north"}
 
