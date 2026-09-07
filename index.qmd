@@ -173,7 +173,7 @@ I acquired the ADI national ranks of Phoenix block groups from the University of
 
 ### Spatial access to park tree canopy cover {#sec-methods-spatial}
 
-I used the Gaussian two-step floating catchment area (G2SFCA) method to determine Phoenix residents' spatial access to tree canopy cover in public parks. This method accounts for both the supply of public amenities and demand on those amenities when calculating accessibility. In previous studies of green space equity, park size and amenities have often been used as the supply term (CITE). The population of areas surrounding an amenity represents the demand on the amenity. More people living near a park leads to greater competition for the park's amenities, including tree canopy cover.
+The Gaussian two-step floating catchment area (G2SFCA) method was used to determine Phoenix residents' spatial access to tree canopy cover in public parks. This method accounts for both the supply of public amenities and demand on those amenities when calculating accessibility. The population of areas surrounding an amenity represents the demand on the amenity [@hu2020]. In other words, more people living near a park leads to greater competition for the park's amenities, including tree canopy cover.
 
 Park tree canopy area in hectares (PTCA) was used as the supply term and was calculated by multiplying the percent tree canopy cover of a park by its total area (@tbl-parks). Since PTCA values are affected by both park size and percent tree canopy cover, residents living near several small tree-dense parks may have access to more tree canopy than residents near a single large park with scant tree cover. @fig-park-types-tree-area shows the range of tree canopy area by park type and for all parks combined.
 
@@ -198,6 +198,13 @@ datasummary((`Park area (ha)` = area_ha) +
 ```{r}
 #| label: fig-park-types-tree-area
 #| fig-cap: "Tree area (ha) by park type"
+
+# Create park colors pallette
+park_colors <- c("Pocket" = "#4daf4a",
+                 "Linear" = "#377eb8",
+                 "Neighborhood" = "#e41a1c",
+                 "Community" = "#984ea3",
+                 "Regional" = "#a65628")
 
 parks_all <- parks |> 
   mutate(park_type = "All parks")
@@ -243,27 +250,25 @@ $$G(d_{kj}, d_0) =
 0, & \text{if } d_{kj} > d_0
 \end{cases} .$$ {#eq-gaussian}
 
-The second step in G2SFCA is to search all parks $l$ within the threshold distance $d_0$ from block group $i$, thus creating the catchment for the population at $i$. Each $R$ is discounted using the Gaussian function $G$. The discounted $R$ values within the catchment area of $i$ are summed to obtain the spatial accessibility of park tree canopy area at block group $i$ as follows:
+The second step in G2SFCA is to search all parks $l$ within the threshold distance $d_0$ from block group $i$, thus creating the catchment for the population at $i$. Each $R$ is discounted using the Gaussian function $G$. Any park outside the catchment is assigned a $G$ of 0, assuming residents will not travel long distances to visit parks. The discounted $R$ values within the catchment area of $i$ are summed to obtain the spatial accessibility of park tree canopy area at block group $i$ as follows:
 
 $$A_i = \sum_{l \in \ d_{il} \leq d_0} G (d_{il}, d_0)R_l,$$ {#eq-access}
 
 where $l$ denotes all parks within the catchment of block group $i$, and all other notations are the same as in @eq-sd-ratio. The park tree canopy accessibility score ($A_i$) represents the amount of park tree canopy cover (in hectares) available to each resident in a given block group. Raw accessibility scores are very small values and thus were re-scaled by a factor of 1,000,000 for reporting purposes; the re-scaled values are hereafter referred to as park tree access scores (PTAS).
 
-Public park access studies often use the park centroid as the destination (CITE). However, this can bias the results against large parks since users may have to walk long distances from a park entrance to the centroid. Parks may also have multiple points of entry that are separated by significant distances [@zhang2023a]. This study used park entrances, determined by visual examination using QGIS, as destination locations for parks larger than 2 ha. For smaller parks, the centroid was used since travel distance would be minimally affected by the access point location.
+Public park access studies often use park centroids as destination points [@dai2011, @hu2020, @peng2025]. However, this method can bias the results against large parks since users may have to walk long distances from a park entrance to the centroid [@zhang2023a]. This study used actual park entrances, determined by visual examination in QGIS, as destination locations for parks larger than 2 ha. For smaller parks, the centroid was used since travel distance would be minimally affected by the access point location.
 
 Travel distance ($d_{kj}$) from block group centroids ($k$) to park entrances ($j$) was computed using the driving profile in the osrm R package [@osrm]. This method uses the Open Source Routing Machine to identify the shortest driving path between any two points based on the OpenStreetMap road network. A distance matrix of all block group population-weighted centroids to all park entrances was created and then limited to the distance from a block group to only the nearest entrance within any given park.
 
-Previous studies on park access tend to rely on arbitrary catchment sizes, typically in the range of 0.5 to 1 km, based on the assumption that people will only walk a short distance to visit parks (CITE). However, (CITE) have shown that Phoenix residents are willing to travel farther to access larger parks with more amenities (CITE). Therefore, rather than rely on a single catchment size for all parks, catchment size ($d_0$) was determined by the service area radius assigned to each park type by the City of Phoenix (pocket, linear, neighborhood, community, or regional) [@cityofphoenixa]. Pocket and linear parks were assigned a threshold of 0.8 km (0.5 mi), neighborhood parks 1.6 km (1 mi), community parks 4.8 km (3 mi), and regional parks 8.0 km (5 mi). This aligns the park catchment values with the park accessibility goals of the City of Phoenix.
+Previous studies on park access tend to rely on arbitrary catchment sizes, typically in the range of 0.5 to 1 km, based on the assumption that people will only walk a short distance to visit parks (CITE). However, Kim et al. (2023) have shown that Phoenix residents are willing to travel farther to access larger parks with more amenities [@kim2023]. Therefore, rather than rely on a single catchment size ($d_0$) for all parks, $d_0$ was determined by the service area radius assigned by the City of Phoenix to each park type (pocket, linear, neighborhood, community, or regional) [@cityofphoenixa]. Pocket and linear parks were assigned a threshold of 0.8 km (0.5 mi), neighborhood parks 1.6 km (1 mi), community parks 4.8 km (3 mi), and regional parks 8.0 km (5 mi). This aligns the park catchment values with the park accessibility goals of the City of Phoenix.
 
 Residents from nearby cities may visit Phoenix parks, thus diluting the quantity of park tree canopy available to Phoenix residents. Therefore, the populations of `r nrow(park_bg_pw) - nrow(phx_bg_all)` block groups from surrounding cities that lie within park catchment areas were included in the calculation of the supply/demand ratios ($R_j$ and $R_l$).
-
-Because the park tree access score (PTAS) already captures park tree canopy as its supply-side variable, using TTCC as an outcome measure would essentially count the same trees twice: once in the block group tree canopy access and once in the park accessibility axis of the typology. This double counting would artificially inflate the apparent association between the two axes and undermine the central premise of the compensatory access framework. Isolating residential tree canopy cover (RTCC) from park contributions avoids this problem and validates RTCC, rather than TTCC, as the appropriate outcome variable for the tree access typology.
 
 ### Regression analysis of tree canopy cover disparities {#sec-methods-regress}
 
 The first step in evaluating demographic disparities in block group-level tree canopy cover was to apply ordinary least squares (OLS) regression models using RTCC and PTAS as the outcome variables and percent Hispanic population, percent Black population, and ADI national percentile rank as the predictor variables. An initial OLS model using the untransformed PTAS score showed non-normal residuals (Shapiro-Wilk *W* = 0.843, *p* \< .001) with visible right skew in a Q-Q plot. A square root transformation was applied to PTAS and the model re-estimated; residual normality improved (*W* = 0.955) but remained significantly non-normal (*p* \< .001).
 
-Demographic and environmental variables often exhibit spatial autocorrelation, meaning the residuals in a given block group are likely to be similar to their surrounding block groups. The presence of spatial autocorrelation violates the assumption of independent residuals required for for OLS regression, necessitating the use of spatially aware regression models. The global Moran's *I* index was calculated to measure the overall spatial autocorrelation of the residuals of both OLS regression models using the following formula:
+Demographic and environmental variables often exhibit spatial autocorrelation, meaning the residuals in a given areal unit are likely to be similar to their surrounding units. The presence of spatial autocorrelation violates the assumption of independent residuals required for for OLS regression, necessitating the use of spatially aware regression models [@anselin1991]. The global Moran's *I* index was calculated to measure the overall spatial autocorrelation of the residuals of both OLS regression models using the following formula:
 
 $$I = \frac{N}{S_0} \frac {\sum_{i=1}^N \sum_{j=1}^N w_{ij}(x_i-\bar x) (x_j-\bar x)} {\sum_{i=1}^N (x_i-\bar x)^2},$$ {#eq-morans}
 
@@ -283,9 +288,9 @@ where $\lambda$ is the spatial error coefficient, $Wu$ is the weighted average o
 
 ### Tree canopy access typology {#sec-methods-multinom}
 
-Block groups were classified according to RTCC and PTAS. Because the park tree access score (PTAS) already captures park tree canopy as its supply-side variable, using TTCC as an outcome measure would essentially count the same trees twice: once in the block group tree canopy access and once in the park accessibility axis of the typology. This double counting would artificially inflate the apparent association between the two axes and undermine the central premise of the compensatory access framework. Isolating residential tree canopy cover (RTCC) from park contributions avoids this problem and validates RTCC, rather than TTCC, as the appropriate outcome variable for the tree access typology.
+Block groups were classified according to RTCC and PTAS values. Because PTAS already captures park tree canopy as its supply-side variable, using TTCC as an outcome measure would essentially count the same trees twice: once in the block group tree canopy access and once in the park accessibility axis of the typology [see @fossa2023]. Use of RTCC avoids the duplication issue.
 
-Those with an RTCC value of 15% or higher were classified as high RTCC category, following American Forests' recommendation that desert cities should maintain a 15% tree canopy cover to achieve tree equity [@cityofphoenix]; the remainder were classified as low RTCC. In the absence of comparable policy guidelines for park tree access, block groups with a PTAS at or above the median were classified as high PTAS, and those below the median as low PTAS. The two factors were then combined to create four tree canopy access categories: a) high RTCC/high PTAS (HH), b) high RTCC/low PTAS (HL), c) low RTCC/high PTAS (LH), or d) low RTCC/low PTAS (LL).
+Block groups with an RTCC value of 15% or higher were classified as high RTCC category, following American Forests' recommendation that desert cities should maintain a 15% tree canopy cover to achieve tree equity [@cityofphoenix]; the remainder were classified as low RTCC. In the absence of comparable policy guidelines for park tree access, block groups with a PTAS at or above the median were classified as high PTAS, and those below the median as low PTAS. The two factors were then combined to create four tree canopy access categories: a) high RTCC/high PTAS (HH), b) high RTCC/low PTAS (HL), c) low RTCC/high PTAS (LH), or d) low RTCC/low PTAS (LL).
 
 Multinomial logistic regression was used to examine whether the percent Hispanic population, percent Black population, or ADI rank predicted a block group's membership in each tree canopy access category relative to the high RTCC/high PTAS condition (HH). Given that spatial autocorrelation was detected in the residuals of both the RTCC and PTAS regression residuals, it was expected that the residuals of the tree access category logistic regression model might exhibit similar spatial dependence. However, global Moran's *I* cannot be calculated directly on the residuals of a multinomial logistic model, since the outcome comprises four unordered categories rather than a single continuous or binary residual vector. To address this, each tree canopy access category (HH, HL, LH, LL) was recast as a binary outcome (one-vs-rest) and modeled separately via logistic regression on the same three demographic predictors. Global Moran's *I* was then calculated on the residuals of each binary model to test for spatial autocorrelation.
 
@@ -577,7 +582,7 @@ regress_table <- modelsummary(list("OLS" = ols_canopy,
 regress_table
 ```
 
-### Demographic inequities in tree canopy access {#sec-res-demographic}
+### Tree canopy access typology {#sec-res-demographic}
 
 Block groups were organized into one of four tree canopy access categories based on their RTCC and PTAS values (@tbl-canopy-access). Of the 988 total block groups, 211 met the high-RTCC threshold and 777 fell below the threshold; PTAS values were split evenly around the median (*n* = 494 high and 494 low). The spatial distribution of each category is illustrated in @fig-canopy-access-map. The least common category is HH, or neighborhoods with both abundant residential tree canopy and higher than average access to park tree canopy. These block groups are mostly confined to isolated pockets in the northeastern part of Phoenix. Block groups in the HL category have abundant residential tree canopy, but lower than average access to park trees. The most common category is LH, representing low-residential canopy neighborhoods where public parks provide a tree canopy refuge to the residents. They are located mostly in the center and northern portions of the city. The remaining block groups belong to the LL category, or tree canopy deserts, lacking both residential tree canopy cover and access to public park tree canopy. They tend to be found on the periphery of the city.
 
