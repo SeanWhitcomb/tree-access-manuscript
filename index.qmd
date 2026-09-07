@@ -11,10 +11,10 @@ keywords:
   - green space equity
 date: last-modified
 format: 
-  nature-html:
-    journal:
-      cite-style: sn-basic
-      cite-method: natbib
+#  nature-html:
+#    journal:
+#      cite-style: sn-basic
+#      cite-method: natbib
   nature-pdf: 
     journal:
       cite-style: sn-basic
@@ -260,9 +260,9 @@ Public park access studies often use park centroids as destination points [@dai2
 
 Travel distance ($d_{kj}$) from block group centroids ($k$) to park entrances ($j$) was computed using the driving profile in the osrm R package [@osrm]. This method uses the Open Source Routing Machine to identify the shortest driving path between any two points based on the OpenStreetMap road network. A distance matrix of all block group population-weighted centroids to all park entrances was created and then limited to the distance from a block group to only the nearest entrance within any given park.
 
-Previous studies on park access tend to rely on arbitrary catchment sizes, typically in the range of 0.5 to 1 km, based on the assumption that people will only walk a short distance to visit parks (CITE). However, Kim et al. (2023) have shown that Phoenix residents are willing to travel farther to access larger parks with more amenities [@kim2023]. Therefore, rather than rely on a single catchment size ($d_0$) for all parks, $d_0$ was determined by the service area radius assigned by the City of Phoenix to each park type (pocket, linear, neighborhood, community, or regional) [@cityofphoenixa]. Pocket and linear parks were assigned a threshold of 0.8 km (0.5 mi), neighborhood parks 1.6 km (1 mi), community parks 4.8 km (3 mi), and regional parks 8.0 km (5 mi). This aligns the park catchment values with the park accessibility goals of the City of Phoenix.
+Previous studies on park access tend to rely on arbitrary catchment sizes, typically in the range of 0.5 to 1 km, based on the assumption that people will only walk a short distance to visit parks [@elderbrock2024, @lara-valencia2018, @so2016] . However, Phoenix is a uniquely car-dependent city [@saeidizand2024], and Kim et al. (2025) have shown that Phoenix residents are willing to travel farther to access larger parks with more amenities [@kim2025]. Therefore, rather than rely on a single catchment size ($d_0$) for all parks, $d_0$ was determined by the service area radius assigned by the City of Phoenix to each park type (pocket, linear, neighborhood, community, or regional) [@cityofphoenixa]. Pocket and linear parks were assigned a threshold of 0.8 km (0.5 mi), neighborhood parks 1.6 km (1 mi), community parks 4.8 km (3 mi), and regional parks 8.0 km (5 mi). This aligns the park catchment values with the park accessibility goals of the City of Phoenix.
 
-Residents from nearby cities may visit Phoenix parks, thus diluting the quantity of park tree canopy available to Phoenix residents. Therefore, the populations of `r nrow(park_bg_pw) - nrow(phx_bg_all)` block groups from surrounding cities that lie within park catchment areas were included in the calculation of the supply/demand ratios ($R_j$ and $R_l$).
+While the focus of this study is on Phoenix residents' access to parks, people from nearby cities are free to visit Phoenix parks, thus diluting the quantity of park tree canopy available to Phoenix residents. Therefore, the populations of `r nrow(park_bg_pw) - nrow(phx_bg_all)` block groups from surrounding cities that lie within park catchment areas were also included in the calculation of the supply/demand ratios ($R_j$ and $R_l$).
 
 ### Regression analysis of tree canopy cover disparities {#sec-methods-regress}
 
