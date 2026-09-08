@@ -1,5 +1,5 @@
 ---
-title: Phoenix public parks serve as tree refuges in deprived areas
+title: Public parks serve as tree canopy refuges in disadvantaged neighborhoods of Phoenix, Arizona, USA
 author:
   - name: Sean Whitcomb
     corresponding: true
@@ -10,18 +10,22 @@ keywords:
   - urban forest
   - green space equity
 date: last-modified
+mainfont: Arial
 format: 
-#  nature-html:
-#    journal:
-#      cite-style: sn-basic
-#      cite-method: natbib
-  nature-pdf: 
+  nature-pdf:
     journal:
       cite-style: sn-basic
       cite-method: natbib
+    classoption: Numbered
+    keep-tex: true
+    font-size: 12
 bibliography: references.bib
 csl: _extensions/christopherkenny/nature/csl/springer-basic-brackets-no-et-al.csl
 number-sections: true
+header-includes:
+  - \usepackage{pdflscape}
+  - \geometry{margin=1in}
+link-citations: true
 ---
 
 ```{r}
@@ -85,15 +89,17 @@ Like many urban amenities, tree canopy cover is often inequitably distributed ac
 
 As a source of publicly available tree canopy cover, municipal parks could potentially act as "tree refuges" and compensate for the lack of tree cover in disadvantaged neighborhoods. While park equity studies have yielded mixed results, some have shown consistent patterns of disparities in park access in the United States. A 2016 literature review by Rigolon et al. found that neighborhoods with high White populations had the greatest park access in 18 out of 20 papers examined [@rigolon2016].
 
-The research on disparities in access to tree canopy cover in parks is limited. A spatial analysis of urban parks across the U.S. found that parks are more common in areas with larger White populations, and these parks tend to have greater tree coverage [@winkler2024]. Fossa, et al. (2023) investigated parks within the three largest U.S. cities and found that park tree cover was positively associated with larger Black populations, larger Hispanic populations, and more socioeconomic deprivation in surrounding neighborhoods [@fossa2023]. Conversely, Elderbrock, et al. (2024) found that park tree canopy cover is equitably distributed across Portland, Oregon, regardless of the racial, ethnic, or economic makeup of the surrounding neighborhoods [@elderbrock2024].
+The research on disparities in access to tree canopy cover in parks is limited. A spatial analysis of urban parks across the U.S. found that parks are more common in areas with larger White populations, and these parks tend to have greater tree coverage [@winkler2024]. Fossa et al. (2023) investigated parks within the three largest U.S. cities and found that park tree cover was negatively associated with larger Black populations, larger Hispanic populations, and more socioeconomic deprivation in surrounding neighborhoods [@fossa2023]. Conversely, Elderbrock et al. (2024) found that park tree canopy cover is equitably distributed across Portland, Oregon, regardless of the racial, ethnic, or economic makeup of the surrounding neighborhoods [@elderbrock2024].
 
-Several researchers have analyzed disparities in Phoenix park access. Lara-Valencia (2018) found that Hispanic residents of Phoenix tend to have greater access to municipal parks due to a higher concentration of parks in the urban core [@lara-valencia2018]. However, Ibes (2015) analyzed access to public parks in Phoenix by park type and found that "green neighborhood parks" are more concentrated in neighborhoods with higher White populations while "urban core parks" are more often found in areas with lower incomes and more minority residents [@ibes2015]. Corley (2024) found no association between park acreage and minority resident proportion or poverty level at the block group level in Phoenix [@corley2024]. However, these three studies on Phoenix park access did not account for spatial autocorrelation of variables—the tendency of spatially proximate observations to be more similar than expected under random distribution—which can inflate the apparent significance of predictors when left unaddressed [@anselin1995]. Kim, et al. (2023) addressed this limitation by using spatial regression models to investigate park access in Phoenix and nearby Mesa, Arizona, and found that residents of more affluent neighborhoods had access to greater park acreage within walking distance, but there were no significant correlations between race/ethnicity and the number of parks, size of parks, or distance to the nearest park [@kim2023].
+Several researchers have analyzed disparities in Phoenix park access. Lara-Valencia (2018) found that Hispanic residents of Phoenix tend to have greater access to municipal parks due to a higher concentration of parks in the urban core [@lara-valencia2018]. However, Ibes (2015) analyzed access to public parks in Phoenix by park type and found that "green neighborhood parks" are more concentrated in neighborhoods with higher White populations while "urban core parks" are more often found in areas with lower incomes and more minority residents [@ibes2015]. Corley (2024) found no association between park acreage and minority resident proportion or poverty level at the block group level in Phoenix [@corley2024]. However, these three studies on Phoenix park access did not account for spatial autocorrelation of variables—the tendency of spatially proximate observations to be more similar than expected under random distribution—which can inflate the apparent significance of predictors when left unaddressed [@anselin1995]. Kim et al. (2023) addressed this limitation by using spatial regression models to investigate park access in Phoenix and nearby Mesa, Arizona, and found that residents of more affluent neighborhoods had access to greater park acreage within walking distance, but there were no significant correlations between race/ethnicity and the number of parks, size of parks, or distance to the nearest park [@kim2023].
 
-As seen in the Phoenix studies cited above, research on park accesstends to use a simple Euclidean distance metric to determine accessibility, but this method does not account for the actual distance that residents must travel to visit parks. The travel distance from a residential area to a public amenity can vary greatly from the Euclidean distance depending on the layout of the road network [@li2019]. Additionally, most studies consider "park access" to be a binary variable, where a resident has complete access to any parks within a given catchment area and no access to parks outside of the catchment area. However, this approach does not capture the reality of park visitation–people are more likely to visit nearby parks, but may still travel a greater distance to visit larger parks. For example, Kim et al. (2025) found that Phoenix residents tend to favor local parks within 1 km of their neighborhood, but the likelihood that they will travel beyond 1 km to visit larger amenity-rich parks increases as the size of the local parks decreases [@kim2025].
+As seen in the Phoenix studies cited above, research on park access tends to use a simple Euclidean distance metric to determine accessibility, but this method does not account for the actual distance that residents must travel to visit parks. The travel distance from a residential area to a public amenity can vary greatly from the Euclidean distance depending on the layout of the road network [@li2019]. Additionally, most studies consider "park access" to be a binary variable, where a resident has complete access to any parks within a given catchment area and no access to parks outside of the catchment area. However, this approach does not capture the reality of park visitation–people are more likely to visit nearby parks, but may still travel a greater distance to visit larger parks. For example, Kim et al. (2025) found that Phoenix residents tend to favor local parks within 1 km of their neighborhood, but the likelihood that they will travel beyond 1 km to visit larger amenity-rich parks increases as the size of the local parks decreases [@kim2025].
 
 Traditional park access research also tends to only address the "supply" side of access by quantifying park number, area, or amenities [@kim2025, @nesbitt2019, @winkler2024] while ignoring the "demand" side, or the number of people competing for access to the parks. Other studies incorporate the population factor by simply dividing the total park area by the population within a given catchment [@lara-valencia2018]. The Gaussian two-step floating catchment area (G2SFCA) method of assessing park access addresses these shortcomings by calculating distance to an amenity based on road network rather than Euclidean distance and incorporating a park supply factor (e.g., total area or amenities), a demand factor (the population of residents with access to the parks), and a travel distance metric that weights closer parks more heavily than distant parks [@zhang_assessing_2023].
 
-Residential tree canopy cover provided by trees in neighborhoods and commercial areas likely has a more direct impact on residents' lives than the tree canopy in public parks since residential trees shade people's homes, workplaces, and travel routes. But parks may act as tree canopy refuges, allowing people to temporarily enjoy the benefits of trees that may be lacking in their daily lives. No studies have directly investigated the relationship between residential tree canopy cover and access to park tree canopy cover, but a 2013 study by Zhou and Kim investigated neighborhood tree canopy disparities and walking-distance access to parks in six Illinois cities [@zhou2013]. They found that in four of the cities, a higher proportion of Black residents was associated with lower neighborhood tree canopy cover, but there were no disparities in access to parks. However, Zhou and Kim did not quantify the tree canopy cover within the parks.
+Residential tree canopy cover provided by trees in neighborhoods and commercial areas likely has a more direct impact on residents' lives than the tree canopy in public parks since residential trees shade people's homes, workplaces, and travel routes. When parks in disadvantaged neighborhoods have low tree canopy cover, this may perpetuate the overall inequitable tree distribution in cities. For example, Fossa et al. (2023) found that parks have greater tree cover and overall greenness compared to surrounding neighborhoods in New York City, NY, Chicago, IL, and Los Angeles, CA. However, areas with larger Black, Hispanic, and socioeconomically deprived populations contained parks with lower tree canopy cover [@fossa2023].
+
+In other cases, parks may serve as tree canopy refuges in low-canopy residential areas, allowing people to temporarily enjoy the benefits of trees that may be lacking in their daily lives. A 2013 study by Zhou and Kim investigated neighborhood tree canopy disparities and walking-distance access to parks in six Illinois cities. They found that in four of the cities, a higher proportion of Black residents was associated with lower neighborhood tree canopy cover, but there were no disparities in access to parks. However, Zhou and Kim did not quantify the tree canopy cover within the parks, so it is unclear whether the park trees compensate for the lack of trees in the surrounding neighborhoods [@zhou2013].
 
 Given the inequities in tree canopy distribution and apparent lack of inequities in park access within Phoenix, it is possible that public parks serve as tree canopy refuges that partially compensate for lack of tree cover in neighborhoods with high minority populations and low socioeconomic status. However, no research to date has tested this hypothesis. This study attempts to fill this research gap by answering the following questions:
 
@@ -142,6 +148,13 @@ park_types <- data.frame(
 
 park_types |> 
   gt() |> 
+  cols_width(
+    `Park type` ~ px(120),
+    `Typical amenities` ~ px(220),
+    `n` ~ px(30),
+    `Size (ha)` ~ px(60),
+    `Service area radius (km)` ~ px(120)
+  ) |> 
   cols_align("center",
              columns = 3:4) |> 
   tab_style(
@@ -609,6 +622,12 @@ canopy_access <- data.frame(
 # Create gt table
 canopy_access |> 
   gt() |> 
+  cols_width(
+    category ~ px(70),
+    rule ~ px(200),
+    desc ~ px(200),
+    bg_pct ~ px(120)
+  ) |> 
   cols_label(
     category = "Category",
     rule = "Rule",
@@ -677,7 +696,7 @@ mn_table |>
     LH_OR = "OR", LH_CI = "95% CI",
     LL_OR = "OR", LL_CI = "95% CI"
   ) |>
-  cols_width(2:7 ~ "15%") |> 
+  cols_width(2:7 ~ "10%") |> 
   cols_align_decimal(columns = 2:7) |> 
   tab_footnote("OR: Odds ratio; CI: Confidence interval",
                    locations = cells_column_labels(columns = HL_OR))  |>
