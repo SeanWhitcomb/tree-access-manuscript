@@ -45,14 +45,16 @@ inset_phx <- tm_shape(az_state) +
   tm_polygons(fill = "lightblue", 
               col = "gray40", 
               lwd = 0.5) +
-  tm_text("NAME", size = 1.2, ymod = 5) +
+  tm_text("NAME", 
+          size = 1.5, 
+          ymod = 5) +
   tm_shape(phx_city_limits) +
   tm_polygons(fill = "darkblue",
               col = "darkblue") +
   tm_text(text = "Phoenix",
-          size = 0.8, 
-          xmod = 4, 
-          ymod = 4) +
+          size = 1.3, 
+          xmod = 3, 
+          ymod = 3) +
   tm_layout(frame = TRUE, inner.margins = 0.1, frame.lwd = 0.3)
 
 # Create legend element
@@ -60,6 +62,7 @@ legend_bg_parks <- tm_shape(phx_bg_all) +
   tm_polygons(fill = "#fee08b") +
   tm_add_legend(
     title = "Block group data",
+    title.size = 1.1,
     type = "polygons",
     fill = c("#fee08b", "#fdae61", "gray90"),
     col = c("black", "black", "black"),
@@ -70,6 +73,7 @@ legend_bg_parks <- tm_shape(phx_bg_all) +
   ) +
   tm_add_legend(
     title = "Park area (ha)",
+    title.size = 1.1,
     type = "bubbles",
     fill = "gray50",
     size = c(0.3, 0.6, 1, 1.2, 1.4),
@@ -77,6 +81,7 @@ legend_bg_parks <- tm_shape(phx_bg_all) +
   ) +
   tm_add_legend(
     title = "Park type",
+    title.size = 1.1,
     type = "bubbles",
     size = 1,
     fill = park_colors,
@@ -91,7 +96,8 @@ legend_bg_parks <- tm_shape(phx_bg_all) +
   tm_layout(legend.only = TRUE,
             legend.frame = TRUE,
             legend.frame.lwd = 1,
-            legend.bg.col = "white")
+            legend.bg.col = "white",
+            legend.text.size = 1.0)
 
 # # Create map of block groups and parks
 # map_phx <- tm_shape(phx_city_limits) +
@@ -154,13 +160,13 @@ map_bg_parks <- ggdraw() +
   draw_plot(tmap_grob(map_phx),
             x = 0.15) +
   draw_plot(tmap_grob(legend_bg_parks), 
-            x = 0.75, 
-            y = 0.55, 
+            x = 0.70, 
+            y = 0.5, 
             width = 0.3, 
             height = 0.35) +
   draw_plot(tmap_grob(inset_az),
-            x = 0.053,
-            y = 0.4,
+            x = 0.052,
+            y = 0.42,
             width = 0.4,
             height = 0.4) +
   draw_plot(tmap_grob(inset_phx), 

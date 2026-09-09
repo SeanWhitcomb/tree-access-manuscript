@@ -9,115 +9,40 @@ library(tidyverse)
 library(sf)
 library(modelsummary)
 
-phx_bg_parks <- readRDS(here::here("phx_bg_parks.rds"))
+```
 
-#| label: tbl-ttcc-rtcc
-#| tbl-cap: "Total tree canopy cover (TTCC) and residential tree canopy cover (RTCC) in block groups that contain parks"
+See @tbl-canopy-access
 
-ttcc_rtcc_table <- phx_bg_parks |> 
-  st_drop_geometry() |> 
-  mutate(diff = pct_tree_parks - pct_tree_wo_parks) |> 
-  select(pct_tree_parks, pct_tree_wo_parks, diff) |> 
-  pivot_longer(
-    cols = everything(),
-    names_to = "variable",
-    values_to = "value"
-  ) |> 
-  mutate(
-    variable = factor(
-      variable,
-      levels = c("pct_tree_parks",
-                 "pct_tree_wo_parks",
-                 "diff")
-    )
-  ) |> 
-  group_by(variable) |> 
-  summarize(
-    Mean = mean(value, na.rm = TRUE),
-    SD = sd(value, na.rm = TRUE),
-    Median = median(value, na.rm = TRUE),
-    Min = min(value, na.rm = TRUE),
-    Max = max(value, na.rm = TRUE)
-  ) |> 
-  mutate(
-    variable = case_match(
-      variable,
-      "pct_tree_parks" ~ "Total tree canopy cover (%)",
-      "pct_tree_wo_parks" ~ "Residential tree canopy cover (%)",
-      "diff" ~ "TTCC - RTCC (%)"
-    )
-  )
+```{r}
 
-ttcc_rtcc_table |> 
-  gt(rowname_col = "variable") |> 
-  cols_label(variable = "") |> 
-  fmt_number(columns = c(Mean, SD, Median, Min, Max), decimals = 2)|> 
-  tab_footnote(footnote = "TTCC: Total tree canopy cover; RTCC: Residential tree canopy cover", 
-               locations = cells_stub(rows = "TTCC - RTCC (%)")) |> 
-  tab_footnote(footnote = md("*N* = 176 block groups containing parks")) |> 
-  tab_style(
-    style = cell_text(align = "left"),
-    locations = list(cells_footnotes()))
+
+
+
+# Build data frame
+canopy_access <- data.frame(
+  category = c("HH", "HL", "LH", "LL"),
+  rule = c("High RTCC + High PTAS", 
+           "High RTCC + Low PTAS", 
+           "Low RTCC + High PTAS",
+           "Low RTCC + Low PTAS"),
+  desc = c("Abundant residential and park tree canopy",
+           "Abundant residential tree canopy, but low park tree access",
+           "Low residential tree canopy, but parks provide tree canopy refuge",
+           "Residential and park tree canopy desert"),
+  bg_pct = c("89 (9.0)", "122 (12.3)", "404 (40.9)", "373 (37.8)")
+)
+
+
 ```
 
 ```{r}
-#| label: tbl-regress
-#| tbl-cap: "Results of OLS and spatial error regression models for RTCC and PTAS"
+#| label: tbl-canopy-access
+#| tbl-cap: "Residential and park tree-canopy access categories"
+#| echo: false
+#| warning: false
+#| message: false
 
-err_canopy <- readRDS(here::here("err_canopy.rds"))
-err_access_sqrt <- readRDS(here::here("err_access_sqrt.rds"))
-ols_canopy <- readRDS(here::here("ols_canopy.rds"))
-ols_access_sqrt <- readRDS(here::here("ols_access_sqrt.rds"))
-
-# Extract pseudo-r2 from spatial error models
-sum_err_canopy <- summary(err_canopy, Nagelkerke = TRUE)
-sum_err_access_sqrt <- summary(err_access_sqrt, Nagelkerke = TRUE)
-
-glance_custom.Sarlm <- function(x, ...) {
-  s <- summary(x, Nagelkerke = TRUE)
-  data.frame(nagelkerke = s$NK)
-}
-
-# Format R2 label
-gof_map <- tribble(~raw, ~clean, ~fmt,
-                   "aic", "AIC", 1,
-                   "r.squared", "R²", 3,
-                   "nagelkerke", "Pseudo-R²", 3)
-
-# Create table
-regress_table <- modelsummary(list("OLS" = ols_canopy,
-                                   "Spatial error" = err_canopy,
-                                   "OLS" = ols_access_sqrt,
-                                   "Spatial error" = err_access_sqrt
-),
-coef_rename = c(
-  "pct_hispanic" = "Hispanic population (%)",
-  "pct_black" = "Black population (%)",
-  "adi_rank" = "ADI rank"),
-estimate = "{estimate}{stars}",
-statistic = NULL,
-stars = c("†" = .1, "*" = .05, "**" = .01, "***" = .001),
-gof_map = gof_map,
-output = "gt") |> 
-  cols_align_decimal(columns = 2:5) |> 
-  tab_spanner(label = "RTCC models",
-              columns = 2:3) |> 
-  tab_spanner(label = "√PTAS models",
-              columns = 4:5) |> 
-  tab_footnote(footnote = md(paste0("&#42; *p* < 0.05, ** *p* < 0.01, *** *p* < 0.001")))|> 
-  tab_footnote(footnote = md(paste0("*N* = ", nrow(phx_bg)))) |> 
-  tab_footnote(footnote = "RTCC: Residential tree canopy cover; √PTAS: Park tree access score (square-root transformed)", 
-               locations = cells_column_spanners(spanners = c(
-                 "RTCC models", "√PTAS models"
-               ))) |> 
-  tab_footnote(
-    footnote = "R² is reported for OLS models; Nagelkerke pseudo-R² is reported for spatial error models",
-    locations = cells_column_labels(columns = c(2, 4))
-  ) |> 
-  tab_style(
-    style = cell_text(align = "left"),
-    locations = list(cells_footnotes())
-  )
-
-regress_table
+# Create gt table
+canopy_access |> 
+  gt()
 ```
