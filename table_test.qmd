@@ -11,38 +11,35 @@ library(modelsummary)
 
 ```
 
-See @tbl-canopy-access
+See @tbl-park-types
 
 ```{r}
+#| label: tbl-park-types
+#| tbl-cap: "Typical amenities, sizes, and service area radii of Phoenix public park types"
 
+library(flextable)
 
-
-
-# Build data frame
-canopy_access <- data.frame(
-  category = c("HH", "HL", "LH", "LL"),
-  rule = c("High RTCC + High PTAS", 
-           "High RTCC + Low PTAS", 
-           "Low RTCC + High PTAS",
-           "Low RTCC + Low PTAS"),
-  desc = c("Abundant residential and park tree canopy",
-           "Abundant residential tree canopy, but low park tree access",
-           "Low residential tree canopy, but parks provide tree canopy refuge",
-           "Residential and park tree canopy desert"),
-  bg_pct = c("89 (9.0)", "122 (12.3)", "404 (40.9)", "373 (37.8)")
+park_types <- data.frame(
+  `Park type` = c("Pocket", "Linear", "Neighborhood", "Community", "Regional"),
+  `Typical amenities` = c(
+    "Playground; small open area; picnic areas",
+    "Linear open space; walking/biking path; fitness equipment; picnic areas",
+    "Open space; playground; sports fields; fitness equipment; picnic areas",
+    "Amenities found in neighborhood parks, plus: swimming pool; recreational center; dog park; skate plaza; pond",
+    "Amenities found in community parks, plus: community/senior center; sports complex and concessions; skate park"
+  ),
+  `n` = c("26", "4", "84", "47", "16"),
+  `Size (ha)` = c("<0.8", "Various", "0.8-11.9", "12-20", ">20"),
+  `Service area radius (km)` = c("0.8", "0.8", "1.6", "4.8", "8.0"),
+  check.names = FALSE
 )
 
+park_types |>
+  flextable() |>
+  align(j = 3:4, align = "center", part = "all") |>
+  italic(j = "n", part = "header") |>
+  autofit() |> 
+  fit_to_width(6.5) |> 
+  fontsize(size = 12, part = "all")
 
-```
-
-```{r}
-#| label: tbl-canopy-access
-#| tbl-cap: "Residential and park tree-canopy access categories"
-#| echo: false
-#| warning: false
-#| message: false
-
-# Create gt table
-canopy_access |> 
-  gt()
 ```
