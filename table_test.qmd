@@ -1,6 +1,15 @@
 ---
 title: "table_test"
 format: docx
+crossref: 
+  custom:
+    - kind: float
+      key: table
+      latex-env: table
+      reference-prefix: Table
+      space-before-numbering: true
+      latex-list-of-description: Table
+      caption-location: top
 ---
 
 ```{r}
@@ -8,17 +17,13 @@ library(gt)
 library(tidyverse)
 library(sf)
 library(modelsummary)
+library(flextable)
 
 ```
 
-See @tbl-park-types
+See @table-park-types
 
 ```{r}
-#| label: tbl-park-types
-#| tbl-cap: "Typical amenities, sizes, and service area radii of Phoenix public park types"
-
-library(flextable)
-
 park_types <- data.frame(
   `Park type` = c("Pocket", "Linear", "Neighborhood", "Community", "Regional"),
   `Typical amenities` = c(
@@ -33,13 +38,17 @@ park_types <- data.frame(
   `Service area radius (km)` = c("0.8", "0.8", "1.6", "4.8", "8.0"),
   check.names = FALSE
 )
+```
+
+```{r}
+#| label: table-park-types
+#| table-cap: "Typical amenities, sizes, and service area radii of Phoenix public park types"
 
 park_types |>
   flextable() |>
   align(j = 3:4, align = "center", part = "all") |>
   italic(j = "n", part = "header") |>
   autofit() |> 
-  fit_to_width(6.5) |> 
-  fontsize(size = 12, part = "all")
+  fit_to_width(6.5)
 
 ```

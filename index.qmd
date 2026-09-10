@@ -12,7 +12,9 @@ keywords:
 date: last-modified
 mainfont: Arial
 format:
-  docx: default
+  docx: 
+    docx: default
+    tbl-cap-location: bottom
   nature-docx:
     journal:
       cite-style: sn-basic
@@ -137,18 +139,24 @@ park_types <- data.frame(
   ),
   `n` = c("26", "4", "84", "47", "16"),
   `Size (ha)` = c("<0.8", "Various", "0.8-11.9", "12-20", ">20"),
-  `Service area radius (km)` = c("0.8", "0.8", "1.6", "4.8", "8.0"),
+  `Service area \nradius (km)` = c("0.8", "0.8", "1.6", "4.8", "8.0"),
   check.names = FALSE
 ) 
 
-park_types |> 
-  gt() |> 
-  cols_align("center",
-             columns = 3:4) |> 
-  tab_style(
-    style = cell_text(style = "italic"),
-    locations = cells_column_labels(columns = "n")
-  ) 
+park_types |>
+  flextable() |>
+  align(j = 3:4, align = "center", part = "all") |>
+  italic(j = "n", part = "header") |>
+  autofit()
+
+# park_types |> 
+#   gt() |> 
+#   cols_align("center",
+#              columns = 3:4) |> 
+#   tab_style(
+#     style = cell_text(style = "italic"),
+#     locations = cells_column_labels(columns = "n")
+#   ) 
 
 ```
 

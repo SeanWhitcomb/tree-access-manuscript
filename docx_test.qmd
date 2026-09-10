@@ -1,0 +1,12 @@
+---
+title: "Flextable DOCX test"
+format: docx
+---
+
+See @tbl-test.
+
+```{r}
+#| label: tbl-test
+#| tbl-cap: "Test table"
+knitr::kable(head(mtcars))
+```
