@@ -57,9 +57,16 @@
     </choose>
   </macro>
   <macro name="year-parenth">
-    <date prefix="(" suffix=")" variable="issued">
-      <date-part name="year"/>
-    </date>
+    <choose>
+      <if variable="issued">
+        <date prefix="(" suffix=")" variable="issued">
+          <date-part name="year"/>
+        </date>
+      </if>
+      <else>
+        <text prefix="(" suffix=")" value="n.d."/>
+      </else>
+    </choose>
   </macro>
   <citation collapse="citation-number">
     <sort>

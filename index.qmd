@@ -12,13 +12,11 @@ keywords:
 date: last-modified
 mainfont: Arial
 format:
-  docx: 
-    docx: default
-    tbl-cap-location: bottom
   nature-docx:
     journal:
       cite-style: sn-basic
       cite-method: natbib
+      tbl-cap-location: bottom
 bibliography: references.bib
 csl: _extensions/christopherkenny/nature/csl/springer-basic-brackets-no-et-al.csl
 number-sections: true
