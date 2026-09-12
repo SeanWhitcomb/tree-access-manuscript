@@ -1,5 +1,5 @@
 ---
-title: Public parks serve as tree canopy refuges in disadvantaged neighborhoods of Phoenix, Arizona, USA
+title: Public parks serve as tree canopy refuges in disadvantaged neighborhoods of Phoenix, Arizona
 author:
   - name: Sean Whitcomb
     corresponding: true
@@ -78,7 +78,7 @@ library(scales)
 
 ## Introduction {#sec-introduction}
 
-Urban trees, whether in private yards, planted along streets, or in public parks, are a critical component of sustainable cities. The urban forest provides numerous ecosystem services that benefit city residents, including shade, stormwater removal, and air pollution mitigation [@fulton2025]. Tree canopy cover (TCC) — defined as the area of ground covered by tree leaves, trunks, and branches — is especially crucial in hot arid cities like Phoenix, Arizona, where ambient temperatures in full sun can feel up to 12.6 °C hotter than under tree shade [@colter2019]. Adequate shade can be a lifesaving amenity in Phoenix, which experienced 337 heat deaths in 2024 [@maricopacountydepartmentofpublichealth2024].
+Urban trees, whether in private yards, planted along streets, or in public parks, are a critical component of sustainable cities. The urban forest provides numerous ecosystem services that benefit city residents, including shade, stormwater removal, and air pollution mitigation [@fulton2025]. Tree canopy cover (TCC)—defined as the area of ground covered by tree leaves, trunks, and branches—is especially crucial in hot arid cities like Phoenix, Arizona, where ambient temperatures in full sun can feel up to 12.6 °C hotter than under tree shade [@colter2019]. Adequate shade can be a lifesaving amenity in Phoenix, which experienced 337 heat deaths in 2024 [@maricopacountydepartmentofpublichealth2024].
 
 Like many urban amenities, tree canopy cover is often inequitably distributed across cities. Several studies have shown that residents of lower socioeconomic status tend to live in neighborhoods with lower tree canopy cover [@greene2018; @schwarz2015; @lowry2012]. Some studies in U.S. cities also report that neighborhoods with larger proportions of ethnic and racial minorities tend to have less tree canopy [@schwarz2015; @locke2016; @foster2024; @elderbrock2024; @walker2024; @zhou2013]. These patterns have been shown to hold true in Phoenix as well. Median income level has consistently been shown to have a positive correlation with TCC in the city, while the proportion of Hispanic residents within block groups is negatively correlated with TCC [@wang2024; @nesbitt2019; @nelson2021]. However, the proportion of Black residents was negatively correlated with TCC in one study [@wang2024] , while another study found no correlation between these variables [@nesbitt2019].
 
@@ -94,7 +94,7 @@ Public green space access research often only addresses the supply side of acces
 
 Residential tree canopy cover provided by trees in neighborhoods and commercial areas likely has a more direct impact on residents' lives than the tree canopy in public parks since residential trees shade people's homes, workplaces, and travel routes. When parks in disadvantaged neighborhoods have low tree canopy cover, this may perpetuate the overall inequitable tree distribution in cities. For example, Fossa et al. (2023) found that parks have greater tree cover and overall greenness compared to surrounding neighborhoods in New York City, NY, Chicago, IL, and Los Angeles, CA. In general, areas with larger Black, Hispanic, and socioeconomically deprived populations contained parks with lower tree canopy cover [@fossa2023]. Park and Guldmann (2020) found that total tree canopy and access to park acreage were positively correlated in metro Columbus, Ohio and Atlanta, Georgia, indicating that neighborhoods with low tree cover also had lower access to public green space [@park2020]. But the approaches used in these two studies did not specifically isolate park tree canopy from total tree canopy, so it is unknown to what extent park trees may compensate for a lack of residential tree canopy.
 
-A 2013 study by Zhou and Kim investigated neighborhood tree canopy disparities and walking-distance access to parks in six Illinois cities. They found that in four of the cities, a higher proportion of Black residents was associated with lower neighborhood tree canopy cover, but there were no disparities in access to parks. This result suggests that parks may in fact serve as tree canopy refuges in disadvantaged neighborhoods; however, the authors did not directly quantify the tree canopy cover within the parks [@zhou2013].
+Two studies have found indications that parks may serve as tree canopy refuges in disadvantaged areas with low total tree canopy cover. A 2013 study by Zhou and Kim investigated neighborhood tree canopy disparities and access to parks in six Illinois cities. They found that in four of the cities, a higher proportion of Black residents was associated with lower neighborhood tree canopy cover, but there were no disparities in access to parks [@zhou2013]. Heo and Bell (2023) studied green space equity in three eastern U.S. cities and found that tree canopy was negatively associated with percent people of color and socioeconomic deprivation, while the demographic factors were positively associated with park access [@heo2023]. The results of these two studies suggest that parks may sometimes serve as tree canopy refuges in disadvantaged neighborhoods; however, the authors only quantified general park access, not the actual tree canopy cover within the parks.
 
 Given the inequities in tree canopy distribution and apparent lack of inequities in park access within Phoenix, it is possible that public parks serve as tree canopy refuges that partially compensate for lack of tree cover in neighborhoods with high minority populations and low socioeconomic status. However, no research to date has tested this hypothesis. This study attempts to fill this research gap by answering the following questions:
 
@@ -145,16 +145,7 @@ park_types |>
   flextable() |>
   align(j = 3:4, align = "center", part = "all") |>
   italic(j = "n", part = "header") |>
-  autofit()
-
-# park_types |> 
-#   gt() |> 
-#   cols_align("center",
-#              columns = 3:4) |> 
-#   tab_style(
-#     style = cell_text(style = "italic"),
-#     locations = cells_column_labels(columns = "n")
-#   ) 
+  autofit() 
 
 ```
 
@@ -187,19 +178,16 @@ Park tree canopy area in hectares (PTCA) was used as the supply term and was cal
 ```{r}
 #| label: tbl-parks  
 #| tbl-cap: "Total park area and park tree canopy cover area in Phoenix public parks"    
- 
-# Create gt table of descriptive statistics
+
+# Create flextable of descriptive statistics
 datasummary((`Park area (ha)` = area_ha) + 
               (`Park tree canopy cover (%)` = tree_pct) ~ 
               Mean + SD + Median + Min + Max, 
             data = st_drop_geometry(parks),
-            output = "gt"
-) |> 
-  tab_footnote(footnote = md(paste0("*N* = ", nrow(parks), " parks"))) |> 
-  tab_style(
-    style = cell_text(align = "left"),
-    locations = list(cells_footnotes())
-  )
+            output = "flextable") |> 
+  add_footer_lines(
+    as_paragraph(as_i("N"), " = 177 parks")) |> 
+  autofit()
 ```
 
 ```{r}
@@ -368,6 +356,7 @@ This comparision does not indicate whether parks add canopy within their own blo
 #| label: tbl-ttcc-rtcc
 #| tbl-cap: "Total tree canopy cover (TTCC) and residential tree canopy cover (RTCC) in block groups that contain parks"
 
+# Set up TTCC and RTCCC comparison
 ttcc_rtcc_table <- phx_bg_parks |> 
   st_drop_geometry() |> 
   mutate(diff = pct_tree_parks - pct_tree_wo_parks) |> 
@@ -402,16 +391,22 @@ ttcc_rtcc_table <- phx_bg_parks |>
     )
   )
 
+# Create table with flextable
 ttcc_rtcc_table |> 
-  gt(rowname_col = "variable") |> 
-  cols_label(variable = "") |> 
-  fmt_number(columns = c(Mean, SD, Median, Min, Max), decimals = 2)|> 
-  tab_footnote(footnote = "TTCC: Total tree canopy cover; RTCC: Residential tree canopy cover", 
-               locations = cells_stub(rows = "TTCC - RTCC (%)")) |> 
-    tab_footnote(footnote = md("*N* = 176 block groups containing parks")) |> 
-  tab_style(
-    style = cell_text(align = "left"),
-    locations = list(cells_footnotes()))
+  flextable() |> 
+  set_header_labels(variable = "") |> 
+  colformat_double(j = c("Mean", "SD", "Median", "Min", "Max"), digits = 2)|> 
+  flextable::footnote(
+    i = 3,
+    j = 1,
+    value = as_paragraph("TTCC: Total tree canopy cover; RTCC: Residential tree canopy cover"),
+    ref_symbols = "a",
+    part = "body"
+  ) |> 
+  add_footer_lines(
+    as_paragraph(as_i("N"), " = 176 block groups")
+  ) |> 
+  autofit()
 ```
 
 ### Regression analysis {#sec-res-regress}
@@ -795,7 +790,7 @@ This study of distributional justice concerns related to residential tree canopy
 
 ### Residential tree canopy disparities
 
-Previous studies in North American cities have shown that TTCC is often negatively associated with higher concentrations of racial and ethnic minorities but positively associated with higher socioeconomic status [@greene2018; @schwarz2015; @elderbrock2024; @walker2024; @zhou2013], and this pattern has been documented in Phoenix as well [@wang2024]. The current study demonstrates this inequitable pattern of tree canopy cover applies specifically to RTCC, excluding the tree canopy provided by public parks. RTCC is negatively associated with percent Hispanic population and percent Black population, indicating that neighborhoods with a higher concentration of minority residents have lower tree canopy cover provided by trees in private yards, parking lots, schools, and other privately and publicly accessible areas. The negative relationship between RTCC and area deprivation index (ADI) rank is even more pronounced; block groups with more economically vulnerable residents have significantly lower residential tree canopy.
+Previous studies in North American cities have shown that TTCC is often negatively associated with higher concentrations of racial and ethnic minorities but positively associated with higher socioeconomic status [@greene2018; @schwarz2015; @elderbrock2024; @walker2024; @zhou2013], and this pattern has been documented in Phoenix as well [@wang2024]. The current study demonstrates this inequitable pattern of tree canopy cover applies specifically to RTCC, excluding the tree canopy provided by public parks. RTCC is negatively associated with percent Hispanic population and percent Black population, indicating that neighborhoods with a higher concentration of minority residents have lower tree canopy cover provided by trees in private yards, parking lots, schools, and other privately and publicly accessible areas. The negative relationship between RTCC and area deprivation index (ADI) rank is even more pronounced; block groups with more economically vulnerable residents have significantly lower residential tree canopy. Spatial regression supported the significance of the linear regression results, demonstrating that these patterns of tree canopy disparity are not mere artifacts due to spatial structuring.
 
 These disparities in tree canopy cover may partially explain why low-income Phoenix communities are disproportionately impacted by urban heat island effects [@zhu2022]. Tree canopy shade can blunt the impact of the urban heat island by reducing radiant temperatures by up to 23.5 °C compared to full sun [@colter2019]. Tree planting efforts in low-income and minority neighborhoods should be a critical component of climate change resilience policies in the Phoenix area to achieve tree canopy equity.
 
@@ -823,7 +818,11 @@ A third limitation is that the Gaussian two-step floating catchment area (G2FSCA
 
 ## Conclusion {#sec-conclusion}
 
+Phoenix, Arizona has an urgent need for greater tree canopy cover, especially in areas where residents are most vulnerable to extreme heat. This study demonstrated that Black residents, Hispanic residents, and residents with lower socioeconomic status (SES) are more likely to live in block groups with low residential tree canopy cover. However, these disparities are not reflected in access to public park tree canopy. Hispanic residents have equal access to park tree canopy compared to non-Hispanic residents, while Black residents and those in high-deprivation areas have greater access to public park trees. Combining measures of residential tree canopy cover with park tree access revealed that there are many block groups in Phoenix that can be considered tree deserts, and these areas have more Black and low-SES residents. However, low-canopy block groups with nearby parks that serve as tree canopy refuges are also more likely to be located in areas with large Black populations and greater deprivation. These findings suggest that the City of Phoenix should focus on creating new parks and increasing park tree canopy in tree desert neighborhoods, allowing these parks to develop into tree canopy refuges where they are need the most.
+
 ## Acknowledgements {#sec-acknowledge}
+
+I am grateful to Jake Simon at American Forests for providing access to the land cover data upon which this study was based. I would also like to thank Phoenix Parks and Recreation for providing open access to their data and for creating a park system that provides innumerable benefits to the people of Phoenix.
 
 ## References {.unnumbered}
 

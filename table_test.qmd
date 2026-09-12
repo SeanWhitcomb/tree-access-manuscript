@@ -1,29 +1,54 @@
 ---
 title: "table_test"
 format: docx
-crossref: 
-  custom:
-    - kind: float
-      key: table
-      latex-env: table
-      reference-prefix: Table
-      space-before-numbering: true
-      latex-list-of-description: Table
-      caption-location: top
+execute:
+  echo: false
 ---
 
 ```{r}
+#| include: false
+
 library(gt)
 library(tidyverse)
 library(sf)
 library(modelsummary)
 library(flextable)
 
+phx_bg <- readRDS(here::here("phx_bg.rds"))
+parks <- readRDS(here::here("parks.rds"))
+phx_bg_all <- readRDS(here::here("phx_bg_all.rds"))
+phx_city_limits <- readRDS(here::here("phx_city_limits.rds"))
+phx_bg_parks <- readRDS(here::here("phx_bg_parks.rds"))
+park_bg_pw <- readRDS(here::here("park_bg_pw.rds"))
+HH_glm <- readRDS(here::here("HH_glm.rds"))
+HH_glm_sf <- readRDS(here::here("HH_glm_sf.rds"))
+HL_glm <- readRDS(here::here("HL_glm.rds"))
+HL_glm_sf <- readRDS(here::here("HL_glm_sf.rds"))
+LH_glm <- readRDS(here::here("LH_glm.rds"))
+LH_glm_sf <- readRDS(here::here("LH_glm_sf.rds"))
+LL_glm <- readRDS(here::here("LL_glm.rds"))
+LL_glm_sf <- readRDS(here::here("LL_glm_sf.rds"))
+ols_canopy <- readRDS(here::here("ols_canopy.rds"))
+ols_access_sqrt <- readRDS(here::here("ols_access_sqrt.rds"))
+err_canopy <- readRDS(here::here("err_canopy.rds"))
+err_access_sqrt <- readRDS(here::here("err_access_sqrt.rds"))
+multinom1 <- readRDS(here::here("multinom1.rds"))
+odds <- readRDS(here::here("odds.rds"))
+ci <- readRDS(here::here("ci.rds"))
+z_15 <- readRDS(here::here("z_15.rds"))
+p_15 <- readRDS(here::here("p_15.rds"))
+map_bg_parks <- readRDS(here::here("map_bg_parks.rds"))
+map_access <- readRDS(here::here("map_access.rds"))
+map_rtcc_ptas <- readRDS(here::here("map_rtcc_ptas.rds"))
+map_demographics <- readRDS(here::here("map_demographics.rds"))
 ```
 
 See @table-park-types
 
 ```{r}
+#| label: tbl-park-types
+#| tbl-cap: "Typical amenities, sizes, and service area radii of Phoenix public park types"
+
 park_types <- data.frame(
   `Park type` = c("Pocket", "Linear", "Neighborhood", "Community", "Regional"),
   `Typical amenities` = c(
@@ -35,20 +60,163 @@ park_types <- data.frame(
   ),
   `n` = c("26", "4", "84", "47", "16"),
   `Size (ha)` = c("<0.8", "Various", "0.8-11.9", "12-20", ">20"),
-  `Service area radius (km)` = c("0.8", "0.8", "1.6", "4.8", "8.0"),
+  `Service area \nradius (km)` = c("0.8", "0.8", "1.6", "4.8", "8.0"),
   check.names = FALSE
-)
-```
-
-```{r}
-#| label: table-park-types
-#| table-cap: "Typical amenities, sizes, and service area radii of Phoenix public park types"
+) 
 
 park_types |>
   flextable() |>
   align(j = 3:4, align = "center", part = "all") |>
   italic(j = "n", part = "header") |>
-  autofit() |> 
-  fit_to_width(6.5)
+  autofit()
+  
+```
 
+```{r}
+#| label: tbl-parks  
+#| tbl-cap: "Total park area and park tree canopy cover area in Phoenix public parks"    
+
+# Create flextable of descriptive statistics
+datasummary((`Park area (ha)` = area_ha) + 
+              (`Park tree canopy cover (%)` = tree_pct) ~ 
+              Mean + SD + Median + Min + Max, 
+            data = st_drop_geometry(parks),
+            output = "flextable") |> 
+  add_footer_lines(
+    as_paragraph(as_i("N"), " = 177 parks")) |> 
+  autofit()
+
+```
+
+```{r}
+#| label: tbl-ttcc-rtcc
+#| tbl-cap: "Total tree canopy cover (TTCC) and residential tree canopy cover (RTCC) in block groups that contain parks"
+
+# Set up TTCC and RTCCC comparison
+ttcc_rtcc_table <- phx_bg_parks |> 
+  st_drop_geometry() |> 
+  mutate(diff = pct_tree_parks - pct_tree_wo_parks) |> 
+  select(pct_tree_parks, pct_tree_wo_parks, diff) |> 
+  pivot_longer(
+    cols = everything(),
+    names_to = "variable",
+    values_to = "value"
+  ) |> 
+  mutate(
+    variable = factor(
+      variable,
+      levels = c("pct_tree_parks",
+                 "pct_tree_wo_parks",
+                 "diff")
+    )
+  ) |> 
+  group_by(variable) |> 
+  summarize(
+    Mean = mean(value, na.rm = TRUE),
+    SD = sd(value, na.rm = TRUE),
+    Median = median(value, na.rm = TRUE),
+    Min = min(value, na.rm = TRUE),
+    Max = max(value, na.rm = TRUE)
+  ) |> 
+  mutate(
+    variable = case_match(
+      variable,
+      "pct_tree_parks" ~ "Total tree canopy cover (%)",
+      "pct_tree_wo_parks" ~ "Residential tree canopy cover (%)",
+      "diff" ~ "TTCC - RTCC (%)"
+    )
+  )
+
+# Create table with flextable
+ttcc_rtcc_table |> 
+  flextable() |> 
+  set_header_labels(variable = "") |> 
+  colformat_double(j = c("Mean", "SD", "Median", "Min", "Max"), digits = 2)|> 
+  flextable::footnote(
+    i = 3,
+    j = 1,
+    value = as_paragraph("TTCC: Total tree canopy cover; RTCC: Residential tree canopy cover"),
+    ref_symbols = "a",
+    part = "body"
+  ) |> 
+  add_footer_lines(
+    as_paragraph(as_i("N"), " = 176 block groups")
+  ) |> 
+  autofit()
+```
+
+```{r}
+#| label: tbl-desc-stats
+#| tbl-cap: "Descriptive statistics of the dataset"
+
+# Create descriptive statistics table
+desc_table <- phx_bg |> 
+  sf::st_drop_geometry() |> 
+  summarize(
+    across(
+      c(population, pct_hispanic, pct_black, adi_rank, pct_tree, tree_access),
+      list(
+        Mean   = ~mean(.x, na.rm = TRUE),
+        SD     = ~sd(.x, na.rm = TRUE),
+        Median = ~median(.x, na.rm = TRUE),
+        Min    = ~min(.x, na.rm = TRUE),
+        Max    = ~max(.x, na.rm = TRUE)
+      ),
+      .names = "{.col}__{.fn}"
+    )
+  ) |> 
+  tidyr::pivot_longer(
+    everything(),
+    names_to = c("Variable", "Statistic"),
+    names_sep = "__"
+  ) |> 
+  tidyr::pivot_wider(names_from = Statistic, values_from = value) |> 
+  mutate(
+    Variable = case_match(Variable,
+                          "population"   ~ "Total population",
+                          "pct_hispanic" ~ "Hispanic population (%)",
+                          "pct_black"    ~ "Black population (%)",
+                          "adi_rank"     ~ "ADI rank",
+                          "pct_tree"     ~ "Residential tree canopy cover (%)",
+                          "tree_access"  ~ "Park tree access score"
+    )
+  ) |> 
+  # Preserve intended row order rather than alphabetical
+  arrange(match(Variable, c("Total population", "Hispanic population (%)",
+                            "Black population (%)", "ADI rank",
+                            "Residential tree canopy cover (%)",
+                            "Park tree access score")))
+
+desc_table |> 
+  gt() |> 
+  tab_row_group(
+    label = md("*Block group characteristics*"),
+    rows = Variable %in% c("Total population", 
+                           "Hispanic population (%)", 
+                           "Black population (%)",
+                           "ADI rank")
+  ) |> 
+  tab_row_group(
+    label = md("*Outcome variables*"),
+    rows = Variable %in% c("Residential tree canopy cover (%)",
+                           "Park tree canopy access score")
+  ) |> 
+  row_group_order(groups = c("*Block group characteristics*",
+                             "*Outcome variables*")) |> 
+  fmt_number(columns = c(Mean, SD, Median, Min, Max), 
+             rows = Variable %in% c("Total population", "ADI rank"),
+             decimals = 0) |> 
+  fmt_number(columns = c(Mean, SD, Median, Min, Max), 
+             rows = Variable %in% c("Hispanic population (%)", 
+                                    "Black population (%)",
+                                    "Residential tree canopy cover (%)",
+                                    "Park tree access score"),
+             decimals = 1) |>
+  cols_label(Variable = "") |> 
+  tab_footnote(footnote = md("*N* = 988 block groups")) |> 
+  tab_options(row_group.padding = px(10)) |> 
+  tab_style(
+    style = cell_text(align = "left"),
+    locations = list(cells_footnotes())
+  )
 ```
