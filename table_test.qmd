@@ -1,6 +1,7 @@
 ---
 title: "table_test"
 format: docx
+tbl-cap-location: bottom
 execute:
   echo: false
 ---
@@ -68,7 +69,7 @@ park_types |>
   flextable() |>
   align(j = 3:4, align = "center", part = "all") |>
   italic(j = "n", part = "header") |>
-  autofit()
+  fit_columns(max_width = 6.5) 
   
 ```
 
@@ -187,36 +188,96 @@ desc_table <- phx_bg |>
                             "Residential tree canopy cover (%)",
                             "Park tree access score")))
 
-desc_table |> 
-  gt() |> 
-  tab_row_group(
-    label = md("*Block group characteristics*"),
-    rows = Variable %in% c("Total population", 
-                           "Hispanic population (%)", 
-                           "Black population (%)",
-                           "ADI rank")
+desc_table <- desc_table |> 
+  mutate(
+    group = case_when(
+      Variable %in% c("Total population", 
+                      "Hispanic population (%)",
+                      "Black population (%)", 
+                      "ADI rank") ~ "Block group characteristics",
+      Variable %in% c("Residential tree canopy cover (%)",
+                      "Park tree access score") ~ "Outcome variables"
+    ),
+    across(c(Mean, SD, Median, Min, Max),
+           ~ case_when(
+             Variable %in% c("Total population", "ADI rank") ~
+               sprintf("%.0f", .x),
+             TRUE ~ sprintf("%.1f", .x)
+           ))
+  )
+
+grouped <- desc_table |> 
+  as_grouped_data(groups = "group")
+group_rows <- which(is.na(grouped$group))
+first_data_row <- min(which(is.na(grouped$group)))
+
+grouped |>
+  as_flextable(hide_grouplabel = TRUE) |> 
+  italic(i = ~ !is.na(group), part = "body") |> 
+  set_header_labels(Variable = "") |> 
+  add_footer_lines(
+    value = as_paragraph(as_i("N"), " = 988 block groups")
+    ) |> 
+  hline(i = 1, part = "body") |>
+  hline(i = 5, part = "body") |> 
+  hline(i = 6, part = "body") |> 
+  fit_columns(max_width = 6.5)
+
+```
+
+```{r}
+#| label: tbl-regress
+#| tbl-cap: "Results of OLS and spatial error regression models for RTCC and PTAS"
+
+# Extract pseudo-r2 from spatial error models
+sum_err_canopy <- summary(err_canopy, Nagelkerke = TRUE)
+sum_err_access_sqrt <- summary(err_access_sqrt, Nagelkerke = TRUE)
+
+glance_custom.Sarlm <- function(x, ...) {
+  s <- summary(x, Nagelkerke = TRUE)
+  data.frame(nagelkerke = s$NK)
+}
+
+# Format R2 label
+gof_map <- tribble(~raw, ~clean, ~fmt,
+                   "aic", "AIC", 1,
+                   "r.squared", "R²", 3,
+                   "nagelkerke", "Pseudo-R²", 3)
+
+# Create table
+regress_table <- modelsummary(list("OLS" = ols_canopy,
+                                   "Spatial error" = err_canopy,
+                                   "OLS" = ols_access_sqrt,
+                                   "Spatial error" = err_access_sqrt
+),
+coef_rename = c(
+  "pct_hispanic" = "Hispanic population (%)",
+  "pct_black" = "Black population (%)",
+  "adi_rank" = "ADI rank"),
+estimate = "{estimate}{stars}",
+statistic = NULL,
+stars = c("†" = .1, "*" = .05, "**" = .01, "***" = .001),
+gof_map = gof_map,
+output = "gt") |> 
+  cols_align_decimal(columns = 2:5) |> 
+  tab_spanner(label = "RTCC models",
+              columns = 2:3) |> 
+  tab_spanner(label = "√PTAS models",
+              columns = 4:5) |> 
+  tab_footnote(footnote = md(paste0("&#42; *p* < 0.05, ** *p* < 0.01, *** *p* < 0.001")))|> 
+  tab_footnote(footnote = md(paste0("*N* = ", nrow(phx_bg)))) |> 
+  tab_footnote(footnote = "RTCC: Residential tree canopy cover; √PTAS: Park tree access score (square-root transformed)", 
+               locations = cells_column_spanners(spanners = c(
+                 "RTCC models", "√PTAS models"
+               ))) |> 
+  tab_footnote(
+    footnote = "R² is reported for OLS models; Nagelkerke pseudo-R² is reported for spatial error models",
+    locations = cells_column_labels(columns = c(2, 4))
   ) |> 
-  tab_row_group(
-    label = md("*Outcome variables*"),
-    rows = Variable %in% c("Residential tree canopy cover (%)",
-                           "Park tree canopy access score")
-  ) |> 
-  row_group_order(groups = c("*Block group characteristics*",
-                             "*Outcome variables*")) |> 
-  fmt_number(columns = c(Mean, SD, Median, Min, Max), 
-             rows = Variable %in% c("Total population", "ADI rank"),
-             decimals = 0) |> 
-  fmt_number(columns = c(Mean, SD, Median, Min, Max), 
-             rows = Variable %in% c("Hispanic population (%)", 
-                                    "Black population (%)",
-                                    "Residential tree canopy cover (%)",
-                                    "Park tree access score"),
-             decimals = 1) |>
-  cols_label(Variable = "") |> 
-  tab_footnote(footnote = md("*N* = 988 block groups")) |> 
-  tab_options(row_group.padding = px(10)) |> 
   tab_style(
     style = cell_text(align = "left"),
     locations = list(cells_footnotes())
   )
+
+regress_table
 ```

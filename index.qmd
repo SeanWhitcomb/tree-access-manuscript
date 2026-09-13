@@ -16,7 +16,7 @@ format:
     journal:
       cite-style: sn-basic
       cite-method: natbib
-      tbl-cap-location: bottom
+tbl-cap-location: bottom
 bibliography: references.bib
 csl: _extensions/christopherkenny/nature/csl/springer-basic-brackets-no-et-al.csl
 number-sections: true
@@ -74,6 +74,7 @@ library(gt)
 library(broom)
 library(purrr)
 library(scales)
+library(rspell)
 ```
 
 ## Introduction {#sec-introduction}
@@ -145,7 +146,7 @@ park_types |>
   flextable() |>
   align(j = 3:4, align = "center", part = "all") |>
   italic(j = "n", part = "header") |>
-  autofit() 
+  fit_columns(max_width = 6.5) 
 
 ```
 
@@ -187,7 +188,7 @@ datasummary((`Park area (ha)` = area_ha) +
             output = "flextable") |> 
   add_footer_lines(
     as_paragraph(as_i("N"), " = 177 parks")) |> 
-  autofit()
+  fit_columns(max_width = 6.5) 
 ```
 
 ```{r}
@@ -406,7 +407,7 @@ ttcc_rtcc_table |>
   add_footer_lines(
     as_paragraph(as_i("N"), " = 176 block groups")
   ) |> 
-  autofit()
+  fit_columns(max_width = 6.5) 
 ```
 
 ### Regression analysis {#sec-res-regress}
@@ -416,6 +417,7 @@ ttcc_rtcc_table |>
 ```{r}
 #| label: tbl-desc-stats
 #| tbl-cap: "Descriptive statistics of the dataset"
+
 
 # Create descriptive statistics table
 desc_table <- phx_bg |> 
@@ -455,38 +457,42 @@ desc_table <- phx_bg |>
                             "Residential tree canopy cover (%)",
                             "Park tree access score")))
 
-desc_table |> 
-  gt() |> 
-  tab_row_group(
-    label = md("*Block group characteristics*"),
-    rows = Variable %in% c("Total population", 
-                           "Hispanic population (%)", 
-                           "Black population (%)",
-                           "ADI rank")
-  ) |> 
-  tab_row_group(
-    label = md("*Outcome variables*"),
-    rows = Variable %in% c("Residential tree canopy cover (%)",
-                           "Park tree canopy access score")
-  ) |> 
-  row_group_order(groups = c("*Block group characteristics*",
-                             "*Outcome variables*")) |> 
-  fmt_number(columns = c(Mean, SD, Median, Min, Max), 
-             rows = Variable %in% c("Total population", "ADI rank"),
-             decimals = 0) |> 
-  fmt_number(columns = c(Mean, SD, Median, Min, Max), 
-             rows = Variable %in% c("Hispanic population (%)", 
-                                    "Black population (%)",
-                                    "Residential tree canopy cover (%)",
-                                    "Park tree access score"),
-             decimals = 1) |>
-  cols_label(Variable = "") |> 
-  tab_footnote(footnote = md("*N* = 988 block groups")) |> 
-  tab_options(row_group.padding = px(10)) |> 
-  tab_style(
-    style = cell_text(align = "left"),
-    locations = list(cells_footnotes())
+desc_table <- desc_table |> 
+  mutate(
+    group = case_when(
+      Variable %in% c("Total population", 
+                      "Hispanic population (%)",
+                      "Black population (%)", 
+                      "ADI rank") ~ "Block group characteristics",
+      Variable %in% c("Residential tree canopy cover (%)",
+                      "Park tree access score") ~ "Outcome variables"
+    ),
+    across(c(Mean, SD, Median, Min, Max),
+           ~ case_when(
+             Variable %in% c("Total population", "ADI rank") ~
+               sprintf("%.0f", .x),
+             TRUE ~ sprintf("%.1f", .x)
+           ))
   )
+
+# Group data
+grouped <- desc_table |> 
+  as_grouped_data(groups = "group")
+group_rows <- which(is.na(grouped$group))
+first_data_row <- min(which(is.na(grouped$group)))
+
+# Generate flextable
+grouped |>
+  as_flextable(hide_grouplabel = TRUE) |> 
+  italic(i = ~ !is.na(group), part = "body") |> 
+  set_header_labels(Variable = "") |> 
+  add_footer_lines(
+    value = as_paragraph(as_i("N"), " = 988 block groups")
+  ) |> 
+  hline(i = 1, part = "body") |>
+  hline(i = 5, part = "body") |> 
+  hline(i = 6, part = "body") |> 
+  fit_columns(max_width = 6.5)
 ```
 
 ![Tree canopy variables: a) Block group residential tree canopy cover (%) and b) block group park tree access score with tree canopy area (ha) within parks](images/map_rtcc_ptas.png){#fig-rtcc-ptas-map fig-alt="Residential tree canopy cover is highest in the central and northeastern parts of Phoenix. Park tree access score is highest in the central part."}
@@ -707,7 +713,7 @@ Because spatial autocorrelation was detected in the one-vs-rest binary logistic 
 #| label: tbl-bin-regress
 #| message: false
 #| warning: false
-#| tbl-cap: Binary logistic regression results for canopy access categories before and after spatial filtering
+#| tbl-cap: "Binary logistic regression results for canopy access categories before and after spatial filtering"
 
 # Named lists of fitted models
 unfiltered <- list(HH = HH_glm, 
