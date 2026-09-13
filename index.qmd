@@ -555,38 +555,63 @@ gof_map <- tribble(~raw, ~clean, ~fmt,
 
 # Create table
 regress_table <- modelsummary(list("OLS" = ols_canopy,
-                  "Spatial error" = err_canopy,
-                  "OLS" = ols_access_sqrt,
-                  "Spatial error" = err_access_sqrt
-                  ),
-             coef_rename = c(
-               "pct_hispanic" = "Hispanic population (%)",
-               "pct_black" = "Black population (%)",
-               "adi_rank" = "ADI rank"),
-             estimate = "{estimate}{stars}",
-             statistic = NULL,
-             stars = c("†" = .1, "*" = .05, "**" = .01, "***" = .001),
-             gof_map = gof_map,
-             output = "gt") |> 
-  cols_align_decimal(columns = 2:5) |> 
-  tab_spanner(label = "RTCC models",
-              columns = 2:3) |> 
-  tab_spanner(label = "√PTAS models",
-              columns = 4:5) |> 
-  tab_footnote(footnote = md(paste0("&#42; *p* < 0.05, ** *p* < 0.01, *** *p* < 0.001")))|> 
-  tab_footnote(footnote = md(paste0("*N* = ", nrow(phx_bg)))) |> 
-  tab_footnote(footnote = "RTCC: Residential tree canopy cover; √PTAS: Park tree access score (square-root transformed)", 
-               locations = cells_column_spanners(spanners = c(
-                 "RTCC models", "√PTAS models"
-               ))) |> 
-  tab_footnote(
-    footnote = "R² is reported for OLS models; Nagelkerke pseudo-R² is reported for spatial error models",
-    locations = cells_column_labels(columns = c(2, 4))
+                                   "Spatial error" = err_canopy,
+                                   "OLS" = ols_access_sqrt,
+                                   "Spatial error" = err_access_sqrt
+),
+coef_rename = c(
+  "pct_hispanic" = "Hispanic population (%)",
+  "pct_black" = "Black population (%)",
+  "adi_rank" = "ADI rank"),
+estimate = "{estimate}{stars}",
+statistic = NULL,
+stars = c("*" = .05, 
+          "**" = .01, 
+          "***" = .001),
+gof_map = gof_map,
+output = "flextable") |> 
+  align(j = 2:5,
+        align = "right",
+        part = "all") |>
+  add_header_row(
+    top = TRUE,
+    values = c("", "RTCC models", 
+               "RTCC models", 
+               "√PTAS models", 
+               "√PTAS models"),
+    colwidths = c(1, 1, 1, 1, 1)
   ) |> 
-    tab_style(
-    style = cell_text(align = "left"),
-    locations = list(cells_footnotes())
-  )
+  merge_h(part = "header", i = 1) |> 
+  align(part = "header", align = "center") |> 
+  flextable::footnote(
+    i = 1,
+    j = 2,
+    value = as_paragraph("RTCC: Residential tree canopy cover; √PTAS: Park tree access score (square-root transformed)"),
+    ref_symbols = "a",
+    part = "header"
+  ) |> 
+  flextable::footnote(
+    i = 6,
+    j = 1,
+    value = as_paragraph("AIC: Akaike information criterion"),
+    ref_symbols = "b",
+    part = "body"
+  ) |> 
+  flextable::footnote(
+    i = 7,
+    j = 1,
+    value = as_paragraph("R² is reported for OLS models; Nagelkerke pseudo-R² is reported for spatial error models"),
+    ref_symbols = " c",
+    part = "body"
+  ) |> 
+  add_footer_lines(
+    as_paragraph("* ", as_i("p"), " < 0.05, ** ", as_i("p"), 
+                 " < 0.01, *** ", as_i("p"), " < 0.001")
+  ) |> 
+  add_footer_lines(
+    as_paragraph(as_i("N"), " = 988 block groups")
+  ) |> 
+  fit_columns(max_width = 6.5)
 
 regress_table
 ```
@@ -599,7 +624,7 @@ Block groups were organized into one of four tree canopy access categories based
 #| label: tbl-canopy-access
 #| message: false
 #| warning: false
-#| tbl-cap: Tree canopy access categories
+#| tbl-cap: "Tree canopy access categories"
 
 # Build data frame
 canopy_access <- data.frame(
@@ -608,33 +633,29 @@ canopy_access <- data.frame(
            "High RTCC + Low PTAS", 
            "Low RTCC + High PTAS",
            "Low RTCC + Low PTAS"),
-  desc = c("Abundant residential and park tree canopy",
+  desc = c("Abundant residential tree canopy and park tree access",
            "Abundant residential tree canopy, but low park tree access",
            "Low residential tree canopy, but parks provide tree canopy refuge",
            "Residential and park tree canopy desert"),
   bg_pct = c("89 (9.0)", "122 (12.3)", "404 (40.9)", "373 (37.8)")
 )
 
-# Create gt table
+# Create flextable
 canopy_access |> 
-  gt() |> 
-  cols_width(
-    category ~ px(70),
-    rule ~ px(200),
-    desc ~ px(200),
-    bg_pct ~ px(120)
-  ) |> 
-  cols_label(
+  flextable() |> 
+  set_header_labels(
     category = "Category",
     rule = "Rule",
     desc = "Description",
-    bg_pct = md("*n* Block groups (%)"),
+    bg_pct = "n Block groups (%)"
   ) |> 
-  tab_footnote(footnote = md(paste0("*N* = 988 total block groups"))) |> 
-  tab_style(
-    style = cell_text(align = "left"),
-    locations = list(cells_footnotes())
-  )
+  add_footer_lines(
+    value = as_paragraph(as_i("N"), " = 988 block groups")) |> 
+  width(j = "category", width = 1.0) |> 
+  width(j = "rule", width = 2.0) |> 
+  width(j = "desc", width = 2.5) |> 
+  width(j = "bg_pct", width = 1.0) |> 
+  set_table_properties(layout = "fixed", width = 1)
 ```
 
 ![Block group tree canopy access categories](images/map_access.png){#fig-canopy-access-map fig-alt="HH block groups are mostly in the northeast of Phoenix; HL block groups are in the eastern part; LH are mostly in the central part; LL are mostly on the edges of the city"}
@@ -653,15 +674,14 @@ The higher odds of a block group with a larger Black or Hispanic population belo
 #| label: tbl-multinom
 #| message: false
 #| warning: false
-#| tbl-cap: "Multinomial logistic regression odds ratios for canopy access categories"
+#| tbl-cap: "Multinomial logistic regression odds ratios for canopy access categories HL (High RTCC/Low PTAS), LH (Low RTCC/High PTAS), and LL (Low RTCC/Low PTAS) compared to HH (High RTCC/High PTAS)"
 
-# Create results table
 # Format stars
 fmt_stars <- function(p) {
   ifelse(p < 0.001, "***",
-    ifelse(p < 0.01, "**",
-      ifelse(p < 0.05, "*",
-        ifelse(p < 0.1, "†", ""))))
+         ifelse(p < 0.01, "**",
+                ifelse(p < 0.05, "*",
+                       ifelse(p < 0.1, "†", ""))))
 }
 
 # Build data frame
@@ -681,33 +701,51 @@ mn_table <- data.frame(
                  formatC(ci[2:4, 2, 3], format = "f", digits = 2))
 )
 
-# Build gt table
-mn_table |>
-  gt() |>
-  tab_spanner(label = "HL", columns = 2:3) |>
-  tab_spanner(label = "LH", columns = 4:5) |>
-  tab_spanner(label = "LL", columns = 6:7) |>
-  cols_label(
+mn_table |> 
+  flextable() |> 
+  add_header_row(
+    top = TRUE,
+    values = c("",
+               "HL", 
+               "LH", 
+               "LL"),
+    colwidths = c(1, 2, 2, 2)
+  )|> 
+  set_header_labels(
     HL_OR = "OR", HL_CI = "95% CI",
     LH_OR = "OR", LH_CI = "95% CI",
     LL_OR = "OR", LL_CI = "95% CI"
-  ) |>
-  cols_width(2:7 ~ "10%") |> 
-  cols_align_decimal(columns = 2:7) |> 
-  tab_footnote("OR: Odds ratio; CI: Confidence interval",
-                   locations = cells_column_labels(columns = HL_OR))  |>
-  tab_footnote("Reference category: HH (High RTCC/High PTAS)") |>
-  tab_footnote(md("† *p* < 0.1, * *p* < 0.05, ** *p* < 0.01, *** *p* < 0.001")) |>
-  tab_footnote(md("*N* = 988: HH = 89 (9.0%), HL = 122 (12.3%), LH = 404 (40.9%), LL = 373 (37.8%)")) |> 
-  tab_style(
-    style = cell_text(align = "left"),
-    locations = list(cells_footnotes())
-  )
+  ) |> 
+  merge_h(part = "header", i = 1) |> 
+  align(part = "header", align = "center") |> 
+  flextable::footnote(
+    i = 2,
+    j = 2,
+    ref_symbols = "a",
+    value = as_paragraph("OR: Odds ratio; CI: Confidence interval"),
+    part = "header"
+  ) |> 
+  add_footer_lines(
+    as_paragraph("Reference category: HH (High RTCC/High PTAS)")
+  ) |> 
+  add_footer_lines(
+    as_paragraph("† ", as_i("p"), " < 0.1, * ", as_i("p"), " < 0.05, ** ", as_i("p"), " < 0.01, *** ", as_i("p"), " < 0.001")
+  ) |> 
+  add_footer_lines(
+    as_paragraph(as_i("N"), " = 988: HH = 89, HL = 122, LH = 404, LL = 373")
+  ) |> 
+  fit_columns(max_width = 6.5)
 ```
 
 Because spatial autocorrelation was detected in the one-vs-rest binary logistic models underlying the four-category canopy access typology (Moran's *I*: HH = 0.140, HL = 0.144, LH = 0.267, LL = 0.232; all *p* \< 0.001), Moran eigenvector spatial filtering was applied to the models. Selected eigenvectors (HH: 9, HL: 14, LH: 30, LL: 23) were added as covariates to each binary model, substantially reducing spatial autocorrelation across all four categories. Moran's *I* was reduced by 76-85% in each model (HH = 0.033, HL = 0.030, LH = 0.040, LL = 0.034), though modest statistically significant spatial clustering remained in each case (*p* \< 0.05). This result is consistent with spatial structure operating at a scale broader than the local nearest-neighbor weighting could capture.
 
-@tbl-bin-regress reports the β coefficients for each tree canopy access binary logistic models before and after spatial filtering. Both the HH and HL categories were negatively associated with ADI national percentile rank, while the LH and LL categories were positively associated with ADI rank. These associations were significant both before and after spatial filtering, indicating that the relationship between ADI and canopy access category is robust to the presence of spatial autocorrelation in the model residuals. Significance levels for most other predictor β terms also remained stable after filtering, with two exceptions: for the HH category, the negative associations with Hispanic population and Black population moved from marginal significance (*p* \< 0.1) to significance at *p* \< 0.05; and for HL, the negative association with Hispanic population shifted from non-significant to significant at *p* \< 0.05, while the association with Black population strengthened from *p* \< 0.05 to *p* \< 0.01.
+@tbl-bin-regress reports the β coefficients for each tree canopy access binary logistic models before and after spatial filtering. Both the HH and HL categories were negatively associated with ADI national percentile rank, while the LH and LL categories were positively associated with ADI rank. (CHECK THIS!!!! No p stars in the table) These associations were significant both before and after spatial filtering, indicating that the relationship between ADI and canopy access category is robust to the presence of spatial autocorrelation in the model residuals. Significance levels for most other predictor β terms also remained stable after filtering, with two exceptions: for the HH category, the negative associations with Hispanic population and Black population moved from marginal significance (*p* \< 0.1) to significance at *p* \< 0.05; and for HL, the negative association with Hispanic population shifted from non-significant to significant at *p* \< 0.05, while the association with Black population strengthened from *p* \< 0.05 to *p* \< 0.01. CHECK RESULTS FOR THIS SECTION AND WRITE TO BE MORE CLEAR
+
+-----------
+
+Across the four canopy-access typology categories (reference: HH), coefficient signs, magnitudes, and significance patterns remain largely stable between the unfiltered and spatially filtered (ESF) models, supporting the robustness of the primary multinomial findings. ADI rank is the most consistent predictor: it is negatively associated with membership in HH (β = -0.044, p \< .001 unfiltered; β = -0.039, p \< .001 filtered) and HL (β = -0.065; β = -0.068, both p \< .001) relative to reference, and positively associated with LH (β = 0.032; β = 0.038, both p \< .001), with virtually no attenuation after spatial filtering — indicating this relationship is not an artifact of spatial autocorrelation. Racial composition effects show a similar pattern of stability with two notable exceptions. In HH, both Hispanic and Black population share strengthen from marginal to conventional significance after filtering (Hispanic: p = .062 to p = .020; Black: p = .078 to p = .042), and in HL, Black population share strengthens from p = .024 to p = .0036 while Hispanic population share newly reaches significance (p = .135 to p = .0068). The clearest divergence is in LH, where the positive association with Hispanic population share found in the unfiltered model (β = 0.007, p = .027) loses significance after spatial filtering (β = 0.006, p = .118), while the Black population share effect in this category remains significant in both specifications (p = .0084; p = .0043). No demographic or deprivation predictor reaches significance for LL in either model. Given that the ESF procedure is documented elsewhere as reducing residual spatial autocorrelation by 76–85% across categories, the overall stability of coefficients suggests the multinomial results are not substantially confounded by unmodeled spatial structure — with the LH Hispanic effect representing the one relationship whose evidentiary strength depends on whether spatial autocorrelation is explicitly filtered, a nuance that should be flagged explicitly given the analogous Hispanic-effect divergence already noted between the continuous PTAS and typology models.
+
+----------
 
 ```{r}
 #| label: tbl-bin-regress
@@ -770,22 +808,31 @@ coef_table <- all_coefs |>
   select(category, term, stage, estimate_fmt) |> 
   tidyr::pivot_wider(names_from = stage, 
                      values_from = c(estimate_fmt)) |> 
-  gt(groupname_col = "category", rowname_col = "term") |> 
-  tab_stubhead(label = "Term") |> 
-  cols_label(
+  as_grouped_data(groups = "category") |> 
+  as_flextable(hide_grouplabel = TRUE) |> 
+  set_header_labels(
+    term = "Term", 
     unfiltered = "β (unfiltered)",
-    filtered = "β (filtered)",
+    filtered = "β (filtered)"
   ) |> 
-  tab_style(
-    style = cell_text(style = "italic"),
-    locations = cells_row_groups()
+  italic(
+    i = ~ !is.na(category),
+    part = "body"
   ) |> 
-  tab_options(row_group.padding = px(10)) |> 
-  tab_footnote(footnote = md("† *p* < 0.1, * *p* < 0.05, ** *p* < 0.01, *** *p* < 0.001"),) |> 
-  tab_style(
-    style = cell_text(align = "left"),
-    locations = list(cells_footnotes())
-  )
+  add_footer_lines(
+    as_paragraph("† ", as_i("p"), " < 0.1, * ", as_i("p"), " < 0.05, ** ", as_i("p"), " < 0.01, *** ", as_i("p"), " < 0.001")
+  ) |> 
+  add_footer_lines(
+    as_paragraph(as_i("N"), " = 988 block groups")
+  )|> 
+  hline(i = 1, part = "body") |>
+  hline(i = 5, part = "body") |>
+  hline(i = 6, part = "body") |>
+  hline(i = 10, part = "body") |>
+  hline(i = 11, part = "body") |>
+  hline(i = 15, part = "body") |>
+  hline(i = 16, part = "body") |>
+  autofit()
 
 coef_table
 ```
@@ -812,7 +859,7 @@ Given that RTCC is inequitably distributed in Phoenix, while PTAS is higher in s
 
 The tree canopy access patterns found here both echo and diverge from Elderbrock et al.'s (2024) study of tree canopy equity in Portland, Oregon. Like this study, the authors found less residential tree canopy in block groups with larger Black, Hispanic, and low-income populations. Unlike this study, however, they found no compensatory pattern in park tree canopy access, which was unrelated to race or income and was actually *lower*, not higher for Hispanic residents [@elderbrock2024].
 
-This divergence may be due to a difference in function between Portland and Phoenix parks, or it may be methodological. Elderbrock et al. measured park access with a simple 800-m buffer around block group boundaries, a binary measure that does not weight nearby parks more heavily than distant ones or account for differences in tree-canopy demand based on block group population. The Gaussian two-step floating catchment area (G2SFCA) method used here incorporates both of these factors, along with distance measured from actual park boundaries, which Zhang et al. (2023) found reduces the underestimations of accessibility that centroid- or perimeter-based distances can produce [@zhang_assessing_2023].
+This divergence may be due to a difference in function between Portland and Phoenix parks, or it may be methodological. Elderbrock et al. measured park access with a simple 800-m buffer around block group boundaries, a binary measure that does not weight nearby parks more heavily than distant ones or account for differences in tree-canopy demand based on block group population. The Gaussian two-step floating catchment area (G2SFCA) method used here incorporates both of these factors, along with distance measured from actual park boundaries, which Zhang et al. (2023) found reduces the underestimations of accessibility that centroid- or perimeter-based distances can produce [@zhang2023].
 
 ### Limitations and future research {#sec-disc-limit}
 
@@ -828,7 +875,7 @@ Phoenix, Arizona has an urgent need for greater tree canopy cover, especially in
 
 ## Acknowledgements {#sec-acknowledge}
 
-I am grateful to Jake Simon at American Forests for providing access to the land cover data upon which this study was based. I would also like to thank Phoenix Parks and Recreation for providing open access to their data and for creating a park system that provides innumerable benefits to the people of Phoenix.
+I am grateful to Jake Simon at American Forests for providing access to the land cover data upon which this study was based. I would also like to thank Phoenix Parks and Recreation for allowing open access to their data and for creating a park system that provides innumerable benefits to the people of Phoenix.
 
 ## References {.unnumbered}
 
