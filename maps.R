@@ -47,14 +47,15 @@ inset_phx <- tm_shape(az_state) +
               lwd = 0.5) +
   tm_text("NAME", 
           size = 1.5, 
-          ymod = 5) +
+          ymod = 4) +
   tm_shape(phx_city_limits) +
   tm_polygons(fill = "darkblue",
               col = "darkblue") +
   tm_text(text = "Phoenix",
+          fontface = "italic",
           size = 1.3, 
-          xmod = 3, 
-          ymod = 3) +
+          xmod = 1, 
+          ymod = 2) +
   tm_layout(frame = TRUE, inner.margins = 0.1, frame.lwd = 0.3)
 
 # Create legend element
@@ -99,31 +100,6 @@ legend_bg_parks <- tm_shape(phx_bg_all) +
             legend.bg.col = "white",
             legend.text.size = 1.0)
 
-# # Create map of block groups and parks
-# map_phx <- tm_shape(phx_city_limits) +
-#   tm_polygons(fill = "gray90", 
-#               col = "black", 
-#               lwd = 1) +
-#   tm_shape(phx_bg_all) +
-#   tm_polygons(fill = "#fee08b",
-#               lwd = 0.3) +
-#   tm_shape(phx_bg) +
-#   tm_polygons(fill = "#fdae61") +
-#   tm_shape(parks) +
-#   tm_polygons("park_type",
-#               fill.scale = tm_scale(values =c("Pocket" = "#4daf4a", 
-#                                               "Linear" = "#377eb8", 
-#                                               "Neighborhood" = "#e41a1c", 
-#                                               "Community" = "#984ea3", 
-#                                               "Regional" = "#a65628")
-#               ),
-#               lwd = 0.8
-#   ) +
-#   tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
-#               position = tm_pos_out("right", "bottom"),
-#               text.size = 0.8) +
-#   tm_layout(frame = FALSE, legend.show = FALSE)
-
 # Create map of block groups and parks with parks as bubbles
 map_phx <- tm_shape(phx_city_limits) +
   tm_polygons(fill = "gray90", 
@@ -150,9 +126,9 @@ map_phx <- tm_shape(phx_city_limits) +
               lwd = 0.8,
              fill_alpha = 0.8
   ) +
-  tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
+  tm_scalebar(breaks = c(0, 5, 10),
               position = tm_pos_out("right", "bottom"),
-              text.size = 0.8) +
+              text.size = 1.0) +
   tm_layout(frame = FALSE, legend.show = FALSE)
 
 # Plot all elements
@@ -177,6 +153,11 @@ map_bg_parks <- ggdraw() +
 
 map_bg_parks
 
+inset_az
+inset_phx
+legend_bg_parks
+map_phx
+
 ggsave("images/map_bg_parks.png", plot = map_bg_parks, bg = "white", width = 8, height = 6)
 
 tmap_save(map_phx, "images/map_phx.png")
@@ -200,24 +181,34 @@ map_rtcc <- tm_shape(phx_city_limits) +
                                     label.na = "Missing data",
                                     label.format = list(digits = 1)),
               fill.legend = tm_legend(title = "Residential tree \ncanopy cover (%)",
+                                      title.size = 1.1,
+                                      text.size = 1,
                                       position = tm_pos_out("center",
                                                             "bottom",
                                                             pos.h = 0.25,
                                                             pos.v = 1))) +
-  tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
-              position = tm_pos_out("center", 
-                                    "bottom",
-                                    pos.h = 0.5,
-                                    pos.v = 1),
-              text.size = 0.8) +
+  tm_scalebar(breaks = c(0, 5, 10),
+              position = tm_pos_out("right", 
+                                    "bottom"),
+              text.size = 1.0) +
   tm_title_in("a", 
               position = tm_pos_in("left", 
                                    "top",
-                                   pos.h = 0.2,
+                                   pos.h = 0.1,
                                    pos.v = 1),
               size = 1.4) +
+  tm_layout(frame = FALSE)
+
+# Create RTCC map without legend
+map_rtcc_no_legend <- map_rtcc +
+  tm_legend(show = FALSE)
+map_rtcc_no_legend
+
+# Create RTCC legend
+legend_rtcc <- map_rtcc +
   tm_layout(frame = FALSE, 
-            legend.show = TRUE)
+            legend.only = TRUE)
+legend_rtcc
 
 # Create map of PTAS
 map_ptas <- tm_shape(phx_city_limits) +
@@ -232,7 +223,9 @@ map_ptas <- tm_shape(phx_city_limits) +
                                     value.na = "gray90",
                                     label.na = "Missing data"),
               fill.legend = tm_legend(title = "Park tree \naccess score",
-                                      group_id = "combined_legend")) +
+                                      group_id = "combined_legend",
+                                      title.size = 1.1,
+                                      text.size = 1)) +
   tm_shape(parks) +
   tm_bubbles(size = "tree_area",
              size.scale = tm_scale_continuous(values.range = c(0.3, 1.4),
@@ -247,21 +240,35 @@ map_ptas <- tm_shape(phx_city_limits) +
              lwd = 0.8,
              fill_alpha = 0.6,
              size.legend = tm_legend(title = "Tree canopy \narea (ha) in parks",
-                                     group_id = "combined_legend")) +
+                                     group_id = "combined_legend",
+                                     title.size = 1.1,
+                                     text.size = 1)) +
   tm_components("combined_legend",
                 position = tm_pos_out("center", "bottom", pos.h = 0.15, pos.v = 1),
                 stack = "horizontal",
                 frame_combine = TRUE) +
-  tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
-              position = tm_pos_out("center", "bottom", pos.h = 0.6, pos.v = 1),
-              text.size = 0.8) +
+  tm_scalebar(breaks = c(0, 5, 10),
+              position = tm_pos_out("right", 
+                                    "bottom"),
+              text.size = 1) +
   tm_title_in("b", 
-              position = tm_pos_in("left", "top", pos.h = 0.2, pos.v = 1),
+              position = tm_pos_in("left", 
+                                   "top", 
+                                   pos.h = 0.1, 
+                                   pos.v = 1),
               size = 1.4) +
+  tm_layout(frame = FALSE)
+
+# Create PTAS map without legend
+map_ptas_no_legend <- map_ptas +
+  tm_legend(show = FALSE)
+map_ptas_no_legend
+
+# Create PTAS legend
+legend_ptas <- map_ptas +
   tm_layout(frame = FALSE, 
-            legend.show = TRUE)
-
-
+            legend.only = TRUE)
+legend_ptas
 
 
 # Combine maps
