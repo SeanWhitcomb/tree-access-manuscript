@@ -295,21 +295,29 @@ map_hisp <- tm_shape(phx_city_limits) +
                 label.na = "Missing data",
                 label.format = list(digits = 1)),
               fill.legend = tm_legend(title = "Hispanic population (%)",
-                                      position = tm_pos_out("center",
-                                                            "bottom",
-                                                            pos.h = 0.25,
-                                                            pos.v = 1))) +
-  tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
+                                      title.size = 1.1,
+                                      text.size = 1)) +
+  tm_scalebar(breaks = c(0, 5, 10),
               position = tm_pos_out("center", 
-                                    "bottom", 
-                                    pos.h = 0.75,
+                                    "bottom",
+                                    pos.h = 0.5,
                                     pos.v = 1),
-              text.size = 0.8) +
+              text.size = 1)+
   tm_title_in("a", 
               position = tm_pos_in("left", 
                                    "top"),
               size = 1.4) +
-  tm_layout(frame = FALSE, legend.show = TRUE)
+  tm_layout(frame = FALSE)
+
+map_hisp_no_legend <- map_hisp +
+  tm_legend(show = FALSE)
+map_hisp_no_legend
+
+# Create Hispanic map legend
+legend_hisp <- map_hisp +
+  tm_layout(frame = FALSE,
+            legend.only = TRUE)
+legend_hisp
 
 # Create map of Black population
 map_black <- tm_shape(phx_city_limits) +
@@ -326,23 +334,29 @@ map_black <- tm_shape(phx_city_limits) +
                 label.na = "Missing data",
                 label.format = list(digits = 1)),
               fill.legend = tm_legend(title = "Black population (%)",
-                                      position = tm_pos_out("center",
-                                                            "bottom",
-                                                            pos.h = 0.25,
-                                                            pos.v = 1))) +
-  tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
+                                      title.size = 1.1,
+                                      text.size = 1)) +
+  tm_scalebar(breaks = c(0, 5, 10),
               position = tm_pos_out("center", 
                                     "bottom", 
-                                    pos.h = 0.75,
+                                    pos.h = 0.5,
                                     pos.v = 1),
-              text.size = 0.8) +
+              text.size = 1) +
   tm_title_in("b", 
                position = tm_pos_in("left", 
                                      "top"),
                size = 1.4) +
-  tm_layout(frame = FALSE, 
-            legend.show = TRUE) 
+  tm_layout(frame = FALSE)
 
+# Create Black map without legend
+map_black_no_legend <- map_black +
+  tm_legend(show = FALSE)
+map_black_no_legend
+
+# Create Black map legend
+legend_black <- map_black +
+  tm_layout(legend.only = TRUE)
+legend_black
 
 # Create map of ADI rank
 map_adi <- tm_shape(phx_city_limits) +
@@ -358,29 +372,30 @@ map_adi <- tm_shape(phx_city_limits) +
                 value.na = "gray90",
                 label.na = "Missing data",
                 label.format = list(digits = 0)),
-              fill.legend = tm_legend(title = "ADI rank",
-                                      position = tm_pos_out("center",
-                                                            "bottom",
-                                                            pos.h = 0.25,
-                                                            pos.v = 1))) +
-  tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
+              fill.legend = tm_legend(title = "ADI national rank",
+                                      title.size = 1.1,
+                                      text.size = 1)) +
+  tm_scalebar(breaks = c(0, 5, 10),
               position = tm_pos_out("center", 
                                     "bottom", 
-                                    pos.h = 0.64,
+                                    pos.h = 0.5,
                                     pos.v = 1),
-              text.size = 0.8) +
+              text.size = 1) +
   tm_title_in("c", 
               position = tm_pos_in("left", 
                                    "top"),
               size = 1.4) +
-  tm_layout(frame = FALSE, legend.show = TRUE)
+  tm_layout(frame = FALSE)
 
-# Arrange all three maps in one row
-map_demographics <- tmap_arrange(map_hisp, map_black, map_adi, nrow = 1)
+# Create ADI map without legend
+map_adi_no_legend <- map_adi +
+  tm_legend(show = FALSE)
+map_adi_no_legend
 
-map_demographics
-
-saveRDS(map_demographics, "map_demographics.rds")
+# Create ADI map legend
+legend_adi <- map_adi +
+  tm_layout(legend.only = TRUE)
+legend_adi
 
 # Map of tree access canopy categories =====================================================
 
@@ -401,18 +416,24 @@ map_access <- tm_shape(phx_city_limits) +
                                             value.na = "gray90",
                                             label.na = "Missing data"),
                                             fill.legend = tm_legend(title = "Tree canopy access categories",
-                                                                    position = tm_pos_out("center",
-                                                                                          "bottom",
-                                                                                          pos.h = 0.1,
-                                                                                          pos.v = 1))) +
-  tm_scalebar(breaks = c(0, 2, 4, 6, 8, 10),
+                                                                    title.size = 1.1,
+                                                                    text.size = 1)) +
+  tm_scalebar(breaks = c(0, 5, 10),
               position = tm_pos_out("center", 
                                     "bottom", 
-                                    pos.h = 0.8,
+                                    pos.h = 0.5,
                                     pos.v = 1),
               text.size = 0.8) +
   tm_layout(frame = FALSE, legend.show = TRUE)
 
-map_access
+# Create access map without legend
+map_access_no_legend <- map_access +
+  tm_legend(show = FALSE)
+map_access_no_legend
+
+# Create access map legend
+legend_access <- map_access +
+  tm_layout(legend.only = TRUE)
+legend_access
 
 saveRDS(map_access, "map_access.rds")
