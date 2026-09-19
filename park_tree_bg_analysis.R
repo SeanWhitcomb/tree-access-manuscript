@@ -25,38 +25,46 @@ st_write(phx_bg, "phx_park_tree_access.gpkg", layer = "phx_bg", delete_layer = T
 parks <- readRDS("parks.rds")
 phx_bg <- readRDS("phx_bg.rds")
 
-## Prepare phx_bg object ======================================
+# Compute median values of block group TTCC with and without parks
+rtcc_med <- formatC(median(phx_bg_parks$pct_tree_wo_parks), format = "f", digits = 2)
+ttcc_med <- formatC(median(phx_bg_parks$pct_tree_parks), format = "f", digits = 2)
 
-# Read in Phoenix block group land cover data and filter to only land cover columns
-# land_cover <- st_read("phx_park_tree_access.gpkg", layer = "bg_land_cover_wo_parks")
-# land_cover <- land_cover |> select(geoid, land_cover_0:pixel_cover)
+ttcc_med_parks <- phx_bg_all |> 
+  filter(has_park) |>
+  st_drop_geometry() |>
+  summarize(median = median(pct_tree_parks, na.rm = TRUE)) |>
+  pull(median) |>
+  formatC(format = "f", digits = 2)
 
-# Join land cover data to block group polygons
-# phx_bg <- left_join(phx_bg, st_drop_geometry(land_cover), by = "geoid")
+ttcc_med_wo_parks <- phx_bg_all |> 
+  filter(!has_park) |>
+  st_drop_geometry() |>
+  summarize(median = median(pct_tree_parks, na.rm = TRUE)) |>
+  pull(median) |>
+  formatC(format = "f", digits = 2)
 
-# Calculate tree canopy and green cover percent per block group (without parks)
-# phx_bg$pct_tree <- 
-#   (phx_bg$land_cover_1 / (phx_bg$land_cover_1 + phx_bg$land_cover_2 +
-#     phx_bg$land_cover_3 + phx_bg$land_cover_4 + phx_bg$land_cover_5 +
-#     phx_bg$land_cover_6 + phx_bg$land_cover_7)) * 100
+# Compute Mann's U statistic for median TTCC with and without parks
+mann <- wilcox.test(pct_tree_parks ~ has_park, data = phx_bg_all)
 
-# phx_bg$pct_green <- 
-#   ((phx_bg$land_cover_1 + phx_bg$land_cover_2)/ (phx_bg$land_cover_1 + phx_bg$land_cover_2 +
-#     phx_bg$land_cover_3 + phx_bg$land_cover_4 + phx_bg$land_cover_5 +
-#     phx_bg$land_cover_6 + phx_bg$land_cover_7)) * 100
+mann_u <- formatC(mann$statistic, format = "f", digits = 0)
+mann_p <- ifelse(mann$p.value < 0.001, "0.001",
+                 formatC(mann$p.value, format = "f", digits = 3))
 
-# Convert demographic columns to percents
-# phx_bg$pct_white <- phx_bg$pct_white * 100
-# phx_bg$pct_black <- phx_bg$pct_black * 100
-# phx_bg$pct_hispanic <- phx_bg$pct_hispanic * 100
-# phx_bg$pct_nonwhite <- 100 - phx_bg$pct_white
+# Compute Wilcoxon's V statistic for median RTCC with and without parks
+wilcox <- wilcox.test(phx_bg_parks$pct_tree_parks, phx_bg_parks$pct_tree_wo_parks, paired = T)
 
-# Remove block groups with NA land cover columns
-# phx_bg <- phx_bg |> 
-#   filter(!is.na(pct_tree))
+wilcox_v <- formatC(wilcox$statistic, format = "f", digits = 0)
+wilcox_p <- ifelse(wilcox$p.value < 0.001, "0.001",
+                   formatC(wilcox$p.value, format = "f", digits = 3))
 
-# phx_bg <- phx_bg |> 
-#   filter(geoid != "040136130002")
+# Calculate number of block groups with negative diff between TTCC and RTCC
+negative_diff <- phx_bg_parks |> 
+  st_drop_geometry() |> 
+  mutate(diff = pct_tree_parks - pct_tree_wo_parks) |> 
+  summarize(
+    n_neg = sum(diff < 0, na.rm = TRUE),
+    pct_neg = round(mean(diff < 0, na.rm = TRUE) * 100, 1)
+  )
 	
 ## Map tree cover per block group and park access ========================
 tmap_mode("view")
@@ -115,15 +123,6 @@ plot.nb(nb8, st_geometry(phx_bg_pw), add = T)
 
 plot(st_geometry(phx_bg), border = "lightgray")
 plot.nb(nb5, st_geometry(phx_bg_pw), add = T) 
-
-## Local Moran's I =====================================
-# localmoran() function of spdep
-# output: 
-  # Ii: Local Moran's I for each area
-  # E.Ii: Expected Local Moran's I
-  # Var.Ii: Variance of Local Moran's I
-  # Z.Ii: z-score
-  # Pr(z...): p-value for hypothesis tested
 
 # Calculate 2-sided local Moran's I for tree access
 moran_access <- localmoran(phx_bg$tree_access, nbw8, alternative = "two.sided")
